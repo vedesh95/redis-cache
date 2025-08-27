@@ -250,7 +250,10 @@ public class Main {
                     }else if(command.get(0).equals("TYPE")){
                         String key = command.get(1);
                         // print map and streamMap
-                        System.out.println("---map-" + map.keys().toString());
+                        streamMap.forEach((k, v) -> {
+                            System.out.println("streamMap key: " + k + " value: ");
+                            v.forEach( kv -> System.out.println("   " + kv.key + " : " + kv.value));
+                        });
                         System.out.println("---streamMap-" + streamMap.keys());
                         System.out.println();
                         if(map.containsKey(key)){
