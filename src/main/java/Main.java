@@ -71,9 +71,9 @@ public class Main {
                     if (line.equalsIgnoreCase("PING")) {
                         out.write("+PONG\r\n".getBytes());
                         out.flush();
-                    } else if (line.startsWith("echo ")) {
-                        String response = line.substring(5);
-                        out.write((response + "\r\n").getBytes());
+                    } else if (line.startsWith("ECHO")) {
+                        line = reader.readLine();
+                        out.write(("\r\n" + line + "\r\n").getBytes());
                         out.flush();
                     }
                 }
