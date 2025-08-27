@@ -53,12 +53,14 @@ public class Main {
                         String line0 = reader.readLine();
                         String line1 = reader.readLine();
                         String line2 = reader.readLine();
+                        System.out.println("set----" + line1 + " " + line2);
                         String key = line1;
                         String value = line2;
                         map.put(key, value);
                         out.write("+OK\r\n".getBytes());
                         out.flush();
                     } else if(line.contains("GET")){
+                        reader.readLine();
                         String line0 = reader.readLine();
                         String line1 = reader.readLine();
                         String key = line1;
