@@ -2,16 +2,13 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Time;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Queue;
 
 class Pair{
     public String value;
     public Time time;
-    public int expireTime;
-    public Pair(String value, int expireTime) {
+    public Integer expireTime;
+    public Pair(String value, Integer expireTime) {
         this.value = value;
         time = new Time(System.currentTimeMillis());
         this.expireTime = expireTime;
@@ -60,12 +57,19 @@ public class Main {
                         out.write((line0 + "\r\n" + line + "\r\n").getBytes());
                         out.flush();
                     } else if(line.contains("SET")){
-                        System.out.println("printing lines---" + reader.lines());
+
                         String line0 = reader.readLine();
                         String line1 = reader.readLine();
                         String line2 = reader.readLine();
                         String line3 = reader.readLine();
                         String line4 = reader.readLine();
+                        if(line4 == null){
+                            String key = line1;
+                            String value = line3;
+                            map.put(key, new Pair(value, null));
+                            out.write("+OK\r\n".getBytes());
+                            out.flush();
+                        }
                         String line5 = reader.readLine();
                         String line6 = reader.readLine();
                         String line7 = reader.readLine();
@@ -88,7 +92,7 @@ public class Main {
                         String line1 = reader.readLine();
                         System.out.println("get----" + line0 + " " + line1);
                         String key = line1;
-                        if(map.containsKey(key) && map.get(key).expireTime + map.get(key).time.getTime() > System.currentTimeMillis()){
+                        if(map.containsKey(key) && (map.get(key).expireTime == null || map.get(key).expireTime + map.get(key).time.getTime() > System.currentTimeMillis())){
                             String value = map.get(key).value;
                             out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
                             out.flush();
