@@ -2,9 +2,10 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Time;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 class Pair{
     public String value;
@@ -27,6 +28,7 @@ public class Main {
         int port = 6379;
       ConcurrentHashMap<String, Pair> map = new ConcurrentHashMap<>();
       ConcurrentHashMap<String, List<String>> lists = new ConcurrentHashMap<>();
+      ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
         try {
           serverSocket = new ServerSocket(port);
           // Since the tester restarts your program quite often, setting SO_REUSEADDR
@@ -34,14 +36,14 @@ public class Main {
           serverSocket.setReuseAddress(true);
           while (true){
             Socket clientSocket = serverSocket.accept();
-            spinThread(clientSocket, map, lists);
+            spinThread(clientSocket, map, lists, threadsWaitingForBLPOP);
           }
         } catch (IOException e) {
           System.out.println("IOException: " + e.getMessage());
         }
   }
 
-    public static void spinThread(Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists) {
+    public static void spinThread(Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP){
         new Thread(() -> {
             try (clientSocket;
                  BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -194,30 +196,41 @@ public class Main {
                             }
 
                         }
-                    } else if(command.get(0).contains("BLOP")){
+                    } else if(command.get(0).contains("BLPOP")) {
+
+                        /*
+                        If a timeout duration is supplied, it is the number of seconds the client will wait for an element to be available for removal. If no elements were inserted during this interval, the server returns a null bulk string ($-1\r\n).
+                        If an element was inserted during this interval, the server removes it from the list and responds to the blocking client with a RESP-encoded array containing two elements:
+                        The list name (as a bulk string)
+                        The element that was popped (as a bulk string)
+                           If multiple clients are blocked for BLPOP command, the server responds to the client which has been blocked for the longest duration.
+                        * */
+
+
                         String key = command.get(1);
-                        int timeout = Integer.parseInt(command.get(2));
+                        int timeout = Integer.parseInt(command.get(2)) * 1000; // convert to milliseconds
+                        boolean waitForever = timeout == 0;
+                        Thread currentThread = Thread.currentThread();
+                        if (threadsWaitingForBLPOP.containsKey(key) == false) {
+                            threadsWaitingForBLPOP.put(key, new ConcurrentLinkedQueue<>());
+                        }
+                        threadsWaitingForBLPOP.get(key).add(currentThread);
                         long startTime = System.currentTimeMillis();
-                        while((!lists.containsKey(key) || lists.get(key).isEmpty()) && (System.currentTimeMillis() - startTime) < timeout * 1000){
+                        while (waitForever || (System.currentTimeMillis() - startTime) < timeout && threadsWaitingForBLPOP.get(key).peek() == currentThread) {
+                            if (lists.containsKey(key) && lists.get(key).isEmpty() == false) {
+                                String value = lists.get(key).remove(0);
+                                out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                                out.flush();
+                                threadsWaitingForBLPOP.get(key).remove();
+                                break;
+                            }
                             try {
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {
                                 throw new RuntimeException(e);
                             }
                         }
-                        if(!lists.containsKey(key) || lists.get(key).isEmpty()){
-                            out.write("$-1\r\n".getBytes());
-                            out.flush();
-                        } else {
-                            String value = lists.get(key).remove(0);
-                            out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
-                            out.flush();
-                        }
                     }
-//                    else {
-//                        out.write("-ERR unknown command\r\n".getBytes());
-//                        out.flush();
-//                    }
                 }
             } catch (IOException e) {
                 System.out.println(e);
