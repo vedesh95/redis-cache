@@ -36,14 +36,14 @@ public class Main {
 
                   String s = new String(inp,0, bytesRead);
                   System.out.println(s);
-                  if(s.startsWith("ECHO")){
+                  if(s.contains("ECHO")){
                       byte[] inpp = new byte[1024];
                       int bytesReads = clientSocket.getInputStream().read(inpp);
                       String ss = new String(inpp,0, bytesReads);
                       System.out.println(ss);
                       OutputStream out = clientSocket.getOutputStream();
                       out.write(("\r\n" + ss + "\r\n").getBytes());
-                  }else {
+                  }else if(s.contains("PING")) {
                       OutputStream out = clientSocket.getOutputStream();
                       out.write("+PONG\r\n".getBytes());
                       out.flush();
