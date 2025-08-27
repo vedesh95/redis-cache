@@ -219,20 +219,28 @@ public class Main {
                         threadsWaitingForBLPOP.get(key).offer(currentThread);
                         System.out.println("----blpop----" + key + " " + timeout + " " + currentThread + threadsWaitingForBLPOP.get(key).size());
                         long startTime = System.currentTimeMillis();
-                        while (waitForever || (System.currentTimeMillis() - startTime) < timeout && threadsWaitingForBLPOP.get(key).peek() == currentThread) {
+                        while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
+                            if(threadsWaitingForBLPOP.get(key).peek() == currentThread){
+                                if (lists.containsKey(key) && lists.get(key).isEmpty() == false) {
+                                    String value = lists.get(key).remove(0);
+                                    out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                                    out.flush();
+                                    threadsWaitingForBLPOP.get(key).remove();
+                                    break;
+                                }
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }
 
-                            if (lists.containsKey(key) && lists.get(key).isEmpty() == false) {
-                                String value = lists.get(key).remove(0);
-                                out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
-                                out.flush();
-                                threadsWaitingForBLPOP.get(key).remove();
-                                break;
-                            }
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                                throw new RuntimeException(e);
-                            }
+                        }
+                        // timeout occurred
+                        if(threadsWaitingForBLPOP.get(key).peek() == currentThread) {
+                            out.write("$-1\r\n".getBytes());
+                            out.flush();
+                            threadsWaitingForBLPOP.get(key).remove();
                         }
                     }
                 }
