@@ -78,7 +78,7 @@ public class Main {
 //                        System.out.println("set----" + line1 + " " + line2 + " " + line3 + " " + line4 + " " + line5 + " " + line6 + " " + line7);
                         String key = line1;
                         String value = line3;
-                        map.put(key, new Pair(value, Integer.valueOf(line3)));
+                        map.put(key, new Pair(value, Integer.valueOf(line7)));
                         out.write("+OK\r\n".getBytes());
                         out.flush();
                     } else if(line.contains("GET")){
