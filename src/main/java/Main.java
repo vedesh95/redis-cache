@@ -4,6 +4,7 @@ import java.net.Socket;
 import java.sql.Time;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 class Pair{
     public String value;
@@ -24,6 +25,8 @@ public class Main {
         ServerSocket serverSocket = null;
 //        Socket clientSocket = null;
         int port = 6379;
+      ConcurrentHashMap<String, Pair> map = new ConcurrentHashMap<>();
+      ConcurrentHashMap<String, List<String>> lists = new ConcurrentHashMap<>();
         try {
           serverSocket = new ServerSocket(port);
           // Since the tester restarts your program quite often, setting SO_REUSEADDR
@@ -31,20 +34,19 @@ public class Main {
           serverSocket.setReuseAddress(true);
           while (true){
             Socket clientSocket = serverSocket.accept();
-            spinThread(clientSocket);
+            spinThread(clientSocket, map, lists);
           }
         } catch (IOException e) {
           System.out.println("IOException: " + e.getMessage());
         }
   }
 
-    public static void spinThread(Socket clientSocket) {
+    public static void spinThread(Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists) {
         new Thread(() -> {
             try (clientSocket;
                  BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                  OutputStream out = clientSocket.getOutputStream()) {
-                HashMap<String, Pair> map = new HashMap<>();
-                HashMap<String, List<String>> lists = new HashMap<>();
+
 
                 while(true){
                     List<String> command = parseCommand(reader);
@@ -191,6 +193,25 @@ public class Main {
                                 out.flush();
                             }
 
+                        }
+                    } else if(command.get(0).contains("BLOP")){
+                        String key = command.get(1);
+                        int timeout = Integer.parseInt(command.get(2));
+                        long startTime = System.currentTimeMillis();
+                        while((!lists.containsKey(key) || lists.get(key).isEmpty()) && (System.currentTimeMillis() - startTime) < timeout * 1000){
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        if(!lists.containsKey(key) || lists.get(key).isEmpty()){
+                            out.write("$-1\r\n".getBytes());
+                            out.flush();
+                        } else {
+                            String value = lists.get(key).remove(0);
+                            out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                            out.flush();
                         }
                     }
 //                    else {
