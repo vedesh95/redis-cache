@@ -274,6 +274,7 @@ public class Main {
                         }
                         // The return value is the ID of the entry created as a bulk string.
                         String id = String.valueOf(streamMap.get(streamkey).size());
+                        System.out.println("-----debug=" + streamkey);
                         out.write(("$" + id.length() + "\r\n" + id + "\r\n").getBytes());
                         out.flush();
                     }
