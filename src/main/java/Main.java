@@ -3,6 +3,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Time;
 import java.util.HashMap;
+import java.util.List;
 
 class Pair{
     public String value;
@@ -44,69 +45,52 @@ public class Main {
                  OutputStream out = clientSocket.getOutputStream()) {
                 HashMap<String, Pair> map = new HashMap<>();
 
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    System.out.println(line);
-                    if (line.equalsIgnoreCase("PING")) {
-                        out.write("+PONG\r\n".getBytes());
+                List<String> command = parseCommand(reader);
+                System.out.println("command is " + command);
+
+                if (command.get(0).equalsIgnoreCase("PING")) {
+                    out.write("+PONG\r\n".getBytes());
+                    out.flush();
+                } else if (command.get(0).startsWith("ECHO")) {
+                    String line = command.get(1);
+                    System.out.println("echo----" + line);
+                    out.write(("ECHO" + "\r\n" + line + "\r\n").getBytes());
+                    out.flush();
+                } else if(command.get(0).contains("SET")){
+
+                    if(command.size()==5){
+                        String key = command.get(1);
+                        String value = command.get(2);
+                        map.put(key, new Pair(value, Integer.valueOf(command.get(4))));
+                        out.write("+OK\r\n".getBytes());
                         out.flush();
-                    } else if (line.startsWith("ECHO")) {
-                        String line0 = reader.readLine();
-                        line = reader.readLine();
-                        System.out.println("echo----" + line);
-                        out.write((line0 + "\r\n" + line + "\r\n").getBytes());
+                    } else {
+                        String key = command.get(1);
+                        String value = command.get(2);
+                        map.put(key, new Pair(value, null));
+                        out.write("+OK\r\n".getBytes());
                         out.flush();
-                    } else if(line.contains("SET")){
+                    }
+                } else if(command.get(0).contains("GET")){
 
-                        String line0 = reader.readLine();
-                        String line1 = reader.readLine();
-                        String line2 = reader.readLine();
-                        String line3 = reader.readLine();
-                        System.out.println("set---" + line0 + " " + line1 + " " + line2 + " " + line3);
-
-                        try{
-                            System.out.println("trying to read line4 now");
-                            String line4 = reader.readLine();
-                            String line5 = reader.readLine();
-                            String line6 = reader.readLine();
-                            String line7 = reader.readLine();
-
-                            System.out.println("set---" + line0 + " " + line1 + " " + line2 + " " + line3 + " " + line4 + " " + line5 + " " + line6 + " " + line7);
-                            String key = line1;
-                            String value = line3;
-                            map.put(key, new Pair(value, Integer.valueOf(line7)));
-                            out.write("+OK\r\n".getBytes());
-                            out.flush();
-                        } catch (Exception e) {
-                            System.out.println("----- exception caught bhau");
-                            String key = line1;
-                            String value = line3;
-                            map.put(key, new Pair(value, null));
-                            out.write("+OK\r\n".getBytes());
-                            out.flush();
-
-                        }
-
-                    } else if(line.contains("GET")){
-
-                        String line0 = reader.readLine();
-                        String line1 = reader.readLine();
-                        System.out.println("get----" + line0 + " " + line1);
-                        String key = line1;
-                        if(map.containsKey(key) && (map.get(key).expireTime == null || map.get(key).expireTime + map.get(key).time.getTime() > System.currentTimeMillis())){
-                            String value = map.get(key).value;
-                            out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
-                            out.flush();
-                        } else {
-                            out.write("$-1\r\n".getBytes());
-                            out.flush();
-                        }
+                    String line0 = reader.readLine();
+                    String line1 = reader.readLine();
+                    System.out.println("get----" + line0 + " " + line1);
+                    String key = line1;
+                    if(map.containsKey(key) && (map.get(key).expireTime == null || map.get(key).expireTime + map.get(key).time.getTime() > System.currentTimeMillis())){
+                        String value = map.get(key).value;
+                        out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                        out.flush();
+                    } else {
+                        out.write("$-1\r\n".getBytes());
+                        out.flush();
                     }
                 }
             } catch (IOException e) {
-                System.out.println("Exception occured bhau" + e);
+                System.out.println(e);
             }
         }).start();
+
     }
 
 //    public List<List<String>> parse(BufferedReader reader) throws IOException {
@@ -137,5 +121,21 @@ public class Main {
 //        }
 //
 //    }
+
+    public static List<String> parseCommand(BufferedReader reader) throws IOException {
+        String line;
+        line = reader.readLine();
+        List<String> command = new java.util.ArrayList<>();
+        if (line != null && line.startsWith("*")) {
+            int n = Integer.parseInt(line.substring(1));
+            for (int i = 0; i < n; i++) {
+                int m = Integer.parseInt(line.substring(1));
+                line = reader.readLine();
+                line = reader.readLine();
+                command.add(line);
+            }
+        }
+        return command;
+    }
 
 }
