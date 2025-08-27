@@ -147,11 +147,21 @@ public class Main {
                             out.write((":" + lists.get(key).size() + "\r\n").getBytes());
                             out.flush();
                         }
+                    } else if(command.get(0).contains("LPOP")){
+                        String key = command.get(1);
+                        if(!lists.containsKey(key) || lists.get(key).isEmpty()){
+                            out.write("$-1\r\n".getBytes());
+                            out.flush();
+                        } else {
+                            String value = lists.get(key).remove(0);
+                            out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                            out.flush();
+                        }
                     }
-                    else {
-                        out.write("-ERR unknown command\r\n".getBytes());
-                        out.flush();
-                    }
+//                    else {
+//                        out.write("-ERR unknown command\r\n".getBytes());
+//                        out.flush();
+//                    }
                 }
             } catch (IOException e) {
                 System.out.println(e);
