@@ -1,11 +1,10 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Queue;
 
 class Pair{
@@ -65,6 +64,7 @@ public class Main {
                         String line1 = reader.readLine();
                         String line2 = reader.readLine();
                         String line3 = reader.readLine();
+                        System.out.println("set---" + reader.readLine());
                         System.out.println("set---" + line0 + " " + line1 + " " + line2 + " " + line3);
                         // px
 //                        String line4 = reader.readLine();
@@ -98,4 +98,34 @@ public class Main {
             }
         }).start();
     }
+
+//    public List<List<String>> parse(BufferedReader reader) throws IOException {
+//        String line;
+//        line = reader.readLine();
+//        ArrayList<ArrayList<String>> res = new ArrayList<>();
+//        while (line != null) {
+//            if (line.startsWith("*")) {
+//                int n = Integer.parseInt(line.substring(1));
+//                ArrayList<String> command = new ArrayList<>();
+//                for (int i = 0; i < n; i++) {
+//                    line = reader.readLine();
+//                    int m = Integer.parseInt(line.substring(1));
+//                    for(int j = 0; j < m; j++) {
+//                        line = reader.readLine();
+//                        if(line.contains("PING")){
+//                            command.add("PING");
+//                        }else if(line.contains("ECHO")) {
+//                            command.add("ECHO");
+//                        }else if(line.contains("SET"))
+//                        command.add(line);
+//                    }
+//
+//                }
+//                res.add(command);
+//            }
+//            line = reader.readLine();
+//        }
+//
+//    }
+
 }
