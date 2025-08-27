@@ -269,9 +269,7 @@ public class Main {
                         if(!streamMap.containsKey(streamid)){
                             streamMap.put(streamid, new LinkedHashMap<>());
                         }
-                        if(!streamMap.get(streamid).containsKey(entryid)){
-                            streamMap.get(streamid).put(entryid, new ArrayList<>());
-                        }
+
 
                         // The entryid should be greater than the ID of the last entry in the stream.
                         //    The millisecondsTime part of the ID should be greater than or equal to the millisecondsTime of the last entry.
@@ -300,6 +298,9 @@ public class Main {
                                     continue;
                                 }
                             }
+                        }
+                        if(!streamMap.get(streamid).containsKey(entryid)){
+                            streamMap.get(streamid).put(entryid, new ArrayList<>());
                         }
 
                         String id = command.get(2);
