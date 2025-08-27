@@ -67,6 +67,7 @@ public class Main {
 
                 String line;
                 while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
                     if (line.equalsIgnoreCase("PING")) {
                         out.write("+PONG\r\n".getBytes());
                         out.flush();
