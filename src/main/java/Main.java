@@ -56,14 +56,15 @@ public class Main {
                         String line3 = reader.readLine();
                         System.out.println("set----" + line1 + " " + line2 + " " + line3);
                         String key = line1;
-                        String value = line2;
+                        String value = line3;
                         map.put(key, value);
                         out.write("+OK\r\n".getBytes());
                         out.flush();
                     } else if(line.contains("GET")){
-                        reader.readLine();
+
                         String line0 = reader.readLine();
                         String line1 = reader.readLine();
+                        System.out.println("get----" + line0 + " " + line1);
                         String key = line1;
                         if(map.containsKey(key)){
                             String value = map.get(key);
