@@ -56,7 +56,7 @@ public class Main {
                     } else if (command.get(0).startsWith("ECHO")) {
                         String line = command.get(1);
                         System.out.println("echo----" + line);
-                        out.write(("+" + "\r\n" + line + "\r\n").getBytes());
+                        out.write((command.get(0) + "\r\n" + line + "\r\n").getBytes());
                         out.flush();
                     } else if(command.get(0).contains("SET")){
 
