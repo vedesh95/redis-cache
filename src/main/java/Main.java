@@ -47,6 +47,7 @@ public class Main {
 
                 while(true){
                     List<String> command = parseCommand(reader);
+                    if(command.isEmpty()) continue;
                     System.out.println("command is " + command);
 
                     if (command.get(0).equalsIgnoreCase("PING")) {
