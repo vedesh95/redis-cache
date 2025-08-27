@@ -64,6 +64,7 @@ public class Main {
                         String line3 = reader.readLine();
                         String line4 = reader.readLine();
                         if(line4 == null){
+                            System.out.println("line4 is null");
                             String key = line1;
                             String value = line3;
                             map.put(key, new Pair(value, null));
