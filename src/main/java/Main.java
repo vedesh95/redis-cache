@@ -25,11 +25,10 @@ public class Main {
                 clientSocket.getInputStream().read(inp);
                 String s = new String(inp);
                 System.out.println(s);
-                if (s.contains("ping")) {
-                    OutputStream out = clientSocket.getOutputStream();
-                    out.write("+PONG\r\n".getBytes());
-                    out.flush();
-                }
+                OutputStream out = clientSocket.getOutputStream();
+                out.write("+PONG\r\n".getBytes());
+                out.flush();
+
             }
 
         } catch (IOException e) {
