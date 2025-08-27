@@ -62,6 +62,7 @@ public class Main {
                         String line1 = reader.readLine();
                         String line2 = reader.readLine();
                         String line3 = reader.readLine();
+                        System.out.println("set---" + line0 + " " + line1 + " " + line2 + " " + line3);
                         String line4 = reader.readLine();
                         if(line4 == null){
                             System.out.println("line4 is null");
