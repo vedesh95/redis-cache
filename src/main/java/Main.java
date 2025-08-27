@@ -74,10 +74,7 @@ public class Main {
                         }
                     } else if(command.get(0).contains("GET")){
 
-                        String line0 = reader.readLine();
-                        String line1 = reader.readLine();
-                        System.out.println("get----" + line0 + " " + line1);
-                        String key = line1;
+                        String key = command.get(1);
                         if(map.containsKey(key) && (map.get(key).expireTime == null || map.get(key).expireTime + map.get(key).time.getTime() > System.currentTimeMillis())){
                             String value = map.get(key).value;
                             out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
