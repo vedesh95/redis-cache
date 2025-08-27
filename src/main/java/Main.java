@@ -153,9 +153,30 @@ public class Main {
                             out.write("$-1\r\n".getBytes());
                             out.flush();
                         } else {
-                            String value = lists.get(key).remove(0);
-                            out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
-                            out.flush();
+                            // lpop can ask to remove multiple values
+                            // LPOP mylist 2
+                            // If the number of elements to remove is greater than the list length, it returns RESP encoded array of all the elements of the list.
+                            int count = 1;
+                            if(command.size() == 3){
+                                count = Integer.parseInt(command.get(2));
+                            }
+                            List<String> list = lists.get(key);
+                            if(count > list.size()){
+                                out.write(("*" + list.size() + "\r\n").getBytes());
+                                for(String value : list){
+                                    out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                                }
+                                lists.put(key, new java.util.ArrayList<>());
+                                out.flush();
+                            } else {
+                                out.write(("*" + count + "\r\n").getBytes());
+                                for(int i = 0; i < count; i++){
+                                    String value = list.remove(0);
+                                    out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                                }
+                                out.flush();
+                            }
+
                         }
                     }
 //                    else {
