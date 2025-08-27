@@ -112,7 +112,7 @@ public class Main {
                             if(end >= list.size()) end = list.size() - 1;
                             if(start < 0) start = list.size() + start;
                             if(end< 0) end = list.size() + end;
-                            if(start < 0) start = 0;
+                            if(start < 0) start = 0; //suppose list is of size 6 and start is -7
                             if(start > end || start >= list.size()){
                                 out.write("*0\r\n".getBytes());
                                 out.flush();
@@ -124,9 +124,20 @@ public class Main {
                                 }
                                 out.flush();
                             }
-
-
                         }
+                    } else if(command.get(0).contains("LPUSH")){
+                        // lpush might send multiple values
+                        // LPUSH mylist "hello" "world"
+                        String key = command.get(1);
+                        for(int i = 2; i < command.size(); i++){
+                            String value = command.get(i);
+                            if(!lists.containsKey(key)){
+                                lists.put(key, new java.util.ArrayList<>());
+                            }
+                            lists.get(key).add(0, value);
+                        }
+                        out.write((":" + lists.get(key).size() + "\r\n").getBytes());
+                        out.flush();
                     } else {
                         out.write("-ERR unknown command\r\n".getBytes());
                         out.flush();
