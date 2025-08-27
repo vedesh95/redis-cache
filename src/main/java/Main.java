@@ -64,8 +64,12 @@ public class Main {
                         String line1 = reader.readLine();
                         String line2 = reader.readLine();
                         String line3 = reader.readLine();
-                        System.out.println("set---" + reader.readLine());
-                        System.out.println("set---" + line0 + " " + line1 + " " + line2 + " " + line3);
+                        String line4 = reader.readLine();
+                        String line5 = reader.readLine();
+                        String line6 = reader.readLine();
+                        String line7 = reader.readLine();
+
+                        System.out.println("set---" + line0 + " " + line1 + " " + line2 + " " + line3 + " " + line4 + " " + line5 + " " + line6 + " " + line7);
                         // px
 //                        String line4 = reader.readLine();
 //                        String line5 = reader.readLine();
