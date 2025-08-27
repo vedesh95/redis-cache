@@ -73,6 +73,7 @@ public class Main {
                         out.flush();
                     } else if (line.startsWith("ECHO")) {
                         line = reader.readLine();
+                        line = reader.readLine();
                         System.out.println("echo----" + line);
                         out.write(("\r\n" + line + "\r\n").getBytes());
                         out.flush();
