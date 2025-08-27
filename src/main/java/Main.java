@@ -210,7 +210,7 @@ public class Main {
                         * */
 
                         String key = command.get(1);
-                        int timeout = Integer.parseInt(command.get(2)) * 1000; // convert to milliseconds
+                        Double timeout = Double.parseDouble(command.get(2)) * 1000; // convert to milliseconds
                         boolean waitForever = timeout == 0;
                         Thread currentThread = Thread.currentThread();
                         if (threadsWaitingForBLPOP.containsKey(key) == false) {
