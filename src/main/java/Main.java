@@ -219,19 +219,21 @@ public class Main {
                         threadsWaitingForBLPOP.get(key).offer(currentThread);
                         System.out.println("----blpop----" + key + " " + timeout + " " + currentThread + threadsWaitingForBLPOP.get(key).size());
                         long startTime = System.currentTimeMillis();
+                        boolean timedOut = true;
                         while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
                             if(threadsWaitingForBLPOP.get(key).peek() == currentThread){
                                 if (lists.containsKey(key) && lists.get(key).isEmpty() == false) {
                                     String value = lists.get(key).remove(0);
                                     out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
                                     out.flush();
-                                    threadsWaitingForBLPOP.get(key).remove();
+                                    threadsWaitingForBLPOP.get(key).remove(currentThread);
+                                    timedOut = false;
                                     break;
                                 }
                             }
                         }
                         // timeout occurred. we have to return null bulk string and remove the thread from queue even if it is not at the front
-                        if(threadsWaitingForBLPOP.get(key).remove(currentThread)) {
+                        if(timedOut) {
                             out.write("$-1\r\n".getBytes());
                             out.flush();
                         }
