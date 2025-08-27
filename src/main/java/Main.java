@@ -102,7 +102,6 @@ public class Main {
         if (line != null && line.startsWith("*")) {
             int n = Integer.parseInt(line.substring(1));
             for (int i = 0; i < n; i++) {
-                int m = Integer.parseInt(line.substring(1));
                 line = reader.readLine();
                 line = reader.readLine();
                 command.add(line);
