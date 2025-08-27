@@ -160,6 +160,13 @@ public class Main {
                             if(command.size() == 3){
                                 count = Integer.parseInt(command.get(2));
                             }
+                            // if list not found or empty
+                            if(!lists.containsKey(key) || lists.get(key).isEmpty()){
+                                out.write("$-1\r\n".getBytes());
+                                out.flush();
+                                continue;
+                            }
+
                             List<String> list = lists.get(key);
                             if(count > list.size()){
                                 out.write(("*" + list.size() + "\r\n").getBytes());
@@ -169,6 +176,13 @@ public class Main {
                                 lists.put(key, new java.util.ArrayList<>());
                                 out.flush();
                             } else {
+                                // if count == 1 then return a bulk string
+                                if(count == 1){
+                                    String value = list.remove(0);
+                                    out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                                    out.flush();
+                                    continue;
+                                }
                                 out.write(("*" + count + "\r\n").getBytes());
                                 for(int i = 0; i < count; i++){
                                     String value = list.remove(0);
