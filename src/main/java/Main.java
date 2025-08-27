@@ -52,8 +52,19 @@ public class Main {
   }
 
   public static void writeToStream(Socket clientSocket) throws IOException {
-      OutputStream out = clientSocket.getOutputStream();
-      out.write("+PONG\r\n".getBytes());
-      out.flush();
+
+//      out.write("+PONG\r\n".getBytes());
+//      out.flush();
+
+      Thread t = new Thread(() -> {
+          try {
+              OutputStream out = clientSocket.getOutputStream();
+              out.write("+PONG\r\n".getBytes());
+              out.flush();
+          } catch (IOException e) {
+              throw new RuntimeException(e);
+          }
+      });
+      t.start();
   }
 }
