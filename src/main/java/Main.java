@@ -61,7 +61,7 @@ public class Main {
               OutputStream out = clientSocket.getOutputStream();
               out.write("+PONG\r\n".getBytes());
               out.flush();
-              clientSocket.close();
+//              clientSocket.close();
           } catch (IOException e) {
               throw new RuntimeException(e);
           }
