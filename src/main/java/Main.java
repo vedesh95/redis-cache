@@ -65,6 +65,7 @@ public class Main {
                         System.out.println("set---" + line0 + " " + line1 + " " + line2 + " " + line3);
 
                         try{
+                            System.out.println("trying to read line4 now");
                             String line4 = reader.readLine();
                             String line5 = reader.readLine();
                             String line6 = reader.readLine();
