@@ -23,7 +23,9 @@ public class Main {
             while (true){
                 byte[] inp = new byte[1024];
                 clientSocket.getInputStream().read(inp);
-                if (new String(inp).startsWith("ping")) {
+                String s = new String(inp);
+                System.out.println(s);
+                if (s.contains("ping")) {
                     OutputStream out = clientSocket.getOutputStream();
                     out.write("+PONG\r\n".getBytes());
                     out.flush();
