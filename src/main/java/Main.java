@@ -53,7 +53,8 @@ public class Main {
                         String line0 = reader.readLine();
                         String line1 = reader.readLine();
                         String line2 = reader.readLine();
-                        System.out.println("set----" + line1 + " " + line2);
+                        String line3 = reader.readLine();
+                        System.out.println("set----" + line1 + " " + line2 + " " + line3);
                         String key = line1;
                         String value = line2;
                         map.put(key, value);
