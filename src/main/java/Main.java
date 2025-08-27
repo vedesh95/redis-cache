@@ -266,8 +266,8 @@ public class Main {
                         // commands can contains multiple key value pairs
                         for(int i = 3; i < command.size(); i+=2){
                             String value = command.get(i+1);
-                            if(!streamMap.containsKey(keyidentifier)){
-                                streamMap.put(keyidentifier, new ArrayList<>());
+                            if(!streamMap.containsKey(key)){
+                                streamMap.put(key, new ArrayList<>());
                             }
                             streamMap.get(keyidentifier).add(new KeyValue(key, value));
                         }
