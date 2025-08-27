@@ -45,45 +45,47 @@ public class Main {
                  OutputStream out = clientSocket.getOutputStream()) {
                 HashMap<String, Pair> map = new HashMap<>();
 
-                List<String> command = parseCommand(reader);
-                System.out.println("command is " + command);
+                while(true){
+                    List<String> command = parseCommand(reader);
+                    System.out.println("command is " + command);
 
-                if (command.get(0).equalsIgnoreCase("PING")) {
-                    out.write("+PONG\r\n".getBytes());
-                    out.flush();
-                } else if (command.get(0).startsWith("ECHO")) {
-                    String line = command.get(1);
-                    System.out.println("echo----" + line);
-                    out.write(("ECHO" + "\r\n" + line + "\r\n").getBytes());
-                    out.flush();
-                } else if(command.get(0).contains("SET")){
+                    if (command.get(0).equalsIgnoreCase("PING")) {
+                        out.write("+PONG\r\n".getBytes());
+                        out.flush();
+                    } else if (command.get(0).startsWith("ECHO")) {
+                        String line = command.get(1);
+                        System.out.println("echo----" + line);
+                        out.write(("ECHO" + "\r\n" + line + "\r\n").getBytes());
+                        out.flush();
+                    } else if(command.get(0).contains("SET")){
 
-                    if(command.size()==5){
-                        String key = command.get(1);
-                        String value = command.get(2);
-                        map.put(key, new Pair(value, Integer.valueOf(command.get(4))));
-                        out.write("+OK\r\n".getBytes());
-                        out.flush();
-                    } else {
-                        String key = command.get(1);
-                        String value = command.get(2);
-                        map.put(key, new Pair(value, null));
-                        out.write("+OK\r\n".getBytes());
-                        out.flush();
-                    }
-                } else if(command.get(0).contains("GET")){
+                        if(command.size()==5){
+                            String key = command.get(1);
+                            String value = command.get(2);
+                            map.put(key, new Pair(value, Integer.valueOf(command.get(4))));
+                            out.write("+OK\r\n".getBytes());
+                            out.flush();
+                        } else {
+                            String key = command.get(1);
+                            String value = command.get(2);
+                            map.put(key, new Pair(value, null));
+                            out.write("+OK\r\n".getBytes());
+                            out.flush();
+                        }
+                    } else if(command.get(0).contains("GET")){
 
-                    String line0 = reader.readLine();
-                    String line1 = reader.readLine();
-                    System.out.println("get----" + line0 + " " + line1);
-                    String key = line1;
-                    if(map.containsKey(key) && (map.get(key).expireTime == null || map.get(key).expireTime + map.get(key).time.getTime() > System.currentTimeMillis())){
-                        String value = map.get(key).value;
-                        out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
-                        out.flush();
-                    } else {
-                        out.write("$-1\r\n".getBytes());
-                        out.flush();
+                        String line0 = reader.readLine();
+                        String line1 = reader.readLine();
+                        System.out.println("get----" + line0 + " " + line1);
+                        String key = line1;
+                        if(map.containsKey(key) && (map.get(key).expireTime == null || map.get(key).expireTime + map.get(key).time.getTime() > System.currentTimeMillis())){
+                            String value = map.get(key).value;
+                            out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                            out.flush();
+                        } else {
+                            out.write("$-1\r\n".getBytes());
+                            out.flush();
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -92,35 +94,6 @@ public class Main {
         }).start();
 
     }
-
-//    public List<List<String>> parse(BufferedReader reader) throws IOException {
-//        String line;
-//        line = reader.readLine();
-//        ArrayList<ArrayList<String>> res = new ArrayList<>();
-//        while (line != null) {
-//            if (line.startsWith("*")) {
-//                int n = Integer.parseInt(line.substring(1));
-//                ArrayList<String> command = new ArrayList<>();
-//                for (int i = 0; i < n; i++) {
-//                    line = reader.readLine();
-//                    int m = Integer.parseInt(line.substring(1));
-//                    for(int j = 0; j < m; j++) {
-//                        line = reader.readLine();
-//                        if(line.contains("PING")){
-//                            command.add("PING");
-//                        }else if(line.contains("ECHO")) {
-//                            command.add("ECHO");
-//                        }else if(line.contains("SET"))
-//                        command.add(line);
-//                    }
-//
-//                }
-//                res.add(command);
-//            }
-//            line = reader.readLine();
-//        }
-//
-//    }
 
     public static List<String> parseCommand(BufferedReader reader) throws IOException {
         String line;
