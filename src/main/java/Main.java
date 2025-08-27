@@ -66,7 +66,7 @@ public class Main {
                         String line4;
                         try{
                             line4 = reader.readLine();
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             String key = line1;
                             String value = line3;
                             map.put(key, new Pair(value, null));
