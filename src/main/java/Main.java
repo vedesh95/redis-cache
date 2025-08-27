@@ -44,6 +44,7 @@ public class Main {
                  BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                  OutputStream out = clientSocket.getOutputStream()) {
                 HashMap<String, Pair> map = new HashMap<>();
+                HashMap<String, List<String>> lists = new HashMap<>();
 
                 while(true){
                     List<String> command = parseCommand(reader);
@@ -86,6 +87,41 @@ public class Main {
                             out.write("$-1\r\n".getBytes());
                             out.flush();
                         }
+                    } else if(command.get(0).contains("RPUSH")){
+                        String key = command.get(1);
+                        String value = command.get(2);
+                        if(!lists.containsKey(key)){
+                            lists.put(key, new java.util.ArrayList<>());
+                        }
+                        lists.get(key).add(value);
+                        out.write((":" + lists.get(key).size() + "\r\n").getBytes());
+                        out.flush();
+                    } else if(command.get(0).contains("LRANGE")){
+                        String key = command.get(1);
+                        int start = Integer.parseInt(command.get(2));
+                        int end = Integer.parseInt(command.get(3));
+                        if(!lists.containsKey(key)){
+                            out.write("*0\r\n".getBytes());
+                            out.flush();
+                        } else {
+                            List<String> list = lists.get(key);
+                            if(end >= list.size()) end = list.size() - 1;
+                            if(start < 0) start = 0;
+                            if(start > end){
+                                out.write("*0\r\n".getBytes());
+                                out.flush();
+                            } else {
+                                out.write(("*" + (end - start + 1) + "\r\n").getBytes());
+                                for(int i = start; i <= end; i++){
+                                    String value = list.get(i);
+                                    out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                                }
+                                out.flush();
+                            }
+                        }
+                    } else {
+                        out.write("-ERR unknown command\r\n".getBytes());
+                        out.flush();
                     }
                 }
             } catch (IOException e) {
