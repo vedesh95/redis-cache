@@ -228,21 +228,13 @@ public class Main {
                                     threadsWaitingForBLPOP.get(key).remove();
                                     break;
                                 }
-                                try {
-                                    Thread.sleep(100);
-                                } catch (InterruptedException e) {
-                                    throw new RuntimeException(e);
-                                }
                             }
-
                         }
                         // timeout occurred. we have to return null bulk string and remove the thread from queue even if it is not at the front
                         if(threadsWaitingForBLPOP.get(key).remove(currentThread)) {
                             out.write("$-1\r\n".getBytes());
                             out.flush();
                         }
-
-
                     }
                 }
             } catch (IOException e) {
