@@ -237,6 +237,15 @@ public class Main {
                             out.write("$-1\r\n".getBytes());
                             out.flush();
                         }
+                    }else if(command.get(0).equals("TYPE")){
+                        String key = command.get(1);
+                        if(map.containsKey(key)){
+                            out.write("+string\r\n".getBytes());
+                            out.flush();
+                        } else {
+                            out.write("+none\r\n".getBytes());
+                            out.flush();
+                        }
                     }
                 }
             } catch (IOException e) {
