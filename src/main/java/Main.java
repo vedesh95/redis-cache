@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Queue;
 
 public class Main {
   public static void main(String[] args){
@@ -20,16 +21,21 @@ public class Main {
           // Wait for connection from client.
           clientSocket = serverSocket.accept();
 
+
+
             while (true){
                 byte[] inp = new byte[1024];
                 clientSocket.getInputStream().read(inp);
                 String s = new String(inp);
                 System.out.println(s);
-                OutputStream out = clientSocket.getOutputStream();
-                out.write("+PONG\r\n".getBytes());
-                out.flush();
+
+                if(s.contains("PING")){
+                    writeToStream(clientSocket);
+                }
 
             }
+
+
 
         } catch (IOException e) {
           System.out.println("IOException: " + e.getMessage());
@@ -42,5 +48,11 @@ public class Main {
             System.out.println("IOException: " + e.getMessage());
           }
         }
+  }
+
+  public static void writeToStream(Socket clientSocket) throws IOException {
+      OutputStream out = clientSocket.getOutputStream();
+      out.write("+PONG\r\n".getBytes());
+      out.flush();
   }
 }
