@@ -262,17 +262,18 @@ public class Main {
                         }
                     } else if(command.get(0).contains("XADD")){
                         String keyidentifier = command.get(1);
-                        String key = command.get(2);
+                        String streamkey = command.get(2);
                         // commands can contains multiple key value pairs
+                        if(!streamMap.containsKey(streamkey)){
+                            streamMap.put(streamkey, new ArrayList<>());
+                        }
                         for(int i = 3; i < command.size(); i+=2){
+                            String key = command.get(i);
                             String value = command.get(i+1);
-                            if(!streamMap.containsKey(key)){
-                                streamMap.put(key, new ArrayList<>());
-                            }
-                            streamMap.get(keyidentifier).add(new KeyValue(key, value));
+                            streamMap.get(streamkey).add(new KeyValue(key, value));
                         }
                         // The return value is the ID of the entry created as a bulk string.
-                        String id = String.valueOf(streamMap.get(key).size());
+                        String id = String.valueOf(streamMap.get(streamkey).size());
                         out.write(("$" + id.length() + "\r\n" + id + "\r\n").getBytes());
                         out.flush();
                     }
