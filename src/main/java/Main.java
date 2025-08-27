@@ -4,9 +4,20 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Time;
 import java.util.HashMap;
 import java.util.Queue;
 
+class Pair{
+    public String value;
+    public Time time;
+    public int expireTime;
+    public Pair(String value, int expireTime) {
+        this.value = value;
+        time = new Time(System.currentTimeMillis());
+        this.expireTime = expireTime;
+    }
+}
 public class Main {
   public static void main(String[] args){
     // You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -35,7 +46,7 @@ public class Main {
             try (clientSocket;
                  BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                  OutputStream out = clientSocket.getOutputStream()) {
-                HashMap<String, String> map = new HashMap<>();
+                HashMap<String, Pair> map = new HashMap<>();
 
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -54,10 +65,15 @@ public class Main {
                         String line1 = reader.readLine();
                         String line2 = reader.readLine();
                         String line3 = reader.readLine();
+                        // px
+                        String line4 = reader.readLine();
+                        String line5 = reader.readLine();
+                        String line6 = reader.readLine();
+                        Integer line7 = Integer.valueOf((reader.readLine()));
                         System.out.println("set----" + line1 + " " + line2 + " " + line3);
                         String key = line1;
                         String value = line3;
-                        map.put(key, value);
+                        map.put(key, new Pair(value, line7));
                         out.write("+OK\r\n".getBytes());
                         out.flush();
                     } else if(line.contains("GET")){
@@ -66,8 +82,8 @@ public class Main {
                         String line1 = reader.readLine();
                         System.out.println("get----" + line0 + " " + line1);
                         String key = line1;
-                        if(map.containsKey(key)){
-                            String value = map.get(key);
+                        if(map.containsKey(key) && map.get(key).expireTime + map.get(key).time.getTime() > System.currentTimeMillis()){
+                            String value = map.get(key).value;
                             out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
                             out.flush();
                         } else {
