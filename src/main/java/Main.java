@@ -29,13 +29,21 @@ public class Main {
   public static void spinThread(Socket clientSocket) throws IOException {
       new Thread(() -> {
           try(clientSocket) {
-              byte[] inp = new byte[1024];
-              clientSocket.getInputStream().read(inp);
-              String s = new String(inp);
-              System.out.println(s);
-              OutputStream out = clientSocket.getOutputStream();
-              out.write("+PONG\r\n".getBytes());
-              out.flush();
+              while(true){
+                  byte[] inp = new byte[1024];
+                  if (clientSocket.getInputStream().available() <= 0) {
+                      break;
+                  }
+                  clientSocket.getInputStream().read(inp);
+
+                  String s = new String(inp);
+                  System.out.println(s);
+                  OutputStream out = clientSocket.getOutputStream();
+                  out.write("+PONG\r\n".getBytes());
+                  out.flush();
+
+              }
+
 
           } catch (IOException e) {
               throw new RuntimeException(e);
