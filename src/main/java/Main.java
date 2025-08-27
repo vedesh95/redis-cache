@@ -112,7 +112,7 @@ public class Main {
                             if(end >= list.size()) end = list.size() - 1;
                             if(start < 0) start = list.size() + start;
                             if(end< 0) end = list.size() + end;
-                            if(start < 0) start = list.size() + start;
+                            if(start < 0) start = 0;
                             if(start > end || start >= list.size()){
                                 out.write("*0\r\n".getBytes());
                                 out.flush();
@@ -125,17 +125,7 @@ public class Main {
                                 out.flush();
                             }
 
-//                           if(start > end){
-//                                out.write("*0\r\n".getBytes());
-//                                out.flush();
-//                            } else {
-//                                out.write(("*" + (end - start + 1) + "\r\n").getBytes());
-//                                for(int i = start; i <= end; i++){
-//                                    String value = list.get(i);
-//                                    out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
-//                                }
-//                                out.flush();
-//                            }
+
                         }
                     } else {
                         out.write("-ERR unknown command\r\n".getBytes());
