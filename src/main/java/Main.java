@@ -32,11 +32,18 @@ public class Main {
               while(true){
                   byte[] inp = new byte[1024];
                   int bytesRead = clientSocket.getInputStream().read(inp);
+                  if (bytesRead == -1) break; // Client disconnected
+
                   String s = new String(inp,0, bytesRead);
                   System.out.println(s);
-                  OutputStream out = clientSocket.getOutputStream();
-                  out.write("+PONG\r\n".getBytes());
-                  out.flush();
+                  if(s.startsWith("ECHO")){
+                      OutputStream out = clientSocket.getOutputStream();
+                      out.write(("\r\n" + s.substring(5) + "\r\n").getBytes());
+                  }else {
+                      OutputStream out = clientSocket.getOutputStream();
+                      out.write("+PONG\r\n".getBytes());
+                      out.flush();
+                  }
 
               }
 
