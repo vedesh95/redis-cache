@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -26,35 +28,57 @@ public class Main {
         }
   }
 
-  public static void spinThread(Socket clientSocket) throws IOException {
-      new Thread(() -> {
-          try(clientSocket) {
-              while(true){
-                  byte[] inp = new byte[1024];
-                  int bytesRead = clientSocket.getInputStream().read(inp);
-                  if (bytesRead == -1) break; // Client disconnected
+//  public static void spinThread(Socket clientSocket) throws IOException {
+//      new Thread(() -> {
+//          try(clientSocket) {
+//              while(true){
+//                  byte[] inp = new byte[1024];
+//                  int bytesRead = clientSocket.getInputStream().read(inp);
+//                  if (bytesRead == -1) break; // Client disconnected
+//
+//                  String s = new String(inp,0, bytesRead);
+//                  System.out.println(s);
+//                  if(s.contains("ECHO")){
+//                      byte[] inpp = new byte[1024];
+//                      int bytesReads = clientSocket.getInputStream().read(inpp);
+//                      String ss = new String(inpp,0, bytesReads);
+//                      System.out.println(ss);
+//                      OutputStream out = clientSocket.getOutputStream();
+//                      out.write(("\r\n" + ss + "\r\n").getBytes());
+//                  }else if(s.contains("PING")) {
+//                      OutputStream out = clientSocket.getOutputStream();
+//                      out.write("+PONG\r\n".getBytes());
+//                      out.flush();
+//                  }
+//
+//              }
+//
+//
+//          } catch (IOException e) {
+//              throw new RuntimeException(e);
+//          }
+//      }).start();
+//  }
+    public static void spinThread(Socket clientSocket) {
+        new Thread(() -> {
+            try (clientSocket;
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                 OutputStream out = clientSocket.getOutputStream()) {
 
-                  String s = new String(inp,0, bytesRead);
-                  System.out.println(s);
-                  if(s.contains("ECHO")){
-                      byte[] inpp = new byte[1024];
-                      int bytesReads = clientSocket.getInputStream().read(inpp);
-                      String ss = new String(inpp,0, bytesReads);
-                      System.out.println(ss);
-                      OutputStream out = clientSocket.getOutputStream();
-                      out.write(("\r\n" + ss + "\r\n").getBytes());
-                  }else if(s.contains("PING")) {
-                      OutputStream out = clientSocket.getOutputStream();
-                      out.write("+PONG\r\n".getBytes());
-                      out.flush();
-                  }
-
-              }
-
-
-          } catch (IOException e) {
-              throw new RuntimeException(e);
-          }
-      }).start();
-  }
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.equalsIgnoreCase("PING")) {
+                        out.write("+PONG\r\n".getBytes());
+                        out.flush();
+                    } else if (line.startsWith("echo ")) {
+                        String response = line.substring(5);
+                        out.write((response + "\r\n").getBytes());
+                        out.flush();
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
 }
