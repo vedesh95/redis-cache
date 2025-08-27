@@ -299,6 +299,7 @@ public class Main {
                                         entryid = entryIdParts[0] + "-0";
                                     }
                                     entryIdParts = entryid.split("-");
+                                    System.out.println("----entryIdParts after *----" + entryIdParts[0] + " " + entryIdParts[1]);
                                 }
 
 
