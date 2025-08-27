@@ -20,13 +20,15 @@ public class Main {
           // Wait for connection from client.
           clientSocket = serverSocket.accept();
 
-          byte[] inp = new byte[1024];
-          clientSocket.getInputStream().read(inp);
-          if (new String(inp).startsWith("ping")) {
-            OutputStream out = clientSocket.getOutputStream();
-            out.write("+PONG\r\n".getBytes());
-            out.flush();
-          }
+            while (true){
+                byte[] inp = new byte[1024];
+                clientSocket.getInputStream().read(inp);
+                if (new String(inp).startsWith("ping")) {
+                    OutputStream out = clientSocket.getOutputStream();
+                    out.write("+PONG\r\n".getBytes());
+                    out.flush();
+                }
+            }
 
         } catch (IOException e) {
           System.out.println("IOException: " + e.getMessage());
