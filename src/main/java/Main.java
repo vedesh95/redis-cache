@@ -77,6 +77,7 @@ public class Main {
                             out.write("+OK\r\n".getBytes());
                             out.flush();
                         } catch (Exception e) {
+                            System.out.println("----- exception caught bhau");
                             String key = line1;
                             String value = line3;
                             map.put(key, new Pair(value, null));
