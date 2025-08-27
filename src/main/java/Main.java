@@ -3,6 +3,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Time;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,7 +44,7 @@ public class Main {
       ConcurrentHashMap<String, Pair> map = new ConcurrentHashMap<>();
       ConcurrentHashMap<String, List<String>> lists = new ConcurrentHashMap<>();
       ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
-      ConcurrentHashMap<String, ConcurrentHashMap<String, List<KeyValue> > > streamMap = new ConcurrentHashMap<>();
+      ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
         try {
           serverSocket = new ServerSocket(port);
           // Since the tester restarts your program quite often, setting SO_REUSEADDR
@@ -58,7 +59,7 @@ public class Main {
         }
   }
 
-    public static void spinThread(Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, ConcurrentHashMap<String, List<KeyValue>>>  streamMap){
+    public static void spinThread(Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>>  streamMap){
         new Thread(() -> {
             try (clientSocket;
                  BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -266,11 +267,39 @@ public class Main {
                         String streamid = command.get(1);
                         String entryid = command.get(2);
                         if(!streamMap.containsKey(streamid)){
-                            streamMap.put(streamid, new ConcurrentHashMap<>());
+                            streamMap.put(streamid, new LinkedHashMap<>());
                         }
                         if(!streamMap.get(streamid).containsKey(entryid)){
                             streamMap.get(streamid).put(entryid, new ArrayList<>());
                         }
+
+                        // The entryid should be greater than the ID of the last entry in the stream.
+                        //    The millisecondsTime part of the ID should be greater than or equal to the millisecondsTime of the last entry.
+                        //    If the millisecondsTime part of the ID is equal to the millisecondsTime of the last entry, the sequenceNumber part of the ID should be greater than the sequenceNumber of the last entry.
+                        synchronized (streamMap){
+                            if(!streamMap.get(streamid).isEmpty()){
+                                // get last entry id
+                                String lastEntryId = null;
+                                for (String key : streamMap.get(streamid).keySet()) {
+                                    lastEntryId = key;
+                                }
+                                String[] lastEntryIdParts = lastEntryId.split("-");
+                                String[] entryIdParts = entryid.split("-");
+                                if (Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
+                                        (Integer.parseInt(entryIdParts[0]) == Integer.parseInt(lastEntryIdParts[0]) &&
+                                                Integer.parseInt(entryIdParts[1]) <= Integer.parseInt(lastEntryIdParts[1]))) {
+                                    try {
+                                        out.write("-ERR The ID specified in XADD is equal or smaller than the target stream top item\r\n".getBytes());
+                                        out.flush();
+                                    } catch (IOException e) {
+                                        System.out.println(e);
+                                    }
+
+                                    continue;
+                                }
+                            }
+                        }
+
                         String id = command.get(2);
                         String key = command.get(3);
                         String value = command.get(4);
