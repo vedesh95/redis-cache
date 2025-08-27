@@ -39,7 +39,7 @@ public class Main {
                   if(s.startsWith("ECHO")){
                       byte[] inpp = new byte[1024];
                       int bytesReads = clientSocket.getInputStream().read(inpp);
-                      String ss = new String(inp,0, bytesReads);
+                      String ss = new String(inpp,0, bytesReads);
                       System.out.println(ss);
                       OutputStream out = clientSocket.getOutputStream();
                       out.write(("\r\n" + ss + "\r\n").getBytes());
