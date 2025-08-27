@@ -60,6 +60,7 @@ public class Main {
                         out.write((line0 + "\r\n" + line + "\r\n").getBytes());
                         out.flush();
                     } else if(line.contains("SET")){
+                        System.out.println("printing lines---" + reader.lines());
                         String line0 = reader.readLine();
                         String line1 = reader.readLine();
                         String line2 = reader.readLine();
