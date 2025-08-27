@@ -138,7 +138,17 @@ public class Main {
                         }
                         out.write((":" + lists.get(key).size() + "\r\n").getBytes());
                         out.flush();
-                    } else {
+                    } else if(command.get(0).contains("LLEN")){
+                        String key = command.get(1);
+                        if(!lists.containsKey(key)){
+                            out.write(":0\r\n".getBytes());
+                            out.flush();
+                        } else {
+                            out.write((":" + lists.get(key).size() + "\r\n").getBytes());
+                            out.flush();
+                        }
+                    }
+                    else {
                         out.write("-ERR unknown command\r\n".getBytes());
                         out.flush();
                     }
