@@ -285,6 +285,8 @@ public class Main {
                                 }
                                 String[] lastEntryIdParts = lastEntryId.split("-");
                                 String[] entryIdParts = entryid.split("-");
+                                System.out.println("----lastEntryIdParts----" + lastEntryIdParts[0] + " " + lastEntryIdParts[1]);
+                                System.out.println("----entryIdParts----" + entryIdParts[0] + " " + entryIdParts[1]);
                                 if (Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
                                         (Integer.parseInt(entryIdParts[0]) == Integer.parseInt(lastEntryIdParts[0]) &&
                                                 Integer.parseInt(entryIdParts[1]) <= Integer.parseInt(lastEntryIdParts[1]))) {
