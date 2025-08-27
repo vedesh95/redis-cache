@@ -72,10 +72,10 @@ public class Main {
                         out.write("+PONG\r\n".getBytes());
                         out.flush();
                     } else if (line.startsWith("ECHO")) {
-                        line = reader.readLine();
+                        String line0 = reader.readLine();
                         line = reader.readLine();
                         System.out.println("echo----" + line);
-                        out.write(("\r\n" + line + "\r\n").getBytes());
+                        out.write((line0 + "\r\n" + line + "\r\n").getBytes());
                         out.flush();
                     }
                 }
