@@ -93,6 +93,7 @@ public class Main {
                         if(!lists.containsKey(key)){
                             lists.put(key, new java.util.ArrayList<>());
                         }
+
                         lists.get(key).add(value);
                         out.write((":" + lists.get(key).size() + "\r\n").getBytes());
                         out.flush();
