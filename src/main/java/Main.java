@@ -110,7 +110,7 @@ public class Main {
                         } else {
                             List<String> list = lists.get(key);
                             if(end >= list.size()) end = list.size() - 1;
-                            if(start < 0) start = 0;
+                            if(start < 0) start = list.size() + start;
                             if(start > end){
                                 out.write("*0\r\n".getBytes());
                                 out.flush();
