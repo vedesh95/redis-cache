@@ -4,12 +4,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Queue;
 
 public class Main {
   public static void main(String[] args){
     // You can use print statements as follows for debugging, they'll be visible when running tests.
     System.out.println("Logs from your program will appear here!");
+
 //      Uncomment this block to pass the first stage
         ServerSocket serverSocket = null;
 //        Socket clientSocket = null;
@@ -28,42 +30,12 @@ public class Main {
         }
   }
 
-//  public static void spinThread(Socket clientSocket) throws IOException {
-//      new Thread(() -> {
-//          try(clientSocket) {
-//              while(true){
-//                  byte[] inp = new byte[1024];
-//                  int bytesRead = clientSocket.getInputStream().read(inp);
-//                  if (bytesRead == -1) break; // Client disconnected
-//
-//                  String s = new String(inp,0, bytesRead);
-//                  System.out.println(s);
-//                  if(s.contains("ECHO")){
-//                      byte[] inpp = new byte[1024];
-//                      int bytesReads = clientSocket.getInputStream().read(inpp);
-//                      String ss = new String(inpp,0, bytesReads);
-//                      System.out.println(ss);
-//                      OutputStream out = clientSocket.getOutputStream();
-//                      out.write(("\r\n" + ss + "\r\n").getBytes());
-//                  }else if(s.contains("PING")) {
-//                      OutputStream out = clientSocket.getOutputStream();
-//                      out.write("+PONG\r\n".getBytes());
-//                      out.flush();
-//                  }
-//
-//              }
-//
-//
-//          } catch (IOException e) {
-//              throw new RuntimeException(e);
-//          }
-//      }).start();
-//  }
     public static void spinThread(Socket clientSocket) {
         new Thread(() -> {
             try (clientSocket;
                  BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                  OutputStream out = clientSocket.getOutputStream()) {
+                HashMap<String, String> map = new HashMap<>();
 
                 String line;
                 while ((line = reader.readLine()) != null) {
@@ -77,6 +49,27 @@ public class Main {
                         System.out.println("echo----" + line);
                         out.write((line0 + "\r\n" + line + "\r\n").getBytes());
                         out.flush();
+                    } else if(line.contains("SET")){
+                        String line0 = reader.readLine();
+                        String line1 = reader.readLine();
+                        String line2 = reader.readLine();
+                        String key = line1;
+                        String value = line2;
+                        map.put(key, value);
+                        out.write("+OK\r\n".getBytes());
+                        out.flush();
+                    } else if(line.contains("GET")){
+                        String line0 = reader.readLine();
+                        String line1 = reader.readLine();
+                        String key = line1;
+                        if(map.containsKey(key)){
+                            String value = map.get(key);
+                            out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                            out.flush();
+                        } else {
+                            out.write("$-1\r\n".getBytes());
+                            out.flush();
+                        }
                     }
                 }
             } catch (IOException e) {
