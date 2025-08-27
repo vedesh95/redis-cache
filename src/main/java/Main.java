@@ -247,7 +247,7 @@ public class Main {
                             out.flush();
                         }
                     } else {
-                        out.write(("-ERR unknown command '" + command.get(0) + "'\r\n".getBytes()).getBytes());
+                        out.write(("-ERR unknown command '" + command.get(0) + "'\r\n").getBytes());
                         out.flush();
                     }
                 }
