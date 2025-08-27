@@ -276,7 +276,6 @@ public class Main {
                         String value = command.get(4);
                         streamMap.get(streamid).get(entryid).add(new KeyValue(null, key, value));
 
-
                         out.write(("$" + entryid.length() + "\r\n" + entryid + "\r\n").getBytes());
                         out.flush();
                     }
