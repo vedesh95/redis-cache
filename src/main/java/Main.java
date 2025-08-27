@@ -283,6 +283,8 @@ public class Main {
                                 }
                                 String[] lastEntryIdParts = lastEntryId.split("-");
                                 String[] entryIdParts = entryid.split("-");
+                                System.out.println("----lastEntryId----" + lastEntryId);
+                                System.out.println("----entryId----" + entryid);
 
                                 //When * is used for the sequence number, Redis picks the last sequence number used in the stream (for the same time part) and increments it by 1.
                                 //
