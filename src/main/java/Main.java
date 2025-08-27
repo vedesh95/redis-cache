@@ -31,12 +31,10 @@ public class Main {
           try(clientSocket) {
               while(true){
                   byte[] inp = new byte[1024];
-                  if (clientSocket.getInputStream().available() <= 0) {
-                      break;
-                  }
-                  clientSocket.getInputStream().read(inp);
+                  int bytesRead = clientSocket.getInputStream().read(inp);
+                  if (bytesRead == -1) break; // Client disconnected
 
-                  String s = new String(inp);
+                  String s = new String(inp,0, bytesRead);
                   System.out.println(s);
                   OutputStream out = clientSocket.getOutputStream();
                   out.write("+PONG\r\n".getBytes());
