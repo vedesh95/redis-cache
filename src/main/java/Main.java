@@ -91,20 +91,12 @@ public class Main {
                         // rpush might send multiple values
                         // RPUSH mylist "hello" "world"
                         String key = command.get(1);
-                        if(command.size() < 3){
-                            String value = command.get(2);
+                        for(int i = 2; i < command.size(); i++){
+                            String value = command.get(i);
                             if(!lists.containsKey(key)){
                                 lists.put(key, new java.util.ArrayList<>());
                             }
                             lists.get(key).add(value);
-                        }else {
-                            for(int i = 2; i < command.size(); i++){
-                                String value = command.get(i);
-                                if(!lists.containsKey(key)){
-                                    lists.put(key, new java.util.ArrayList<>());
-                                }
-                                lists.get(key).add(value);
-                            }
                         }
                         out.write((":" + lists.get(key).size() + "\r\n").getBytes());
                         out.flush();
