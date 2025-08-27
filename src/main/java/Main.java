@@ -18,6 +18,8 @@ class Pair{
         this.expireTime = expireTime;
     }
 }
+
+@SuppressWarnings("InfiniteLoopStatement")
 public class Main {
   public static void main(String[] args){
     // You can use print statements as follows for debugging, they'll be visible when running tests.
@@ -207,7 +209,7 @@ public class Main {
                            If multiple clients are blocked for BLPOP command, the server responds to the client which has been blocked for the longest duration.
                         * */
 
-
+                        System.out.println("blpop command received " + command);
                         String key = command.get(1);
                         int timeout = Integer.parseInt(command.get(2)) * 1000; // convert to milliseconds
                         boolean waitForever = timeout == 0;
