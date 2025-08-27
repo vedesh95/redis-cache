@@ -70,7 +70,7 @@ public class Main {
                         String line5 = reader.readLine();
                         String line6 = reader.readLine();
                         Integer line7 = Integer.valueOf((reader.readLine()));
-                        System.out.println("set----" + line1 + " " + line2 + " " + line3);
+                        System.out.println("set----" + line1 + " " + line2 + " " + line3 + " " + line4 + " " + line5 + " " + line6 + " " + line7);
                         String key = line1;
                         String value = line3;
                         map.put(key, new Pair(value, line7));
