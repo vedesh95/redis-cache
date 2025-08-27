@@ -275,7 +275,7 @@ public class Main {
                         //    The millisecondsTime part of the ID should be greater than or equal to the millisecondsTime of the last entry.
                         //    If the millisecondsTime part of the ID is equal to the millisecondsTime of the last entry, the sequenceNumber part of the ID should be greater than the sequenceNumber of the last entry.
                         synchronized (streamMap){
-                            if(!streamMap.get(streamid).isEmpty()){
+
                                 // get last entry id
                                 String lastEntryId = null;
                                 for (String key : streamMap.get(streamid).keySet()) {
@@ -329,7 +329,7 @@ public class Main {
 
                                     continue;
                                 }
-                            }
+
                         }
                         if(!streamMap.get(streamid).containsKey(entryid)){
                             streamMap.get(streamid).put(entryid, new ArrayList<>());
