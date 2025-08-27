@@ -285,6 +285,17 @@ public class Main {
                                 String[] entryIdParts = entryid.split("-");
                                 System.out.println("----lastEntryIdParts----" + lastEntryIdParts[0] + " " + lastEntryIdParts[1]);
                                 System.out.println("----entryIdParts----" + entryIdParts[0] + " " + entryIdParts[1]);
+                                // The minimum entry ID that Redis supports is 0-1
+                                if(Integer.parseInt(entryIdParts[0]) <= 0 || Integer.parseInt(entryIdParts[1]) <= 0){
+                                    try {
+                                        out.write("-ERR The ID specified in XADD must be greater than 0-0\r\n".getBytes());
+                                        out.flush();
+                                    } catch (IOException e) {
+                                        System.out.println(e);
+                                    }
+
+                                    continue;
+                                }
                                 if (Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
                                         (Integer.parseInt(entryIdParts[0]) == Integer.parseInt(lastEntryIdParts[0]) &&
                                                 Integer.parseInt(entryIdParts[1]) <= Integer.parseInt(lastEntryIdParts[1]))) {
