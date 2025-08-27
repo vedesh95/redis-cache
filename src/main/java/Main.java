@@ -69,6 +69,7 @@ public class Main {
                             map.put(key, new Pair(value, null));
                             out.write("+OK\r\n".getBytes());
                             out.flush();
+                            continue;
                         }
                         String line5 = reader.readLine();
                         String line6 = reader.readLine();
