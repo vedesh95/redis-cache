@@ -20,9 +20,11 @@ class Pair{
 }
 
 class KeyValue{
+    public String id;
     public String key;
     public String value;
-    public KeyValue(String key, String value) {
+    public KeyValue(String id, String key, String value) {
+        this.id = id;
         this.key = key;
         this.value = value;
     }
@@ -41,7 +43,7 @@ public class Main {
       ConcurrentHashMap<String, Pair> map = new ConcurrentHashMap<>();
       ConcurrentHashMap<String, List<String>> lists = new ConcurrentHashMap<>();
       ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
-      ConcurrentHashMap<String, List<KeyValue> > streamMap = new ConcurrentHashMap<>();
+      ConcurrentHashMap<String, ConcurrentHashMap<String, List<KeyValue> > > streamMap = new ConcurrentHashMap<>();
         try {
           serverSocket = new ServerSocket(port);
           // Since the tester restarts your program quite often, setting SO_REUSEADDR
@@ -56,7 +58,7 @@ public class Main {
         }
   }
 
-    public static void spinThread(Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, List<KeyValue> >  streamMap){
+    public static void spinThread(Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, ConcurrentHashMap<String, List<KeyValue>>>  streamMap){
         new Thread(() -> {
             try (clientSocket;
                  BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -249,13 +251,13 @@ public class Main {
                         }
                     }else if(command.get(0).equals("TYPE")){
                         String key = command.get(1);
-                        // print map and streamMap
-                        streamMap.forEach((k, v) -> {
-                            System.out.println("streamMap key: " + k + " value: ");
-                            v.forEach( kv -> System.out.println("   " + kv.key + " : " + kv.value));
-                        });
-                        System.out.println("---streamMap-" + streamMap.keys());
-                        System.out.println();
+//                        // print map and streamMap
+//                        streamMap.forEach((k, v) -> {
+//                            System.out.println("streamMap key: " + k + " value: ");
+//                            v.forEach( kv -> System.out.println("   " + kv.key + " : " + kv.value));
+//                        });
+//                        System.out.println("---streamMap-" + streamMap.keys());
+//                        System.out.println();
                         if(map.containsKey(key)){
                             out.write("+string\r\n".getBytes());
                             out.flush();
@@ -268,21 +270,21 @@ public class Main {
                             out.flush();
                         }
                     } else if(command.get(0).contains("XADD")){
-                        String keyidentifier = command.get(1);
-                        String streamkey = command.get(2);
-                        // commands can contains multiple key value pairs
-                        if(!streamMap.containsKey(streamkey)){
-                            streamMap.put(streamkey, new ArrayList<>());
+                        String streamid = command.get(1);
+                        String entryid = command.get(2);
+                        if(!streamMap.containsKey(streamid)){
+                            streamMap.put(streamid, new ConcurrentHashMap<>());
                         }
-                        for(int i = 3; i < command.size(); i+=2){
-                            String key = command.get(i);
-                            String value = command.get(i+1);
-                            streamMap.get(streamkey).add(new KeyValue(key, value));
+                        if(!streamMap.get(streamid).containsKey(entryid)){
+                            streamMap.get(streamid).put(entryid, new ArrayList<>());
                         }
-                        // The return value is the ID of the entry created as a bulk string.
-                        String id = String.valueOf(streamkey);
-                        // write id as bulk string
-                        out.write(("$" + id.length() + "\r\n" + id + "\r\n").getBytes());
+                        String id = command.get(2);
+                        String key = command.get(3);
+                        String value = command.get(4);
+                        streamMap.get(streamid).get(entryid).add(new KeyValue(null, key, value));
+
+
+                        out.write(("$" + entryid.length() + "\r\n" + entryid + "\r\n").getBytes());
                         out.flush();
                     }
                     else {
