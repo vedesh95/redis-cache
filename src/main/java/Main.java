@@ -154,7 +154,7 @@ public class Main {
                             out.write((":" + lists.get(key).size() + "\r\n").getBytes());
                             out.flush();
                         }
-                    } else if(command.get(0).contains("LPOP")){
+                    } else if(command.get(0).equals("LPOP")){
                         String key = command.get(1);
                         if(!lists.containsKey(key) || lists.get(key).isEmpty()){
                             out.write("$-1\r\n".getBytes());
@@ -199,7 +199,7 @@ public class Main {
                             }
 
                         }
-                    } else if(command.get(0).contains("BLPOP")) {
+                    } else if(command.get(0).equals("BLPOP")) {
 
                         /*
                         If a timeout duration is supplied, it is the number of seconds the client will wait for an element to be available for removal. If no elements were inserted during this interval, the server returns a null bulk string ($-1\r\n).
