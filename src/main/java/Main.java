@@ -37,8 +37,12 @@ public class Main {
                   String s = new String(inp,0, bytesRead);
                   System.out.println(s);
                   if(s.startsWith("ECHO")){
+                      byte[] inpp = new byte[1024];
+                      int bytesReads = clientSocket.getInputStream().read(inp);
+                      String ss = new String(inp,0, bytesRead);
+                      System.out.println(ss);
                       OutputStream out = clientSocket.getOutputStream();
-                      out.write(("\r\n" + s.substring(5) + "\r\n").getBytes());
+                      out.write(("\r\n" + ss + "\r\n").getBytes());
                   }else {
                       OutputStream out = clientSocket.getOutputStream();
                       out.write("+PONG\r\n".getBytes());
