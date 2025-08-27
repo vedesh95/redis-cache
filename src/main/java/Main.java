@@ -19,6 +19,15 @@ class Pair{
     }
 }
 
+class KeyValue{
+    public String key;
+    public String value;
+    public KeyValue(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+}
+
 @SuppressWarnings("InfiniteLoopStatement")
 public class Main {
   public static void main(String[] args){
@@ -32,6 +41,7 @@ public class Main {
       ConcurrentHashMap<String, Pair> map = new ConcurrentHashMap<>();
       ConcurrentHashMap<String, List<String>> lists = new ConcurrentHashMap<>();
       ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
+      ConcurrentHashMap<String, List<KeyValue> > streamMap = new ConcurrentHashMap<>();
         try {
           serverSocket = new ServerSocket(port);
           // Since the tester restarts your program quite often, setting SO_REUSEADDR
@@ -39,14 +49,14 @@ public class Main {
           serverSocket.setReuseAddress(true);
           while (true){
             Socket clientSocket = serverSocket.accept();
-            spinThread(clientSocket, map, lists, threadsWaitingForBLPOP);
+            spinThread(clientSocket, map, lists, threadsWaitingForBLPOP, streamMap);
           }
         } catch (IOException e) {
           System.out.println("IOException: " + e.getMessage());
         }
   }
 
-    public static void spinThread(Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP){
+    public static void spinThread(Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, List<KeyValue> >  streamMap){
         new Thread(() -> {
             try (clientSocket;
                  BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
@@ -242,11 +252,31 @@ public class Main {
                         if(map.containsKey(key)){
                             out.write("+string\r\n".getBytes());
                             out.flush();
-                        } else {
+                        } else if (streamMap.containsKey(key)) {
+                            out.write("+stream\r\n".getBytes());
+                            out.flush();
+                        }
+                        else {
                             out.write("+none\r\n".getBytes());
                             out.flush();
                         }
-                    } else {
+                    } else if(command.get(0).contains("XADD")){
+                        String keyidentifier = command.get(1);
+                        String key = command.get(2);
+                        // commands can contains multiple key value pairs
+                        for(int i = 3; i < command.size(); i+=2){
+                            String value = command.get(i+1);
+                            if(!streamMap.containsKey(keyidentifier)){
+                                streamMap.put(keyidentifier, new ArrayList<>());
+                            }
+                            streamMap.get(keyidentifier).add(new KeyValue(key, value));
+                        }
+                        // The return value is the ID of the entry created as a bulk string.
+                        String id = String.valueOf(streamMap.get(key).size());
+                        out.write(("$" + id.length() + "\r\n" + id + "\r\n").getBytes());
+                        out.flush();
+                    }
+                    else {
                         out.write("-ERR unknown command\r\n".getBytes());
                         out.flush();
                     }
