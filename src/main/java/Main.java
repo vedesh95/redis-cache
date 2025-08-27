@@ -283,10 +283,29 @@ public class Main {
                                 }
                                 String[] lastEntryIdParts = lastEntryId.split("-");
                                 String[] entryIdParts = entryid.split("-");
+
+                                //When * is used for the sequence number, Redis picks the last sequence number used in the stream (for the same time part) and increments it by 1.
+                                //
+                                //The default sequence number is 0. The only exception is when the time part is also 0. In that case, the default sequence number is 1.
+                                //
+                                //Here's an example of adding an entry with * as the sequence number:
+
+                                if(entryIdParts[1].equals("*")){
+                                    if(entryIdParts[0].equals("0")){
+                                        entryid = entryIdParts[0] + "-1";
+                                    } else if (entryIdParts[0].equals(lastEntryIdParts[0])) {
+                                        entryid = entryIdParts[0] + "-" + (Integer.parseInt(lastEntryIdParts[1]) + 1);
+                                    } else {
+                                        entryid = entryIdParts[0] + "-0";
+                                    }
+                                    entryIdParts = entryid.split("-");
+                                }
+
+
                                 System.out.println("----lastEntryIdParts----" + lastEntryIdParts[0] + " " + lastEntryIdParts[1]);
                                 System.out.println("----entryIdParts----" + entryIdParts[0] + " " + entryIdParts[1]);
                                 // The minimum entry ID that Redis supports is 0-1
-                                if(Integer.parseInt(entryIdParts[0]) <= 0 && Integer.parseInt(entryIdParts[1]) <= 0){
+                                if(!entryIdParts[1].equals("*") && Integer.parseInt(entryIdParts[0]) <= 0 && Integer.parseInt(entryIdParts[1]) <= 0){
                                     try {
                                         out.write("-ERR The ID specified in XADD must be greater than 0-0\r\n".getBytes());
                                         out.flush();
@@ -295,7 +314,7 @@ public class Main {
                                     }
                                     continue;
                                 }
-                                if (Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
+                                if (!entryIdParts[1].equals("*") && Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
                                         (Integer.parseInt(entryIdParts[0]) == Integer.parseInt(lastEntryIdParts[0]) &&
                                                 Integer.parseInt(entryIdParts[1]) <= Integer.parseInt(lastEntryIdParts[1]))) {
                                     try {
