@@ -345,11 +345,13 @@ public class Main {
                         int index = 1;
                         // set timeout to highest value by default
                         long timeout = Long.MAX_VALUE;
+                        boolean blocking = false;
                         // xread with block implemented here
                         if(command.get(index).equalsIgnoreCase("BLOCK")) {
                             // BLOCK milliseconds
                             timeout = Long.parseLong(command.get(index + 1));
                             index += 2;
+                            blocking = true;
                         }else if(command.get(index).equalsIgnoreCase("COUNT")){
                             count = Integer.parseInt(command.get(index+1));
                             index += 2;
@@ -408,14 +410,14 @@ public class Main {
                                                     Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
                                         result.add(eid);
                                         c++;
-                                        if (c >= count || timeout != Long.MAX_VALUE) break;
+                                        if (c >= count || blocking) break;
                                     }
 
                                 }
                                 // write RESP array for this stream
                                 if(result.size()!=0) results.add(result);
                             }
-                        }while(timeout != Long.MAX_VALUE && results.size()==0 && (System.currentTimeMillis() - startTime) < timeout);
+                        }while(blocking && results.size()==0 && (System.currentTimeMillis() - startTime) < timeout);
 
                         // if no results found after timeout
                         if(results.size()==0){
