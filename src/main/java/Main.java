@@ -421,17 +421,20 @@ public class Main {
                             }
                             // write RESP array for this stream
                             results.add(result);
-                            out.write(("*" + results.size() + "\r\n").getBytes());
+                        }
+                        out.write(("*" + results.size() + "\r\n").getBytes());
+                        for(int i = 0; i < results.size(); i++) {
+                            String streamid = streamids.get(i);
+                            List<String> result = results.get(i);
                             out.write(("*2\r\n$" + streamid.length() + "\r\n" + streamid + "\r\n" + "*" + result.size() + "\r\n").getBytes());
-                            for (String eid : results) {
-                                List<KeyValue> keyValues = streamMap.get(streamid).get(eid);
-                                out.write(("*2\r\n$" + eid.length() + "\r\n" + eid + "\r\n" + "*" + (keyValues.size() * 2) + "\r\n").getBytes());
+                            for (String entryId : result) {
+                                List<KeyValue> keyValues = streamMap.get(streamid).get(entryId);
+                                out.write(("*2\r\n$" + entryId.length() + "\r\n" + entryId + "\r\n" + "*" + (keyValues.size() * 2) + "\r\n").getBytes());
                                 for (KeyValue kv : keyValues) {
                                     out.write(("$" + kv.key.length() + "\r\n" + kv.key + "\r\n").getBytes());
                                     out.write(("$" + kv.value.length() + "\r\n" + kv.value + "\r\n").getBytes());
                                 }
                             }
-
                         }
                     }
                     else {
