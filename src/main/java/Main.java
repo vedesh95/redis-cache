@@ -379,14 +379,23 @@ public class Main {
                             index++;
                         }
 
-                        // XREAD block 1000 streams some_key $
-                        // now we have to return only new entries and we have stream ids in streamids
-                        // and we have to set entryids to - for all stream ids
+
                         if(fetchNew) {
                             int n = streamids.size();
+                            // entry id should be greater than the last entry id in the stream
                             for (int i = 0; i < n; i++) {
-                                // set entryids to current timestamp - 0 millisecond
-                                streamids.add(System.currentTimeMillis() + "-0");
+                                String streamid = streamids.get(i);
+                                if (!streamMap.containsKey(streamid) || streamMap.get(streamid).isEmpty()) {
+                                    streamids.add("0-0");
+                                } else {
+                                    String lastEntryId = null;
+                                    for (String key : streamMap.get(streamid).keySet()) {
+                                        lastEntryId = key;
+                                    }
+                                    String[] lastEntryIdParts = lastEntryId.split("-");
+                                    String entryid = lastEntryIdParts[0] + "-" + (Integer.parseInt(lastEntryIdParts[1]) + 1);
+                                    streamids.add(entryid);
+                                }
                             }
                         }
 
