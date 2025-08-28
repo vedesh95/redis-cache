@@ -430,17 +430,18 @@ public class Main {
                                 // XREAD returns an array where each element is an array composed of two elements, which are the ID and the list of fields and values.
                                 List<String> result = new ArrayList<>();
                                 int c = 0;
-                                for (String eid : streamMap.get(streamid).keySet()) {
-                                    String[] eidParts = eid.split("-");
-                                    if ((Integer.parseInt(eidParts[0]) > Integer.parseInt(entryIdParts[0]) ||
-                                            (Integer.parseInt(eidParts[0]) == Integer.parseInt(entryIdParts[0]) &&
-                                                    Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
-                                        result.add(eid);
-                                        System.out.println("XREAD: streamid=" + streamid + ", entryid=" + entryid + ", found eid=" + eid);
-                                        c++;
-                                        if (c >= count || blocking) break;
+                                synchronized (streamMap){
+                                    for (String eid : streamMap.get(streamid).keySet()) {
+                                        String[] eidParts = eid.split("-");
+                                        if ((Integer.parseInt(eidParts[0]) > Integer.parseInt(entryIdParts[0]) ||
+                                                (Integer.parseInt(eidParts[0]) == Integer.parseInt(entryIdParts[0]) &&
+                                                        Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
+                                            result.add(eid);
+                                            System.out.println("XREAD: streamid=" + streamid + ", entryid=" + entryid + ", found eid=" + eid);
+                                            c++;
+                                            if (c >= count || blocking) break;
+                                        }
                                     }
-
                                 }
                                 // write RESP array for this stream
                                 if(result.size()!=0) results.add(result);
