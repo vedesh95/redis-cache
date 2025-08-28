@@ -2,10 +2,7 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.sql.Time;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -112,7 +109,7 @@ public class Main {
                         for(int i = 2; i < command.size(); i++){
                             String value = command.get(i);
                             if(!lists.containsKey(key)){
-                                lists.put(key, new ArrayList<>());
+                                lists.put(key, Collections.synchronizedList(new ArrayList<>()));
                             }
                             lists.get(key).add(value);
                         }
@@ -150,7 +147,7 @@ public class Main {
                         for(int i = 2; i < command.size(); i++){
                             String value = command.get(i);
                             if(!lists.containsKey(key)){
-                                lists.put(key, new ArrayList<>());
+                                lists.put(key, Collections.synchronizedList(new ArrayList<>()));
                             }
                             lists.get(key).add(0, value);
                         }
@@ -191,7 +188,7 @@ public class Main {
                                 for(String value : list){
                                     out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
                                 }
-                                lists.put(key, new ArrayList<>());
+                                lists.put(key, Collections.synchronizedList(new ArrayList<>()));
                                 out.flush();
                             } else {
                                 // if count == 1 then return a bulk string
