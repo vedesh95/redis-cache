@@ -437,6 +437,7 @@ public class Main {
                                             (Integer.parseInt(eidParts[0]) == Integer.parseInt(entryIdParts[0]) &&
                                                     Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
                                         result.add(eid);
+                                        System.out.println("XREAD: streamid=" + streamid + ", entryid=" + entryid + ", found eid=" + eid);
                                         c++;
                                         if (c >= count || blocking) break;
                                     }
