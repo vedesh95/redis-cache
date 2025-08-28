@@ -344,7 +344,7 @@ public class Main {
                         // STREAMS: Required. Indicates that the following arguments are stream names and IDs.
                         // stream1, stream2, ...: The names of the streams to read from.
                         // id1, id2, ...: The IDs to start reading from for each stream. An ID of 0-0 means to read all entries from the beginning of the stream.
-
+                        System.out.println("command for xread " + command);
                         int count = Integer.MAX_VALUE;
                         int index = 1;
                         if(command.get(1).equalsIgnoreCase("COUNT")){
