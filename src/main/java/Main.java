@@ -289,6 +289,11 @@ public class Main {
                             continue;
                         }
                         // The sequence number doesn't need to be included in the start and end IDs provided to the command. If not provided, XRANGE defaults to a sequence number of 0 for the start and the maximum sequence number for the end.
+                        // start can also be specified as -
+                        // end can also be specified as +
+                        if(startid.equals("-")) startid = "0-0";
+                        if(endid.equals("+")) endid = Integer.MAX_VALUE + "-" + Integer.MAX_VALUE;
+
                         String[] startIdParts = startid.split("-");
                         String[] endIdParts = endid.split("-");
                         if(startIdParts.length==1){
@@ -328,8 +333,6 @@ public class Main {
                                 out.write(("$" + kv.value.length() + "\r\n" + kv.value + "\r\n").getBytes());
                             }
                         }
-
-
                     }
                     else {
                         out.write("-ERR unknown command\r\n".getBytes());
