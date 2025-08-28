@@ -413,6 +413,13 @@ public class Main {
                                 if(timeout != Long.MAX_VALUE && result.size()!=0) results.add(result);
                             }
                         }while(timeout != Long.MAX_VALUE && results.size()==0 && (System.currentTimeMillis() - startTime) < timeout);
+
+                        // if no results found after timeout
+                        if(results.size()==0){
+                            out.write("$-1\r\n".getBytes());
+                            out.flush();
+                            continue;
+                        }
                         out.write(("*" + results.size() + "\r\n").getBytes());
                         for(int i = 0; i < results.size(); i++) {
                             String streamid = streamids.get(i);
