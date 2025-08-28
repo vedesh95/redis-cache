@@ -373,24 +373,22 @@ public class Main {
 
                         // implement blocking if needed
                         Long startTime = System.currentTimeMillis();
+                        while(index < command.size()){
+                            streamids.add(command.get(index));
+                            index++;
+                        }
+                        int mid = streamids.size()/2;
+                        entryids = streamids.subList(mid, streamids.size());
+                        streamids = streamids.subList(0, mid);
+                        System.out.println("streamids: " + streamids);
+                        System.out.println("entryids: " + entryids);
+                        if(streamids.size() != entryids.size()){
+                            out.write("-ERR syntax error\r\n".getBytes());
+                            out.flush();
+                            continue;
+                        }
                         while(System.currentTimeMillis() - startTime < timeout){
                             // command for xread goes something like [XREAD, streams, stream-1, stream-2, range-1, range-2
-                            while(index < command.size()){
-                                streamids.add(command.get(index));
-                                index++;
-                            }
-                            int mid = streamids.size()/2;
-                            entryids = streamids.subList(mid, streamids.size());
-                            streamids = streamids.subList(0, mid);
-                            System.out.println("streamids: " + streamids);
-                            System.out.println("entryids: " + entryids);
-                            if(streamids.size() != entryids.size()){
-                                out.write("-ERR syntax error\r\n".getBytes());
-                                out.flush();
-                                continue;
-                            }
-
-
                             for(int i = 0; i < streamids.size(); i++) {
                                 String streamid = streamids.get(i);
                                 String entryid = entryids.get(i);
