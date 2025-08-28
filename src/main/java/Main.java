@@ -266,6 +266,7 @@ public class Main {
                     } else if(command.get(0).contains("XADD")){
                         String streamid = command.get(1);
                         String entryid = getEntryId(command, out, streamMap);
+                        if(entryid.equals("-1")) continue; // error already handled in getEntryId
                         if(!streamMap.get(streamid).containsKey(entryid)){
                             streamMap.get(streamid).put(entryid, new ArrayList<>());
                         }
@@ -351,7 +352,7 @@ public class Main {
             }
             return "-1";
         }
-        if (lastEntryId!=null && (!entryIdParts[1].equals("*") && Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
+        if (lastEntryId!=null && (Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
                 (Integer.parseInt(entryIdParts[0]) == Integer.parseInt(lastEntryIdParts[0]) &&
                         Integer.parseInt(entryIdParts[1]) <= Integer.parseInt(lastEntryIdParts[1])))) {
             try {
