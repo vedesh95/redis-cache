@@ -348,7 +348,7 @@ public class Main {
                         int count = Integer.MAX_VALUE;
                         int index = 1;
                         // set timeout to highest value by default
-                        Long timeout = Long.MAX_VALUE;
+                        long timeout = Long.MAX_VALUE;
                         // xread with block implemented here
                         if(command.get(index).equalsIgnoreCase("BLOCK")) {
                             // BLOCK milliseconds
@@ -387,7 +387,7 @@ public class Main {
                             out.flush();
                             continue;
                         }
-                        while(System.currentTimeMillis() - startTime < timeout){
+                        do{
                             // command for xread goes something like [XREAD, streams, stream-1, stream-2, range-1, range-2
                             for(int i = 0; i < streamids.size(); i++) {
                                 String streamid = streamids.get(i);
@@ -417,14 +417,14 @@ public class Main {
                                         result.add(eid);
                                         System.out.println("result found - eid=" + eid + " entryid=" + entryid);
                                         c++;
-                                        if (c >= count || timeout == Long.MAX_VALUE) break;
+                                        if (c >= count || timeout != Long.MAX_VALUE) break;
                                     }
 
                                 }
                                 // write RESP array for this stream
-                                if(timeout == Long.MAX_VALUE && result.size()!=0) results.add(result);
+                                if(timeout != Long.MAX_VALUE && result.size()!=0) results.add(result);
                             }
-                        }
+                        }while(timeout != Long.MAX_VALUE && results.size()==0 && (System.currentTimeMillis() - startTime) < timeout);
                         out.write(("*" + results.size() + "\r\n").getBytes());
                         for(int i = 0; i < results.size(); i++) {
                             String streamid = streamids.get(i);
