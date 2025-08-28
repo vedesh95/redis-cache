@@ -312,6 +312,10 @@ public class Main {
         // The millisecondsTime part of the ID should be greater than or equal to the millisecondsTime of the last entry.
         // If the millisecondsTime part of the ID is equal to the millisecondsTime of the last entry, the sequenceNumber part of the ID should be greater than the sequenceNumber of the last entry.
 
+        //When * is used with the XADD command, Redis auto-generates a unique auto-incrementing ID for the message being appended to the stream.
+        //
+        //Redis defaults to using the current unix time in milliseconds for the time part and 0 for the sequence number. If the time already exists in the stream, the sequence number for that record incremented by one will be used.
+
         String streamid = command.get(1);
         String entryid = command.get(2);
         if (!streamMap.containsKey(streamid)) {
@@ -325,6 +329,19 @@ public class Main {
         String[] entryIdParts = entryid.split("-");
         String[] lastEntryIdParts = {};
         if(lastEntryId!=null) lastEntryIdParts = lastEntryId.split("-");
+
+        if(entryIdParts.length==1 && entryIdParts[0].equals("*")){
+            // generate entry id
+            long currentTimeMillis = System.currentTimeMillis();
+            if(lastEntryIdParts.length>0 && Long.parseLong(lastEntryIdParts[0])==currentTimeMillis){
+                entryid = lastEntryIdParts[0] + "-" + (Integer.parseInt(lastEntryIdParts[1]) + 1);
+            } else {
+                entryid = currentTimeMillis + "-0";
+            }
+            entryIdParts = entryid.split("-");
+            System.out.println("----entryIdParts after *----" + entryIdParts[0] + " " + entryIdParts[1]);
+            return entryid;
+        }
 
         if (entryIdParts[1].equals("*")) {
             if (lastEntryIdParts.length>0 && entryIdParts[0].equals(lastEntryIdParts[0])) {
