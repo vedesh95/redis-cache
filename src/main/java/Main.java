@@ -351,9 +351,9 @@ public class Main {
             }
             return "-1";
         }
-        if (lastEntryId!=null && !entryIdParts[1].equals("*") && Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
+        if (lastEntryId!=null && (!entryIdParts[1].equals("*") && Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
                 (Integer.parseInt(entryIdParts[0]) == Integer.parseInt(lastEntryIdParts[0]) &&
-                        Integer.parseInt(entryIdParts[1]) <= Integer.parseInt(lastEntryIdParts[1]))) {
+                        Integer.parseInt(entryIdParts[1]) <= Integer.parseInt(lastEntryIdParts[1])))) {
             try {
                 out.write("-ERR The ID specified in XADD is equal or smaller than the target stream top item\r\n".getBytes());
                 out.flush();
