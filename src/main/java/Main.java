@@ -347,7 +347,8 @@ public class Main {
                         System.out.println("command for xread " + command);
                         int count = Integer.MAX_VALUE;
                         int index = 1;
-                        Long timeout=-1L;
+                        // set timeout to highest value by default
+                        Long timeout = Long.MAX_VALUE;
                         // xread with block implemented here
                         if(command.get(index).equalsIgnoreCase("BLOCK")) {
                             // BLOCK milliseconds
@@ -369,7 +370,7 @@ public class Main {
 
                         // implement blocking if needed
                         Long startTime = System.currentTimeMillis();
-                        while(timeout!=-1L && System.currentTimeMillis() - startTime < timeout){
+                        while(System.currentTimeMillis() - startTime < timeout){
                             // command for xread goes something like [XREAD, streams, stream-1, stream-2, range-1, range-2
                             while(index < command.size()){
                                 streamids.add(command.get(index));
