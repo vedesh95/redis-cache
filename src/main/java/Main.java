@@ -417,12 +417,12 @@ public class Main {
                                         result.add(eid);
                                         System.out.println("result found - eid=" + eid + " entryid=" + entryid);
                                         c++;
-                                        if (c >= count || timeout != Long.MAX_VALUE) break;
+                                        if (c >= count || timeout == Long.MAX_VALUE) break;
                                     }
 
                                 }
                                 // write RESP array for this stream
-                                if(timeout != Long.MAX_VALUE) results.add(result);
+                                if(timeout == Long.MAX_VALUE) results.add(result);
                             }
                         }
                         out.write(("*" + results.size() + "\r\n").getBytes());
