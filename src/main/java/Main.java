@@ -397,6 +397,7 @@ public class Main {
                                     streamids.add(entryid);
                                 }
                             }
+                            System.out.println("XREAD fetchNew: streamids=" + streamids);
                         }
 
 
