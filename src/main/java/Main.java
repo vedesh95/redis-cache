@@ -247,6 +247,7 @@ public class Main {
                         }
                         // timeout occurred. we have to return null bulk string and remove the thread from queue even if it is not at the front
                         if(timedOut) {
+                            threadsWaitingForBLPOP.get(key).remove(currentThread);
                             out.write("$-1\r\n".getBytes());
                             out.flush();
                         }
