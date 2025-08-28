@@ -228,7 +228,7 @@ public class Main {
                         }
                         threadsWaitingForBLPOP.get(key).offer(currentThread);
                         long startTime = System.currentTimeMillis();
-
+                        boolean timedout = true;
                         while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
                             if(threadsWaitingForBLPOP.get(key).peek() == currentThread){
                                 if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
@@ -238,6 +238,7 @@ public class Main {
                                     System.out.println("BLPOP: key=" + key + ", value=" + value + ", thread=" + currentThread.getName());
                                     out.flush();
                                     threadsWaitingForBLPOP.get(key).remove(currentThread);
+                                    timedout = false;
                                     break;
                                 }
                             }
@@ -245,7 +246,7 @@ public class Main {
                         System.out.println("BLPOP: timeout or completed for key=" + key + ", thread=" + currentThread.getName());
                         // timeout reached or operation completed
                         // if operation completed, thread already removed from queue
-                        if(threadsWaitingForBLPOP.get(key).contains(currentThread)){
+                        if(timedout){
                             out.write("$-1\r\n".getBytes());
                             out.flush();
                             threadsWaitingForBLPOP.get(key).remove(currentThread);
