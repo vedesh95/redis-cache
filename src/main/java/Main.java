@@ -231,7 +231,7 @@ public class Main {
                             threadsWaitingForBLPOP.put(key, new ConcurrentLinkedQueue<>());
                         }
                         threadsWaitingForBLPOP.get(key).offer(currentThread);
-                        System.out.println("----blpop----" + key + " " + timeout + " " + currentThread + threadsWaitingForBLPOP.get(key).size());
+                        System.out.println("----blpop----" + key + " " + timeout + " " + currentThread + " n=" + threadsWaitingForBLPOP.get(key).size());
                         long startTime = System.currentTimeMillis();
 
                         while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
