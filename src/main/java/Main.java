@@ -370,8 +370,6 @@ public class Main {
                         List<String> streamids = new ArrayList<>();
                         List<String> entryids = new ArrayList<>();
                         List<List<String>> results = new ArrayList<>();
-                        System.out.println("streamids: " + streamids);
-                        System.out.println("entryids: " + entryids);
 
                         // implement blocking if needed
                         Long startTime = System.currentTimeMillis();
@@ -384,6 +382,8 @@ public class Main {
                             int mid = streamids.size()/2;
                             entryids = streamids.subList(mid, streamids.size());
                             streamids = streamids.subList(0, mid);
+                            System.out.println("streamids: " + streamids);
+                            System.out.println("entryids: " + entryids);
                             if(streamids.size() != entryids.size()){
                                 out.write("-ERR syntax error\r\n".getBytes());
                                 out.flush();
