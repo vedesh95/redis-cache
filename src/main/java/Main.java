@@ -423,7 +423,7 @@ public class Main {
                             results.add(result);
                             out.write(("*" + results.size() + "\r\n").getBytes());
                             out.write(("*2\r\n$" + streamid.length() + "\r\n" + streamid + "\r\n" + "*" + result.size() + "\r\n").getBytes());
-                            for (String eid : result) {
+                            for (String eid : results) {
                                 List<KeyValue> keyValues = streamMap.get(streamid).get(eid);
                                 out.write(("*2\r\n$" + eid.length() + "\r\n" + eid + "\r\n" + "*" + (keyValues.size() * 2) + "\r\n").getBytes());
                                 for (KeyValue kv : keyValues) {
