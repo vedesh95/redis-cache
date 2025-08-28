@@ -413,12 +413,12 @@ public class Main {
                                                     Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
                                         result.add(eid);
                                         c++;
-                                        if (c >= count) break;
+                                        if (c >= count || timeout != Long.MAX_VALUE) break;
                                     }
 
                                 }
                                 // write RESP array for this stream
-                                results.add(result);
+                                if(timeout != Long.MAX_VALUE) results.add(result);
                             }
                         }
                         out.write(("*" + results.size() + "\r\n").getBytes());
