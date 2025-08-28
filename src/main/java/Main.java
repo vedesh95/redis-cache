@@ -69,14 +69,12 @@ public class Main {
                 while(true){
                     List<String> command = parseCommand(reader);
                     if(command.isEmpty()) continue;
-                    System.out.println("command is " + command);
 
                     if (command.get(0).equalsIgnoreCase("PING")) {
                         out.write("+PONG\r\n".getBytes());
                         out.flush();
                     } else if (command.get(0).startsWith("ECHO")) {
                         String line = command.get(1);
-                        System.out.println("echo----" + line);
 //                        out.write((command.get(0) + "\r\n" + line + "\r\n").getBytes());
                         out.write(("$" + line.length() + "\r\n" + line + "\r\n").getBytes());
 
@@ -110,7 +108,6 @@ public class Main {
                     } else if(command.get(0).contains("RPUSH")){
                         // rpush might send multiple values
                         // RPUSH mylist "hello" "world"
-                        System.out.println("rpush----" + "thread" + Thread.currentThread().getId());
                         String key = command.get(1);
                         for(int i = 2; i < command.size(); i++){
                             String value = command.get(i);
@@ -214,7 +211,6 @@ public class Main {
 
                         }
                     } else if(command.get(0).equals("BLPOP")) {
-                        System.out.println("blpop----" + "thread" + Thread.currentThread().getId());
                         /*
                         If a timeout duration is supplied, it is the number of seconds the client will wait for an element to be available for removal. If no elements were inserted during this interval, the server returns a null bulk string ($-1\r\n).
                         If an element was inserted during this interval, the server removes it from the list and responds to the blocking client with a RESP-encoded array containing two elements:
@@ -231,7 +227,6 @@ public class Main {
                             threadsWaitingForBLPOP.put(key, new ConcurrentLinkedQueue<>());
                         }
                         threadsWaitingForBLPOP.get(key).offer(currentThread);
-                        System.out.println("----blpop----" + key + " " + timeout + " " + currentThread + " n=" + threadsWaitingForBLPOP.get(key).size());
                         long startTime = System.currentTimeMillis();
 
                         while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
@@ -239,7 +234,6 @@ public class Main {
                                 if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
                                     String value = lists.get(key).remove(0);
                                     out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
-                                    System.out.println("----blpop return----" + key + " " + value + " " + currentThread);
                                     out.flush();
                                     threadsWaitingForBLPOP.get(key).remove(currentThread);
                                     break;
@@ -344,7 +338,6 @@ public class Main {
                         // STREAMS: Required. Indicates that the following arguments are stream names and IDs.
                         // stream1, stream2, ...: The names of the streams to read from.
                         // id1, id2, ...: The IDs to start reading from for each stream. An ID of 0-0 means to read all entries from the beginning of the stream.
-                        System.out.println("command for xread " + command);
                         int count = Integer.MAX_VALUE;
                         int index = 1;
                         // set timeout to highest value by default
@@ -358,9 +351,7 @@ public class Main {
                             count = Integer.parseInt(command.get(index+1));
                             index += 2;
                         }
-                        System.out.println("timeout: " + timeout);
-                        System.out.println("count: " + count);
-                        System.out.println("index: " + index);
+
                         if(!command.get(index).equalsIgnoreCase("STREAMS")){
                             out.write("-ERR syntax error\r\n".getBytes());
                             out.flush();
@@ -380,8 +371,6 @@ public class Main {
                         int mid = streamids.size()/2;
                         entryids = streamids.subList(mid, streamids.size());
                         streamids = streamids.subList(0, mid);
-                        System.out.println("streamids: " + streamids);
-                        System.out.println("entryids: " + entryids);
                         if(streamids.size() != entryids.size()){
                             out.write("-ERR syntax error\r\n".getBytes());
                             out.flush();
@@ -415,7 +404,6 @@ public class Main {
                                             (Integer.parseInt(eidParts[0]) == Integer.parseInt(entryIdParts[0]) &&
                                                     Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
                                         result.add(eid);
-                                        System.out.println("result found - eid=" + eid + " entryid=" + entryid);
                                         c++;
                                         if (c >= count || timeout != Long.MAX_VALUE) break;
                                     }
@@ -499,8 +487,6 @@ public class Main {
             } else {
                 entryid = currentTimeMillis + "-0";
             }
-            entryIdParts = entryid.split("-");
-            System.out.println("----entryIdParts after *----" + entryIdParts[0] + " " + entryIdParts[1]);
             return entryid;
         }
 
@@ -512,14 +498,9 @@ public class Main {
             } else {
                 entryid = entryIdParts[0] + "-0";
             }
-            entryIdParts = entryid.split("-");
-            System.out.println("----entryIdParts after *----" + entryIdParts[0] + " " + entryIdParts[1]);
             return entryid;
         }
 
-
-//        System.out.println("----lastEntryIdParts----" + lastEntryIdParts[0] + " " + lastEntryIdParts[1]);
-//        System.out.println("----entryIdParts----" + entryIdParts[0] + " " + entryIdParts[1]);
         // The minimum entry ID that Redis supports is 0-1
         if (Integer.parseInt(entryIdParts[0]) <= 0 && Integer.parseInt(entryIdParts[1]) <= 0) {
             try {
