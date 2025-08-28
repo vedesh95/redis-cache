@@ -429,6 +429,8 @@ public class Main {
                                     entryIdParts = entryid.split("-");
                                 }
 
+
+
                                 // XREAD returns an array where each element is an array composed of two elements, which are the ID and the list of fields and values.
                                 List<String> result = new ArrayList<>();
                                 int c = 0;
