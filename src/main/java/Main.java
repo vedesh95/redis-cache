@@ -336,6 +336,93 @@ public class Main {
                                 out.write(("$" + kv.value.length() + "\r\n" + kv.value + "\r\n").getBytes());
                             }
                         }
+                    } else if(command.get(0).equals("XREAD")){
+                        // XREAD COUNT 2 STREAMS mystream 0-0
+                        // The command returns entries from one or more streams, starting from the specified IDs.
+                        // The command takes the following arguments:
+                        // COUNT: Optional. The maximum number of entries to return from each stream. If not specified, all available entries are returned.
+                        // STREAMS: Required. Indicates that the following arguments are stream names and IDs.
+                        // stream1, stream2, ...: The names of the streams to read from.
+                        // id1, id2, ...: The IDs to start reading from for each stream. An ID of 0-0 means to read all entries from the beginning of the stream.
+
+                        int count = Integer.MAX_VALUE;
+                        int index = 1;
+                        if(command.get(1).equals("COUNT")){
+                            count = Integer.parseInt(command.get(2));
+                            index += 2;
+                        }
+                        if(!command.get(index).equals("STREAMS")){
+                            out.write("-ERR syntax error\r\n".getBytes());
+                            out.flush();
+                            continue;
+                        }
+                        index++;
+                        List<String> streamids = new ArrayList<>();
+                        List<String> entryids = new ArrayList<>();
+                        while(index < command.size()){
+                            streamids.add(command.get(index));
+                            index++;
+                            if(index < command.size()){
+                                entryids.add(command.get(index));
+                                index++;
+                            } else {
+                                out.write("-ERR syntax error\r\n".getBytes());
+                                out.flush();
+                                continue;
+                            }
+                        }
+                        if(streamids.size() != entryids.size()){
+                            out.write("-ERR syntax error\r\n".getBytes());
+                            out.flush();
+                            continue;
+                        }
+                        List<List<String>> results = new ArrayList<>();
+                        for(int i = 0; i < streamids.size(); i++) {
+                            String streamid = streamids.get(i);
+                            String entryid = entryids.get(i);
+                            if (!streamMap.containsKey(streamid)) {
+                                results.add(new ArrayList<>());
+                                // write RESP array with empty array for this stream
+                                out.write(("*" + results.size() + "\r\n").getBytes());
+                                continue;
+                            }
+                            if (entryid.equals("-")) entryid = "0-0";
+                            if (entryid.equals("+")) entryid = Integer.MAX_VALUE + "-" + Integer.MAX_VALUE;
+
+                            String[] entryIdParts = entryid.split("-");
+                            if (entryIdParts.length == 1) {
+                                entryid = entryIdParts[0] + "-0";
+                                entryIdParts = entryid.split("-");
+                            }
+
+                            // XREAD returns an array where each element is an array composed of two elements, which are the ID and the list of fields and values.
+                            List<String> result = new ArrayList<>();
+                            int c = 0;
+                            for (String eid : streamMap.get(streamid).keySet()) {
+                                String[] eidParts = eid.split("-");
+                                if ((Integer.parseInt(eidParts[0]) > Integer.parseInt(entryIdParts[0]) ||
+                                        (Integer.parseInt(eidParts[0]) == Integer.parseInt(entryIdParts[0]) &&
+                                                Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
+                                    result.add(eid);
+                                    c++;
+                                    if (c >= count) break;
+                                }
+
+                            }
+                            // write RESP array for this stream
+                            results.add(result)
+                            out.write(("*" + results.size() + "\r\n").getBytes());
+                            out.write(("*2\r\n$" + streamid.length() + "\r\n" + streamid + "\r\n" + "*" + result.size() + "\r\n").getBytes());
+                            for (String eid : result) {
+                                List<KeyValue> keyValues = streamMap.get(streamid).get(eid);
+                                out.write(("*2\r\n$" + eid.length() + "\r\n" + eid + "\r\n" + "*" + (keyValues.size() * 2) + "\r\n").getBytes());
+                                for (KeyValue kv : keyValues) {
+                                    out.write(("$" + kv.key.length() + "\r\n" + kv.key + "\r\n").getBytes());
+                                    out.write(("$" + kv.value.length() + "\r\n" + kv.value + "\r\n").getBytes());
+                                }
+                            }
+
+                        }
                     }
                     else {
                         out.write("-ERR unknown command\r\n".getBytes());
