@@ -412,6 +412,7 @@ public class Main {
                                             (Integer.parseInt(eidParts[0]) == Integer.parseInt(entryIdParts[0]) &&
                                                     Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
                                         result.add(eid);
+                                        System.out.println("result found - eid=" + eid + " entryid=" + entryid);
                                         c++;
                                         if (c >= count || timeout != Long.MAX_VALUE) break;
                                     }
