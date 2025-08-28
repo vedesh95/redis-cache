@@ -350,6 +350,7 @@ public class Main {
                         if(command.get(index).equalsIgnoreCase("BLOCK")) {
                             // BLOCK milliseconds
                             timeout = Long.parseLong(command.get(index + 1));
+                            if(timeout==0) timeout = Long.MAX_VALUE; // wait forever
                             index += 2;
                             blocking = true;
                         }else if(command.get(index).equalsIgnoreCase("COUNT")){
