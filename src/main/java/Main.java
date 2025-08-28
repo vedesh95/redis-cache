@@ -234,6 +234,8 @@ public class Main {
                                 if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
                                     String value = lists.get(key).remove(0);
                                     out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                                    // add debugging info
+                                    System.out.println("BLPOP: key=" + key + ", value=" + value + ", thread=" + currentThread.getName());
                                     out.flush();
                                     threadsWaitingForBLPOP.get(key).remove(currentThread);
                                     break;
