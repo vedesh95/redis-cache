@@ -339,8 +339,8 @@ public class Main {
         }
 
 
-        System.out.println("----lastEntryIdParts----" + lastEntryIdParts[0] + " " + lastEntryIdParts[1]);
-        System.out.println("----entryIdParts----" + entryIdParts[0] + " " + entryIdParts[1]);
+//        System.out.println("----lastEntryIdParts----" + lastEntryIdParts[0] + " " + lastEntryIdParts[1]);
+//        System.out.println("----entryIdParts----" + entryIdParts[0] + " " + entryIdParts[1]);
         // The minimum entry ID that Redis supports is 0-1
         if (Integer.parseInt(entryIdParts[0]) <= 0 && Integer.parseInt(entryIdParts[1]) <= 0) {
             try {
