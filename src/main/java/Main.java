@@ -359,18 +359,28 @@ public class Main {
                         index++;
                         List<String> streamids = new ArrayList<>();
                         List<String> entryids = new ArrayList<>();
+
+                        // command for xread goes something like [XREAD, streams, stream-1, stream-2, range-1, range-2
                         while(index < command.size()){
                             streamids.add(command.get(index));
                             index++;
-                            if(index < command.size()){
-                                entryids.add(command.get(index));
-                                index++;
-                            } else {
-                                out.write("-ERR syntax error\r\n".getBytes());
-                                out.flush();
-                                continue;
-                            }
                         }
+                        int mid = streamids.size()/2;
+                        entryids = streamids.subList(mid, streamids.size());
+                        streamids = streamids.subList(0, mid);
+
+//                        while(index < command.size()){
+//                            streamids.add(command.get(index));
+//                            index++;
+//                            if(index < command.size()){
+//                                entryids.add(command.get(index));
+//                                index++;
+//                            } else {
+//                                out.write("-ERR syntax error\r\n".getBytes());
+//                                out.flush();
+//                                continue;
+//                            }
+//                        }
                         if(streamids.size() != entryids.size()){
                             out.write("-ERR syntax error\r\n".getBytes());
                             out.flush();
