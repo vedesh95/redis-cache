@@ -232,6 +232,7 @@ public class Main {
                                     String value = lists.get(key).remove(0);
                                     out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
                                     // add debugging info
+                                    System.out.println("BLPOP: found value for key=" + key + ", thread=" + Thread.currentThread().getName());
                                     out.flush();
                                     threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
                                     found = true;
