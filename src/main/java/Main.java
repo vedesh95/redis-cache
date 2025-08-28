@@ -334,13 +334,7 @@ public class Main {
                             }
                         }
                     } else if(command.get(0).equalsIgnoreCase("XREAD")){
-                        // XREAD COUNT 2 STREAMS mystream 0-0
-                        // The command returns entries from one or more streams, starting from the specified IDs.
-                        // The command takes the following arguments:
-                        // COUNT: Optional. The maximum number of entries to return from each stream. If not specified, all available entries are returned.
-                        // STREAMS: Required. Indicates that the following arguments are stream names and IDs.
-                        // stream1, stream2, ...: The names of the streams to read from.
-                        // id1, id2, ...: The IDs to start reading from for each stream. An ID of 0-0 means to read all entries from the beginning of the stream.
+
                         int count = Integer.MAX_VALUE;
                         int index = 1;
                         // set timeout to highest value by default
@@ -358,11 +352,21 @@ public class Main {
                             index += 2;
                         }
 
+                        // we have to take care of $ at the end.
+                        // redis-cli XREAD block 1000 streams some_key $
+                        // we have to return only new entries
+                        boolean fetchNew = false;
+                        if(command.get(command.size()-1).equals("$")){
+                            command.remove(command.size()-1);
+                            fetchNew = true;
+                        }
+
                         if(!command.get(index).equalsIgnoreCase("STREAMS")){
                             out.write("-ERR syntax error\r\n".getBytes());
                             out.flush();
                             continue;
                         }
+
                         index++;
                         List<String> streamids = new ArrayList<>();
                         List<String> entryids = new ArrayList<>();
@@ -374,6 +378,19 @@ public class Main {
                             streamids.add(command.get(index));
                             index++;
                         }
+
+                        // XREAD block 1000 streams some_key $
+                        // now we have to return only new entries and we have stream ids in streamids
+                        // and we have to set entryids to - for all stream ids
+                        if(fetchNew) {
+                            int n = streamids.size();
+                            for (int i = 0; i < n; i++) {
+                                // set entryids to current timestamp - 0 millisecond
+                                streamids.add(System.currentTimeMillis() + "-0");
+                            }
+                        }
+
+
                         int mid = streamids.size()/2;
                         entryids = streamids.subList(mid, streamids.size());
                         streamids = streamids.subList(0, mid);
@@ -490,12 +507,12 @@ public class Main {
         }
         String[] entryIdParts = entryid.split("-");
         String[] lastEntryIdParts = {};
-        if(lastEntryId!=null) lastEntryIdParts = lastEntryId.split("-");
+        if (lastEntryId != null) lastEntryIdParts = lastEntryId.split("-");
 
-        if(entryIdParts.length==1 && entryIdParts[0].equals("*")){
+        if (entryIdParts.length == 1 && entryIdParts[0].equals("*")) {
             // generate entry id
             long currentTimeMillis = System.currentTimeMillis();
-            if(lastEntryIdParts.length>0 && Long.parseLong(lastEntryIdParts[0])==currentTimeMillis){
+            if (lastEntryIdParts.length > 0 && Long.parseLong(lastEntryIdParts[0]) == currentTimeMillis) {
                 entryid = lastEntryIdParts[0] + "-" + (Integer.parseInt(lastEntryIdParts[1]) + 1);
             } else {
                 entryid = currentTimeMillis + "-0";
@@ -504,7 +521,7 @@ public class Main {
         }
 
         if (entryIdParts[1].equals("*")) {
-            if (lastEntryIdParts.length>0 && entryIdParts[0].equals(lastEntryIdParts[0])) {
+            if (lastEntryIdParts.length > 0 && entryIdParts[0].equals(lastEntryIdParts[0])) {
                 entryid = entryIdParts[0] + "-" + (Integer.parseInt(lastEntryIdParts[1]) + 1);
             } else if (entryIdParts[0].equals("0")) {
                 entryid = entryIdParts[0] + "-1";
@@ -524,7 +541,7 @@ public class Main {
             }
             return "-1";
         }
-        if (lastEntryId!=null && (Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
+        if (lastEntryId != null && (Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
                 (Integer.parseInt(entryIdParts[0]) == Integer.parseInt(lastEntryIdParts[0]) &&
                         Integer.parseInt(entryIdParts[1]) <= Integer.parseInt(lastEntryIdParts[1])))) {
             try {
