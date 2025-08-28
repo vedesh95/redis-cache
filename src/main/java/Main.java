@@ -43,7 +43,7 @@ public class Main {
         int port = 6379;
       ConcurrentHashMap<String, Pair> map = new ConcurrentHashMap<>();
       ConcurrentHashMap<String, List<String>> lists = new ConcurrentHashMap<>();
-      ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
+      ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
       ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
         try {
           serverSocket = new ServerSocket(port);
@@ -59,7 +59,7 @@ public class Main {
         }
   }
 
-    public static void spinThread(Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, Queue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>>  streamMap){
+    public static void spinThread(Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>>  streamMap){
         new Thread(() -> {
             try (clientSocket;
                  BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
