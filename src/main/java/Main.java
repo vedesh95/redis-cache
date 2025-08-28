@@ -218,7 +218,7 @@ public class Main {
                         The element that was popped (as a bulk string)
                            If multiple clients are blocked for BLPOP command, the server responds to the client which has been blocked for the longest duration.
                         * */
-                        System.out.println("for blop: " +clientSocket.getChannel());
+
                         String key = command.get(1);
                         Double timeout = Double.parseDouble(command.get(2)) * 1000; // convert to milliseconds
                         boolean waitForever = timeout == 0;
@@ -228,17 +228,16 @@ public class Main {
                         }
                         threadsWaitingForBLPOP.get(key).offer(currentThread);
                         long startTime = System.currentTimeMillis();
-                        boolean timedout = true;
+                        boolean found = false;
                         while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
                             if(threadsWaitingForBLPOP.get(key).peek() == currentThread){
                                 if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
                                     String value = lists.get(key).remove(0);
                                     out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
                                     // add debugging info
-                                    System.out.println("BLPOP: key=" + key + ", value=" + value + ", thread=" + currentThread.getName());
                                     out.flush();
                                     threadsWaitingForBLPOP.get(key).remove(currentThread);
-                                    timedout = false;
+                                    found = true;
                                     break;
                                 }
                             }
@@ -246,7 +245,7 @@ public class Main {
                         System.out.println("BLPOP: timeout or completed for key=" + key + ", thread=" + currentThread.getName());
                         // timeout reached or operation completed
                         // if operation completed, thread already removed from queue
-                        if(timedout){
+                        if(!found){
                             out.write("$-1\r\n".getBytes());
                             out.flush();
                             threadsWaitingForBLPOP.get(key).remove(currentThread);
