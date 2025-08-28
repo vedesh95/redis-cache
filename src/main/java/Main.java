@@ -422,7 +422,7 @@ public class Main {
 
                                 }
                                 // write RESP array for this stream
-                                if(timeout == Long.MAX_VALUE) results.add(result);
+                                if(timeout == Long.MAX_VALUE && result.size()!=0) results.add(result);
                             }
                         }
                         out.write(("*" + results.size() + "\r\n").getBytes());
