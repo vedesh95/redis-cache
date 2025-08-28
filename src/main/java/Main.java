@@ -393,7 +393,7 @@ public class Main {
                                         lastEntryId = key;
                                     }
                                     String[] lastEntryIdParts = lastEntryId.split("-");
-                                    String entryid = lastEntryIdParts[0] + "-" + (Integer.parseInt(lastEntryIdParts[1]) + 1);
+                                    String entryid = lastEntryIdParts[0] + "-" + Integer.parseInt(lastEntryIdParts[1]);
                                     streamids.add(entryid);
                                 }
                             }
