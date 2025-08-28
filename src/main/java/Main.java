@@ -110,6 +110,7 @@ public class Main {
                     } else if(command.get(0).contains("RPUSH")){
                         // rpush might send multiple values
                         // RPUSH mylist "hello" "world"
+                        System.out.println("rpush----" + "thread" + Thread.currentThread().getId());
                         String key = command.get(1);
                         for(int i = 2; i < command.size(); i++){
                             String value = command.get(i);
@@ -213,7 +214,7 @@ public class Main {
 
                         }
                     } else if(command.get(0).equals("BLPOP")) {
-
+                        System.out.println("blpop----" + "thread" + Thread.currentThread().getId());
                         /*
                         If a timeout duration is supplied, it is the number of seconds the client will wait for an element to be available for removal. If no elements were inserted during this interval, the server returns a null bulk string ($-1\r\n).
                         If an element was inserted during this interval, the server removes it from the list and responds to the blocking client with a RESP-encoded array containing two elements:
