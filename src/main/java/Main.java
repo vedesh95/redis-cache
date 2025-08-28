@@ -471,6 +471,21 @@ public class Main {
                                 }
                             }
                         }
+                    } else if(command.get(0).equals("INCR")){
+                        String key = command.get(1);
+                        if(!map.containsKey(key)){
+                            map.put(key, new Pair("0", null));
+                        }
+                        try {
+                            int value = Integer.parseInt(map.get(key).value);
+                            value++;
+                            map.put(key, new Pair(String.valueOf(value), null));
+                            out.write((":" + value + "\r\n").getBytes());
+                            out.flush();
+                        } catch (NumberFormatException e) {
+                            out.write("-ERR value is not an integer or out of range\r\n".getBytes());
+                            out.flush();
+                        }
                     }
                     else {
                         out.write("-ERR unknown command\r\n".getBytes());
