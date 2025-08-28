@@ -410,6 +410,7 @@ public class Main {
 
                                 }
                                 // write RESP array for this stream
+//                                if(timeout != Long.MAX_VALUE && result.size()!=0) results.add(result);
                                 results.add(result);
                             }
                         }while(timeout != Long.MAX_VALUE && results.size()==0 && (System.currentTimeMillis() - startTime) < timeout);
