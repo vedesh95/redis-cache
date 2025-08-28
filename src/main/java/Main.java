@@ -410,7 +410,7 @@ public class Main {
 
                             }
                             // write RESP array for this stream
-                            results.add(result)
+                            results.add(result);
                             out.write(("*" + results.size() + "\r\n").getBytes());
                             out.write(("*2\r\n$" + streamid.length() + "\r\n" + streamid + "\r\n" + "*" + result.size() + "\r\n").getBytes());
                             for (String eid : result) {
