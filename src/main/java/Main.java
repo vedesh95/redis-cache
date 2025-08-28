@@ -222,11 +222,10 @@ public class Main {
                         String key = command.get(1);
                         Double timeout = Double.parseDouble(command.get(2)) * 1000; // convert to milliseconds
                         boolean waitForever = timeout == 0;
-                        Thread currentThread = Thread.currentThread();
                         if (threadsWaitingForBLPOP.containsKey(key) == false) {
                             threadsWaitingForBLPOP.put(key, new ConcurrentLinkedQueue<>());
                         }
-                        threadsWaitingForBLPOP.get(key).offer(currentThread);
+                        threadsWaitingForBLPOP.get(key).offer(Thread.currentThread());
                         threadsWaitingForBLPOP.get(key).stream().forEach(x -> System.out.println("blpop waiting threads - " +x.getName())); // println
                         long startTime = System.currentTimeMillis();
                         boolean found = false;
