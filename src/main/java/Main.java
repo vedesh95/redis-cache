@@ -358,6 +358,9 @@ public class Main {
                             count = Integer.parseInt(command.get(index+1));
                             index += 2;
                         }
+                        System.out.println("timeout: " + timeout);
+                        System.out.println("count: " + count);
+                        System.out.println("index: " + index);
                         if(!command.get(index).equalsIgnoreCase("STREAMS")){
                             out.write("-ERR syntax error\r\n".getBytes());
                             out.flush();
