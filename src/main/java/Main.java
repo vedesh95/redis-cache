@@ -235,7 +235,7 @@ public class Main {
                         boolean timedOut = true;
                         while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
                             if(threadsWaitingForBLPOP.get(key).peek() == currentThread){
-                                if (lists.containsKey(key) && lists.get(key).isEmpty() == false) {
+                                if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
                                     String value = lists.get(key).remove(0);
                                     out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
                                     out.flush();
@@ -247,10 +247,17 @@ public class Main {
                         }
                         // timeout occurred. we have to return null bulk string and remove the thread from queue even if it is not at the front
                         if(timedOut) {
+                            System.out.println("----blpop timed out----" + key + " " + timeout + " " + currentThread + threadsWaitingForBLPOP.get(key).size());
                             threadsWaitingForBLPOP.get(key).remove(currentThread);
                             out.write("$-1\r\n".getBytes());
                             out.flush();
                         }
+//                        }
+//                        if(timedOut) {
+//                            threadsWaitingForBLPOP.get(key).remove(currentThread);
+//                            out.write("$-1\r\n".getBytes());
+//                            out.flush();
+//                        }
                     }else if(command.get(0).equals("TYPE")){
                         String key = command.get(1);
                         if(map.containsKey(key)){
