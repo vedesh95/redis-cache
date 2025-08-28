@@ -474,7 +474,7 @@ public class Main {
                     } else if(command.get(0).equals("INCR")){
                         String key = command.get(1);
                         if(!map.containsKey(key)){
-                            map.put(key, new Pair("0", null));
+                            map.put(key, new Pair("1", null));
                         }
                         try {
                             int value = Integer.parseInt(map.get(key).value);
