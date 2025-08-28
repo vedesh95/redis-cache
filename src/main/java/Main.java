@@ -367,6 +367,8 @@ public class Main {
                         List<String> streamids = new ArrayList<>();
                         List<String> entryids = new ArrayList<>();
                         List<List<String>> results = new ArrayList<>();
+                        System.out.println("streamids: " + streamids);
+                        System.out.println("entryids: " + entryids);
 
                         // implement blocking if needed
                         Long startTime = System.currentTimeMillis();
