@@ -218,7 +218,7 @@ public class Main {
                         The element that was popped (as a bulk string)
                            If multiple clients are blocked for BLPOP command, the server responds to the client which has been blocked for the longest duration.
                         * */
-
+                        System.out.println("for blop: " +clientSocket.getChannel());
                         String key = command.get(1);
                         Double timeout = Double.parseDouble(command.get(2)) * 1000; // convert to milliseconds
                         boolean waitForever = timeout == 0;
