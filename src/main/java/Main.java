@@ -347,8 +347,14 @@ public class Main {
                         System.out.println("command for xread " + command);
                         int count = Integer.MAX_VALUE;
                         int index = 1;
-                        if(command.get(1).equalsIgnoreCase("COUNT")){
-                            count = Integer.parseInt(command.get(2));
+                        Long timeout=-1L;
+                        // xread with block implemented here
+                        if(command.get(index).equalsIgnoreCase("BLOCK")) {
+                            // BLOCK milliseconds
+                            timeout = Long.parseLong(command.get(index + 1));
+                            index += 2;
+                        }else if(command.get(index).equalsIgnoreCase("COUNT")){
+                            count = Integer.parseInt(command.get(index+1));
                             index += 2;
                         }
                         if(!command.get(index).equalsIgnoreCase("STREAMS")){
@@ -359,68 +365,60 @@ public class Main {
                         index++;
                         List<String> streamids = new ArrayList<>();
                         List<String> entryids = new ArrayList<>();
-
-                        // command for xread goes something like [XREAD, streams, stream-1, stream-2, range-1, range-2
-                        while(index < command.size()){
-                            streamids.add(command.get(index));
-                            index++;
-                        }
-                        int mid = streamids.size()/2;
-                        entryids = streamids.subList(mid, streamids.size());
-                        streamids = streamids.subList(0, mid);
-
-//                        while(index < command.size()){
-//                            streamids.add(command.get(index));
-//                            index++;
-//                            if(index < command.size()){
-//                                entryids.add(command.get(index));
-//                                index++;
-//                            } else {
-//                                out.write("-ERR syntax error\r\n".getBytes());
-//                                out.flush();
-//                                continue;
-//                            }
-//                        }
-                        if(streamids.size() != entryids.size()){
-                            out.write("-ERR syntax error\r\n".getBytes());
-                            out.flush();
-                            continue;
-                        }
                         List<List<String>> results = new ArrayList<>();
-                        for(int i = 0; i < streamids.size(); i++) {
-                            String streamid = streamids.get(i);
-                            String entryid = entryids.get(i);
-                            if (!streamMap.containsKey(streamid)) {
-                                results.add(new ArrayList<>());
-                                // write RESP array with empty array for this stream
-                                out.write(("*" + results.size() + "\r\n").getBytes());
+
+                        // implement blocking if needed
+                        Long startTime = System.currentTimeMillis();
+                        while(timeout!=-1L && System.currentTimeMillis() - startTime < timeout){
+                            // command for xread goes something like [XREAD, streams, stream-1, stream-2, range-1, range-2
+                            while(index < command.size()){
+                                streamids.add(command.get(index));
+                                index++;
+                            }
+                            int mid = streamids.size()/2;
+                            entryids = streamids.subList(mid, streamids.size());
+                            streamids = streamids.subList(0, mid);
+                            if(streamids.size() != entryids.size()){
+                                out.write("-ERR syntax error\r\n".getBytes());
+                                out.flush();
                                 continue;
                             }
-                            if (entryid.equals("-")) entryid = "0-0";
-                            if (entryid.equals("+")) entryid = Integer.MAX_VALUE + "-" + Integer.MAX_VALUE;
 
-                            String[] entryIdParts = entryid.split("-");
-                            if (entryIdParts.length == 1) {
-                                entryid = entryIdParts[0] + "-0";
-                                entryIdParts = entryid.split("-");
-                            }
 
-                            // XREAD returns an array where each element is an array composed of two elements, which are the ID and the list of fields and values.
-                            List<String> result = new ArrayList<>();
-                            int c = 0;
-                            for (String eid : streamMap.get(streamid).keySet()) {
-                                String[] eidParts = eid.split("-");
-                                if ((Integer.parseInt(eidParts[0]) > Integer.parseInt(entryIdParts[0]) ||
-                                        (Integer.parseInt(eidParts[0]) == Integer.parseInt(entryIdParts[0]) &&
-                                                Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
-                                    result.add(eid);
-                                    c++;
-                                    if (c >= count) break;
+                            for(int i = 0; i < streamids.size(); i++) {
+                                String streamid = streamids.get(i);
+                                String entryid = entryids.get(i);
+                                if (!streamMap.containsKey(streamid)) {
+                                    results.add(new ArrayList<>());
+                                    out.write(("*" + results.size() + "\r\n").getBytes());
+                                    continue;
+                                }
+                                if (entryid.equals("-")) entryid = "0-0";
+                                if (entryid.equals("+")) entryid = Integer.MAX_VALUE + "-" + Integer.MAX_VALUE;
+
+                                String[] entryIdParts = entryid.split("-");
+                                if (entryIdParts.length == 1) {
+                                    entryid = entryIdParts[0] + "-0";
+                                    entryIdParts = entryid.split("-");
                                 }
 
+                                // XREAD returns an array where each element is an array composed of two elements, which are the ID and the list of fields and values.
+                                List<String> result = new ArrayList<>();
+                                int c = 0;
+                                for (String eid : streamMap.get(streamid).keySet()) {
+                                    String[] eidParts = eid.split("-");
+                                    if ((Integer.parseInt(eidParts[0]) > Integer.parseInt(entryIdParts[0]) ||
+                                            (Integer.parseInt(eidParts[0]) == Integer.parseInt(entryIdParts[0]) &&
+                                                    Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
+                                        result.add(eid);
+                                        c++;
+                                        if (c >= count) break;
+                                    }
+
+                                }
+                                // write RESP array for this stream
+                                results.add(result);
                             }
-                            // write RESP array for this stream
-                            results.add(result);
                         }
                         out.write(("*" + results.size() + "\r\n").getBytes());
                         for(int i = 0; i < results.size(); i++) {
