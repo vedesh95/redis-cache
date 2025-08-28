@@ -278,6 +278,58 @@ public class Main {
 
                         out.write(("$" + entryid.length() + "\r\n" + entryid + "\r\n").getBytes());
                         out.flush();
+                    } else if(command.get(0).contains("XRANGE")){
+                        // It takes two arguments: start and end. Both are entry IDs. The command returns all entries in the stream with IDs between the start and end IDs. This range is "inclusive", which means that the response will includes entries with IDs that are equal to the start and end IDs.
+                        String streamid = command.get(1);
+                        String startid = command.get(2);
+                        String endid = command.get(3);
+                        if(!streamMap.containsKey(streamid)){
+                            out.write("*0\r\n".getBytes());
+                            out.flush();
+                            continue;
+                        }
+                        // The sequence number doesn't need to be included in the start and end IDs provided to the command. If not provided, XRANGE defaults to a sequence number of 0 for the start and the maximum sequence number for the end.
+                        String[] startIdParts = startid.split("-");
+                        String[] endIdParts = endid.split("-");
+                        if(startIdParts.length==1){
+                            startid = startIdParts[0] + "-0";
+                            startIdParts = startid.split("-");
+                        }
+                        if(endIdParts.length==1){
+                            endid = endIdParts[0] + "-"+ Integer.MAX_VALUE;
+                            endIdParts = endid.split("-");
+                        }
+                        List<String> result = new ArrayList<>();
+                        for(String entryId : streamMap.get(streamid).keySet()){
+                            String[] entryIdParts = entryId.split("-");
+                            if((Integer.parseInt(entryIdParts[0]) > Integer.parseInt(startIdParts[0]) ||
+                                    (Integer.parseInt(entryIdParts[0]) == Integer.parseInt(startIdParts[0]) &&
+                                            Integer.parseInt(entryIdParts[1]) >= Integer.parseInt(startIdParts[1])))
+                                    &&
+                                    (Integer.parseInt(entryIdParts[0]) < Integer.parseInt(endIdParts[0]) ||
+                                            (Integer.parseInt(entryIdParts[0]) == Integer.parseInt(endIdParts[0]) &&
+                                                    Integer.parseInt(entryIdParts[1]) <= Integer.parseInt(endIdParts[1])))){
+                                result.add(entryId);
+                            }
+                        }
+                        // The actual return value is a RESP Array of arrays.
+                        // Each inner array represents an entry.
+                        // The first item in the inner array is the ID of the entry.
+                        // The second item is a list of key value pairs, where the key value pairs are represented as a list of strings.
+                        // The key value pairs are in the order they were added to the entry.
+
+                        // generate RESP array
+                        out.write(("*" + result.size() + "\r\n").getBytes());
+                        for(String entryId : result) {
+                            List<KeyValue> keyValues = streamMap.get(streamid).get(entryId);
+                            out.write(("*2\r\n$" + entryId.length() + "\r\n" + entryId + "\r\n" + "*" + (keyValues.size() * 2) + "\r\n").getBytes());
+                            for (KeyValue kv : keyValues) {
+                                out.write(("$" + kv.key.length() + "\r\n" + kv.key + "\r\n").getBytes());
+                                out.write(("$" + kv.value.length() + "\r\n" + kv.value + "\r\n").getBytes());
+                            }
+                        }
+
+
                     }
                     else {
                         out.write("-ERR unknown command\r\n".getBytes());
