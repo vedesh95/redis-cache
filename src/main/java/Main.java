@@ -336,7 +336,7 @@ public class Main {
                                 out.write(("$" + kv.value.length() + "\r\n" + kv.value + "\r\n").getBytes());
                             }
                         }
-                    } else if(command.get(0).equals("XREAD")){
+                    } else if(command.get(0).equalsIgnoreCase("XREAD")){
                         // XREAD COUNT 2 STREAMS mystream 0-0
                         // The command returns entries from one or more streams, starting from the specified IDs.
                         // The command takes the following arguments:
@@ -347,11 +347,11 @@ public class Main {
 
                         int count = Integer.MAX_VALUE;
                         int index = 1;
-                        if(command.get(1).equals("COUNT")){
+                        if(command.get(1).equalsIgnoreCase("COUNT")){
                             count = Integer.parseInt(command.get(2));
                             index += 2;
                         }
-                        if(!command.get(index).equals("STREAMS")){
+                        if(!command.get(index).equalsIgnoreCase("STREAMS")){
                             out.write("-ERR syntax error\r\n".getBytes());
                             out.flush();
                             continue;
