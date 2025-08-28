@@ -239,9 +239,9 @@ public class Main {
                                 if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
                                     String value = lists.get(key).remove(0);
                                     out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                                    System.out.println("----blpop return----" + key + " " + value + " " + currentThread);
                                     out.flush();
                                     threadsWaitingForBLPOP.get(key).remove(currentThread);
-
                                     break;
                                 }
                             }
@@ -253,7 +253,6 @@ public class Main {
                             out.flush();
                             threadsWaitingForBLPOP.get(key).remove(currentThread);
                         }
-//
                     }else if(command.get(0).equals("TYPE")){
                         String key = command.get(1);
                         if(map.containsKey(key)){
