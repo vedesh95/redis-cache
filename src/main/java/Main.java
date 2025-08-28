@@ -242,6 +242,7 @@ public class Main {
                                 }
                             }
                         }
+                        System.out.println("BLPOP: timeout or completed for key=" + key + ", thread=" + currentThread.getName());
                         // timeout reached or operation completed
                         // if operation completed, thread already removed from queue
                         if(threadsWaitingForBLPOP.get(key).contains(currentThread)){
