@@ -265,72 +265,7 @@ public class Main {
                         }
                     } else if(command.get(0).contains("XADD")){
                         String streamid = command.get(1);
-                        String entryid = command.get(2);
-                        if(!streamMap.containsKey(streamid)){
-                            streamMap.put(streamid, new LinkedHashMap<>());
-                        }
-
-
-                        // The entryid should be greater than the ID of the last entry in the stream.
-                        //    The millisecondsTime part of the ID should be greater than or equal to the millisecondsTime of the last entry.
-                        //    If the millisecondsTime part of the ID is equal to the millisecondsTime of the last entry, the sequenceNumber part of the ID should be greater than the sequenceNumber of the last entry.
-                        synchronized (streamMap){
-
-                                // get last entry id
-                                String lastEntryId = null;
-                                for (String key : streamMap.get(streamid).keySet()) {
-                                    lastEntryId = key;
-                                }
-                                String[] lastEntryIdParts = lastEntryId.split("-");
-                                String[] entryIdParts = entryid.split("-");
-                                System.out.println("----lastEntryId----" + lastEntryId);
-                                System.out.println("----entryId----" + entryid);
-
-                                //When * is used for the sequence number, Redis picks the last sequence number used in the stream (for the same time part) and increments it by 1.
-                                //
-                                //The default sequence number is 0. The only exception is when the time part is also 0. In that case, the default sequence number is 1.
-                                //
-                                //Here's an example of adding an entry with * as the sequence number:
-
-                                if(entryIdParts[1].equals("*")){
-                                    if(entryIdParts[0].equals("0")){
-                                        entryid = entryIdParts[0] + "-1";
-                                    } else if (entryIdParts[0].equals(lastEntryIdParts[0])) {
-                                        entryid = entryIdParts[0] + "-" + (Integer.parseInt(lastEntryIdParts[1]) + 1);
-                                    } else {
-                                        entryid = entryIdParts[0] + "-0";
-                                    }
-                                    entryIdParts = entryid.split("-");
-                                    System.out.println("----entryIdParts after *----" + entryIdParts[0] + " " + entryIdParts[1]);
-                                }
-
-
-                                System.out.println("----lastEntryIdParts----" + lastEntryIdParts[0] + " " + lastEntryIdParts[1]);
-                                System.out.println("----entryIdParts----" + entryIdParts[0] + " " + entryIdParts[1]);
-                                // The minimum entry ID that Redis supports is 0-1
-                                if(!entryIdParts[1].equals("*") && Integer.parseInt(entryIdParts[0]) <= 0 && Integer.parseInt(entryIdParts[1]) <= 0){
-                                    try {
-                                        out.write("-ERR The ID specified in XADD must be greater than 0-0\r\n".getBytes());
-                                        out.flush();
-                                    } catch (IOException e) {
-                                        System.out.println(e);
-                                    }
-                                    continue;
-                                }
-                                if (!entryIdParts[1].equals("*") && Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
-                                        (Integer.parseInt(entryIdParts[0]) == Integer.parseInt(lastEntryIdParts[0]) &&
-                                                Integer.parseInt(entryIdParts[1]) <= Integer.parseInt(lastEntryIdParts[1]))) {
-                                    try {
-                                        out.write("-ERR The ID specified in XADD is equal or smaller than the target stream top item\r\n".getBytes());
-                                        out.flush();
-                                    } catch (IOException e) {
-                                        System.out.println(e);
-                                    }
-
-                                    continue;
-                                }
-
-                        }
+                        String entryid = getEntryId(command, out, streamMap);
                         if(!streamMap.get(streamid).containsKey(entryid)){
                             streamMap.get(streamid).put(entryid, new ArrayList<>());
                         }
@@ -370,4 +305,63 @@ public class Main {
         return command;
     }
 
+
+    public static String getEntryId(List<String> command, OutputStream out, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>>  streamMap) throws IOException {
+        // The entryid should be greater than the ID of the last entry in the stream.
+        // The millisecondsTime part of the ID should be greater than or equal to the millisecondsTime of the last entry.
+        // If the millisecondsTime part of the ID is equal to the millisecondsTime of the last entry, the sequenceNumber part of the ID should be greater than the sequenceNumber of the last entry.
+
+        String streamid = command.get(1);
+        String entryid = command.get(2);
+        if (!streamMap.containsKey(streamid)) {
+            streamMap.put(streamid, new LinkedHashMap<>());
+        }
+
+        String lastEntryId = null;
+        for (String key : streamMap.get(streamid).keySet()) {
+            lastEntryId = key;
+        }
+        String[] entryIdParts = entryid.split("-");
+        String[] lastEntryIdParts = {};
+        if(lastEntryId!=null) lastEntryIdParts = lastEntryId.split("-");
+
+        if (entryIdParts[1].equals("*")) {
+            if (lastEntryIdParts.length>0 && entryIdParts[0].equals(lastEntryIdParts[0])) {
+                entryid = entryIdParts[0] + "-" + (Integer.parseInt(lastEntryIdParts[1]) + 1);
+            } else if (entryIdParts[0].equals("0")) {
+                entryid = entryIdParts[0] + "-1";
+            } else {
+                entryid = entryIdParts[0] + "-0";
+            }
+            entryIdParts = entryid.split("-");
+            System.out.println("----entryIdParts after *----" + entryIdParts[0] + " " + entryIdParts[1]);
+            return entryid;
+        }
+
+
+        System.out.println("----lastEntryIdParts----" + lastEntryIdParts[0] + " " + lastEntryIdParts[1]);
+        System.out.println("----entryIdParts----" + entryIdParts[0] + " " + entryIdParts[1]);
+        // The minimum entry ID that Redis supports is 0-1
+        if (Integer.parseInt(entryIdParts[0]) <= 0 && Integer.parseInt(entryIdParts[1]) <= 0) {
+            try {
+                out.write("-ERR The ID specified in XADD must be greater than 0-0\r\n".getBytes());
+                out.flush();
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+            return "-1";
+        }
+        if (!entryIdParts[1].equals("*") && Integer.parseInt(entryIdParts[0]) < Integer.parseInt(lastEntryIdParts[0]) ||
+                (Integer.parseInt(entryIdParts[0]) == Integer.parseInt(lastEntryIdParts[0]) &&
+                        Integer.parseInt(entryIdParts[1]) <= Integer.parseInt(lastEntryIdParts[1]))) {
+            try {
+                out.write("-ERR The ID specified in XADD is equal or smaller than the target stream top item\r\n".getBytes());
+                out.flush();
+            } catch (IOException e) {
+                System.out.println(e);
+            }
+            return "-1";
+        }
+        return entryid;
+    }
 }
