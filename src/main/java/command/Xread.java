@@ -70,16 +70,18 @@ public class Xread implements Command {
             for (int i = 0; i < n; i++) {
                 String streamid = streamids.get(i);
 
-                if (!streamMap.containsKey(streamid) || streamMap.get(streamid).isEmpty()) {
-                    streamids.add("0-0");
-                } else {
-                    String lastEntryId = null;
-                    for (String key : streamMap.get(streamid).keySet()) {
-                        lastEntryId = key;
+                synchronized (streamMap){
+                    if (!streamMap.containsKey(streamid) || streamMap.get(streamid).isEmpty()) {
+                        streamids.add("0-0");
+                    } else {
+                        String lastEntryId = null;
+                        for (String key : streamMap.get(streamid).keySet()) {
+                            lastEntryId = key;
+                        }
+                        String[] lastEntryIdParts = lastEntryId.split("-");
+                        String entryid = lastEntryIdParts[0] + "-" + Integer.parseInt(lastEntryIdParts[1]);
+                        streamids.add(entryid);
                     }
-                    String[] lastEntryIdParts = lastEntryId.split("-");
-                    String entryid = lastEntryIdParts[0] + "-" + Integer.parseInt(lastEntryIdParts[1]);
-                    streamids.add(entryid);
                 }
             }
             System.out.println("XREAD fetchNew: streamids=" + streamids);
@@ -98,7 +100,9 @@ public class Xread implements Command {
             for(int i = 0; i < streamids.size(); i++) {
                 String streamid = streamids.get(i);
                 String entryid = entryids.get(i);
-                if (!streamMap.containsKey(streamid)) continue;
+                synchronized (streamMap){
+                    if (!streamMap.containsKey(streamid)) continue;
+                }
 
                 if (entryid.equals("-")) entryid = "0-0";
                 if (entryid.equals("+")) entryid = Integer.MAX_VALUE + "-" + Integer.MAX_VALUE;
@@ -113,15 +117,17 @@ public class Xread implements Command {
                 List<String> result = new ArrayList<>();
                 int c = 0;
 
-                for (String eid : streamMap.get(streamid).keySet()) {
-                    String[] eidParts = eid.split("-");
-                    if ((Integer.parseInt(eidParts[0]) > Integer.parseInt(entryIdParts[0]) ||
-                            (Integer.parseInt(eidParts[0]) == Integer.parseInt(entryIdParts[0]) &&
-                                    Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
-                        result.add(eid);
-                        System.out.println("XREAD: streamid=" + streamid + ", entryid=" + entryid + ", found eid=" + eid);
-                        c++;
-                        if (c >= count || blocking) break;
+                synchronized (streamMap){
+                    for (String eid : streamMap.get(streamid).keySet()) {
+                        String[] eidParts = eid.split("-");
+                        if ((Integer.parseInt(eidParts[0]) > Integer.parseInt(entryIdParts[0]) ||
+                                (Integer.parseInt(eidParts[0]) == Integer.parseInt(entryIdParts[0]) &&
+                                        Integer.parseInt(eidParts[1]) > Integer.parseInt(entryIdParts[1])))) {
+                            result.add(eid);
+//                        System.out.println("XREAD: streamid=" + streamid + ", entryid=" + entryid + ", found eid=" + eid);
+                            c++;
+                            if (c >= count || blocking) break;
+                        }
                     }
                 }
 
@@ -142,7 +148,10 @@ public class Xread implements Command {
             List<String> result = results.get(i);
             out.write(("*2\r\n$" + streamid.length() + "\r\n" + streamid + "\r\n" + "*" + result.size() + "\r\n").getBytes());
             for (String entryId : result) {
-                List<KeyValue> keyValues = streamMap.get(streamid).get(entryId);
+                List<KeyValue> keyValues;
+                synchronized (streamMap){
+                   keyValues = streamMap.get(streamid).get(entryId);
+                }
                 out.write(("*2\r\n$" + entryId.length() + "\r\n" + entryId + "\r\n" + "*" + (keyValues.size() * 2) + "\r\n").getBytes());
                 for (KeyValue kv : keyValues) {
                     out.write(("$" + kv.key.length() + "\r\n" + kv.key + "\r\n").getBytes());

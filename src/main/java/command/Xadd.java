@@ -26,10 +26,10 @@ public class Xadd implements Command{
 
     @Override
     public void execute(List<String> command, OutputStream out) throws IOException {
-        String streamid = command.get(1);
-        String entryid = getEntryId(command, out);
-        if(entryid.equals("-1")) return; // error already handled in getEntryId
         synchronized (streamMap){
+            String streamid = command.get(1);
+            String entryid = getEntryId(command, out);
+            if(entryid.equals("-1")) return; // error already handled in getEntryId
             if(!streamMap.get(streamid).containsKey(entryid)){
                 streamMap.get(streamid).put(entryid, new ArrayList<>());
             }
@@ -37,10 +37,11 @@ public class Xadd implements Command{
             String key = command.get(3);
             String value = command.get(4);
             streamMap.get(streamid).get(entryid).add(new KeyValue(null, key, value));
-        }
 
-        out.write(("$" + entryid.length() + "\r\n" + entryid + "\r\n").getBytes());
-        out.flush();
+
+            out.write(("$" + entryid.length() + "\r\n" + entryid + "\r\n").getBytes());
+            out.flush();
+        }
     }
 
     public String getEntryId(List<String> command, OutputStream out) throws IOException {
