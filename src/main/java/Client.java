@@ -40,6 +40,7 @@ public class Client {
                 if(command.isEmpty()) continue;
                 if(command.get(0).equalsIgnoreCase("MULTI")){
                     isInTransaction = true;
+                    transaction.add(command);
                     out.write("+OK\r\n".getBytes());
                     out.flush();
                 }else if(command.get(0).equalsIgnoreCase("EXEC")){
@@ -50,8 +51,7 @@ public class Client {
                         transaction.clear();
                         continue;
                     }
-                    transaction.remove(0); // remove the multi command
-                    transaction.remove(transaction.size()-1); // remove the exec command
+                    transaction.remove(0); // remove multi from transaction
                     if(transaction.isEmpty()){
                         // reply with empty array
                         out.write("*0\r\n".getBytes());
