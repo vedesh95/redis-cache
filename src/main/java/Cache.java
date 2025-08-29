@@ -1,3 +1,4 @@
+import struct.ServerInfo;
 import struct.KeyValue;
 import struct.Pair;
 
@@ -13,13 +14,16 @@ public class Cache {
     private ConcurrentHashMap<String, List<String>> lists = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
+    private ServerInfo info;
 
     public Cache(){
         this.map = new ConcurrentHashMap<>();
         this.lists = new ConcurrentHashMap<>();
         this.threadsWaitingForBLPOP = new ConcurrentHashMap<>();
         this.streamMap = new ConcurrentHashMap<>();
-        commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap);
+        this.info = new ServerInfo();
+
+        commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info);
     }
 
     public void addClient(Socket clientSocket){

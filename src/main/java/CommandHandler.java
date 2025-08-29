@@ -1,4 +1,5 @@
 import command.*;
+import struct.ServerInfo;
 import struct.KeyValue;
 import struct.Pair;
 
@@ -14,6 +15,8 @@ public class CommandHandler {
     private ConcurrentHashMap<String, List<String>> lists = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap = new ConcurrentHashMap<>();
+    private ServerInfo info;
+
     Command ping;
     Command echo;
     Command set;
@@ -29,12 +32,15 @@ public class CommandHandler {
     Command xrange;
     Command xread;
     Command incr;
+    Command replicationInfo;
 
-    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap) {
+    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info) {
         this.map = map;
         this.lists = lists;
         this.threadsWaitingForBLPOP = threadsWaitingForBLPOP;
         this.streamMap = streamMap;
+        this.info = info;
+
         this.ping = new Ping();
         this.echo = new Echo();
         this.set = new Set(map, lists, threadsWaitingForBLPOP, streamMap);
@@ -50,6 +56,7 @@ public class CommandHandler {
         this.xrange = new Xrange(map, lists, threadsWaitingForBLPOP, streamMap);
         this.xread = new Xread(map, lists, threadsWaitingForBLPOP, streamMap);
         this.incr = new Incr(map, lists, threadsWaitingForBLPOP, streamMap);
+        this.replicationInfo = new ReplicationInfo(info);
     }
 
     public void handleCommand(List<String> command, OutputStream out){
@@ -70,6 +77,7 @@ public class CommandHandler {
                 case "XRANGE": xrange.execute(command, out); break;
                 case "XREAD": xread.execute(command, out); break;
                 case "INCR": incr.execute(command, out); break;
+                case "INFO": replicationInfo.execute(command, out); break;
                 default:
                     out.write("-ERR unknown command\r\n".getBytes());
                     out.flush();
