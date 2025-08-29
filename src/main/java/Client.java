@@ -50,6 +50,13 @@ public class Client {
                         transaction.clear();
                         continue;
                     }
+                    transaction.remove(0); // remove the multi command
+                    if(transaction.isEmpty()){
+                        // reply with empty array
+                        out.write("*0\r\n".getBytes());
+                        out.flush();
+                        continue;
+                    }
                     for(List<String> cmd : transaction){
                         this.commandHandler.handleCommand(cmd, out);
                     }
