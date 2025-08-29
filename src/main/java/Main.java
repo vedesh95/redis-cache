@@ -21,7 +21,7 @@ public class Main {
                 slave.getOutputStream().write("*1\r\n$4\r\nPING\r\n".getBytes());
                 slave.getOutputStream().flush();
                 // REPLCONF listening-port <PORT>
-                slave.getOutputStream().write(("*3\r\n$10\r\nREPLCONF\r\n$14\r\nlistening-port\r\n$" + String.valueOf(port).length() + "\r\n" + port + "\r\n").getBytes());
+                slave.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$14\r\nlistening-port\r\n$" + String.valueOf(port).length() + "\r\n" + port + "\r\n").getBytes());
                 slave.getOutputStream().flush();
                 // REPLCONF capa eof
                 slave.getOutputStream().write("*3\r\n$10\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n".getBytes());
