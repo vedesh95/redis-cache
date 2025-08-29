@@ -48,6 +48,7 @@ public class Client {
                         out.flush();
                         continue;
                     }
+                    isInTransaction = false;
                     if(transaction.isEmpty()){
                         // reply with empty array
                         out.write("*0\r\n".getBytes());
