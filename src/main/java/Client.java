@@ -42,7 +42,7 @@ public class Client {
                     isInTransaction = true;
                     out.write("+OK\r\n".getBytes());
                     out.flush();
-                }else if(isInTransaction && command.get(0).equalsIgnoreCase("EXEC")){
+                }else if(command.get(0).equalsIgnoreCase("EXEC")){
                     isInTransaction = false;
                     if(!transaction.get(0).get(0).equals("MULTI")){
                         out.write("-ERR EXEC without MULTI\r\n".getBytes());
