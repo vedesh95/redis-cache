@@ -64,6 +64,11 @@ public class Client {
 //                    out.write("+OK\r\n".getBytes());
 //                    out.flush();
                 }else if(isInTransaction && command.get(0).equalsIgnoreCase("DISCARD")){
+                    if(!isInTransaction){ // handle case for exec without multi
+                        out.write("-ERR DISCARD without MULTI\r\n".getBytes());
+                        out.flush();
+                        continue;
+                    }
                     isInTransaction = false;
                     transaction.clear();
                     out.write("+OK\r\n".getBytes());
