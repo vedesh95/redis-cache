@@ -134,6 +134,11 @@ public class Xread implements Command {
         }while(blocking && results.size()==0 && (System.currentTimeMillis() - startTime) < timeout);
 
         // if no results found after timeout
+        for(int i=0; i<results.size(); i++){
+            for(int j=0; j<results.get(i).size(); j++){
+                System.out.println(results.get(i).get(j));
+            }
+        }
         if(results.isEmpty()){
             out.write("$-1\r\n".getBytes());
             out.flush();
