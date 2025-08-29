@@ -38,7 +38,7 @@ public class Blpop implements Command {
         long startTime = System.currentTimeMillis();
         boolean found = false;
         while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
-            synchronized (threadsWaitingForBLPOP){
+
                 if(threadsWaitingForBLPOP.get(key).peek() == Thread.currentThread()){
                     if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
                         String value = lists.get(key).remove(0);
@@ -48,9 +48,7 @@ public class Blpop implements Command {
                         found = true;
                         break;
                     }
-
                 }
-            }
 
         }
 
