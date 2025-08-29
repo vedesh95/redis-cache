@@ -30,4 +30,12 @@ public class Cache {
         Client client = new Client(commandHandler, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap);
         new Thread(client::listen).start();
     }
+
+    public ServerInfo getInfo() {
+        return info;
+    }
+
+    public void setInfo(ServerInfo info) {
+        this.info = info;
+    }
 }
