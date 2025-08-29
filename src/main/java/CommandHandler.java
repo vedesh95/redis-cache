@@ -29,6 +29,7 @@ public class CommandHandler {
     Command xrange;
     Command xread;
     Command incr;
+    Command multi;
 
     public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap) {
         this.map = map;
@@ -50,6 +51,7 @@ public class CommandHandler {
         this.xrange = new Xrange(map, lists, threadsWaitingForBLPOP, streamMap);
         this.xread = new Xread(map, lists, threadsWaitingForBLPOP, streamMap);
         this.incr = new Incr(map, lists, threadsWaitingForBLPOP, streamMap);
+        this.multi = new Multi(map, lists, threadsWaitingForBLPOP, streamMap);
     }
 
     public void handleCommand(List<String> command, OutputStream out){
@@ -70,6 +72,7 @@ public class CommandHandler {
                 case "XRANGE": xrange.execute(command, out); break;
                 case "XREAD": xread.execute(command, out); break;
                 case "INCR": incr.execute(command, out); break;
+                case "MULTI": multi.execute(command, out); break;
                 default:
                     out.write("-ERR unknown command\r\n".getBytes());
                     out.flush();
