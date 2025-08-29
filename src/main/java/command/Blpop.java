@@ -40,7 +40,6 @@ public class Blpop implements Command {
         while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
             synchronized (threadsWaitingForBLPOP){
                 if(threadsWaitingForBLPOP.get(key).peek() == Thread.currentThread()){
-                    // ensure list is not modified while we are checking and removing
                     if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
                         String value = lists.get(key).remove(0);
                         out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
@@ -58,9 +57,7 @@ public class Blpop implements Command {
         if(!found){
             out.write("*-1\r\n".getBytes());
             out.flush();
-            synchronized (threadsWaitingForBLPOP){
-                threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
-            }
+            threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
         }
     }
 }
