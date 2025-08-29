@@ -77,7 +77,7 @@ public class CommandHandler {
             }
         }catch (Exception e){
             // log exception
-            System.err.println("Error handling command: " + e.getMessage());
+            System.out.println(e);
         }
     }
 }
