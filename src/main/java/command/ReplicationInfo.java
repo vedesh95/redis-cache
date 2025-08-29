@@ -15,7 +15,7 @@ public class ReplicationInfo implements Command{
     @Override
     public void execute(List<String> command, OutputStream out) throws IOException {
         StringBuilder sb = new StringBuilder();
-        sb.append("# Replication\r\n");
+//        sb.append("# Replication\r\n");
         sb.append("role:").append(serverInfo.getRole()).append("\r\n");
 //        sb.append("connected_slaves:").append(serverInfo.getConnected_slaves()).append("\r\n");
 //        sb.append("master_replid:").append(serverInfo.getMaster_replid()).append("\r\n");
