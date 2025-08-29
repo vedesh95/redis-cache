@@ -59,7 +59,7 @@ public class Blpop implements Command {
         String key = command.get(1);
         double timeout = Double.parseDouble(command.get(2)) * 1000; // convert to milliseconds
         boolean waitForever = timeout == 0;
-
+        System.out.println("waitForever=" + waitForever);
         long startTime = System.currentTimeMillis();
         boolean found = false;
         synchronized (lists){
