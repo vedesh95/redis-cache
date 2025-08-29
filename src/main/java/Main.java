@@ -39,6 +39,19 @@ public class Main {
                 // REPLCONF capa eof
                 slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n".getBytes());
                 slave.getOutputStream().flush();
+                // check response
+                response = reader.readLine();
+                if(!response.equals("+OK")){
+                    System.out.println("Failed to connect to master: " + response);
+                    return;
+                }
+                // PSYNC ?
+                slave.getOutputStream().write("*3\r\n$5\r\nPSYNC\r\n$1\r\n?\r\n$2\r\n-1\r\n".getBytes());
+                slave.getOutputStream().flush();
+                // check response
+                response = reader.readLine();
+
+
                 slave.close();
                 cache.getInfo().setRole("slave");
             }catch (Exception e){
