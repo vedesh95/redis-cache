@@ -6,7 +6,7 @@ public class Main {
     public static void main(String[] args){
         System.out.println("Logs from your program will appear here!");
         int port = 6379;
-        if(args[0].equals("port")) port = Integer.parseInt(args[1]);
+        if(args[0].equalsIgnoreCase("port")) port = Integer.parseInt(args[1]);
 
         Cache cache = new Cache();
         ServerSocket serverSocket = null;
