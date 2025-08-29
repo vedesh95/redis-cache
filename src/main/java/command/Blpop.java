@@ -28,13 +28,13 @@ public class Blpop implements Command {
         String key = command.get(1);
         double timeout = Double.parseDouble(command.get(2)) * 1000; // convert to milliseconds
         boolean waitForever = timeout == 0;
-        synchronized (threadsWaitingForBLPOP){
+//        synchronized (threadsWaitingForBLPOP){
             // ensure we don't get concurrent modification exception and list is created only once
             if (!threadsWaitingForBLPOP.containsKey(key)) {
                 threadsWaitingForBLPOP.put(key, new ConcurrentLinkedQueue<>());
             }
             threadsWaitingForBLPOP.get(key).offer(Thread.currentThread());
-        }
+//        }
         long startTime = System.currentTimeMillis();
         boolean found = false;
         while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
