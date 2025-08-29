@@ -27,7 +27,7 @@ public class ReplicationInfo implements Command{
         sb.append("repl_backlog_histlen:").append(serverInfo.getRepl_backlog_histlen()).append("\r\n");
 
         String response = sb.toString();
-        out.write(("$" + response.length() + "\r\n" + response).getBytes());
+        out.write(("$" + response.length() + "\r\n" + response + "\r\n").getBytes());
         out.flush();
     }
 }
