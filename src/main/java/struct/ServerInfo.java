@@ -75,11 +75,11 @@ public class ServerInfo {
         this.repl_backlog_first_byte_offset = repl_backlog_first_byte_offset;
     }
 
-    public long getRepl_backlog_histlen() {
+    public Long getRepl_backlog_histlen() {
         return repl_backlog_histlen;
     }
 
-    public void setRepl_backlog_histlen(long repl_backlog_histlen) {
+    public void setRepl_backlog_histlen(Long repl_backlog_histlen) {
         this.repl_backlog_histlen = repl_backlog_histlen;
     }
 
