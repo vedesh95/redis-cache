@@ -44,7 +44,7 @@ public class Client {
                     out.flush();
                 }else if(command.get(0).equalsIgnoreCase("EXEC")){
                     isInTransaction = false;
-                    if(!transaction.get(0).get(0).equals("MULTI")){
+                    if(transaction.isEmpty() || !transaction.get(0).get(0).equals("MULTI")){ // handle case for exec without multi
                         out.write("-ERR EXEC without MULTI\r\n".getBytes());
                         out.flush();
                         transaction.clear();
