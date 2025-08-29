@@ -5,7 +5,7 @@ import java.net.Socket;
 public class Main {
     public static void main(String[] args){
         int port = 6379;
-        if(args[0].equalsIgnoreCase("--port")) port = Integer.parseInt(args[1]);
+        if(args.length>=2 && args[0].equalsIgnoreCase("--port")) port = Integer.parseInt(args[1]);
 
         Cache cache = new Cache();
         ServerSocket serverSocket = null;
