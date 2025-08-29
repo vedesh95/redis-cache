@@ -5,6 +5,7 @@ import java.net.Socket;
 public class Main {
     public static void main(String[] args){
         System.out.println("Logs from your program will appear here!");
+        System.out.println("args: " + String.join(" ", args));
         int port = 6379;
         if(args[0].equalsIgnoreCase("port")) port = Integer.parseInt(args[1]);
         System.out.println("Starting server on port: " + port);
