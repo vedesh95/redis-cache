@@ -130,13 +130,13 @@ public class Xread implements Command {
 
                 // write RESP array for this stream
                 if(result.size()!=0) results.add(result);
-                System.out.println("iteration results: " + results);
             }
         }while(blocking && results.size()==0 && (System.currentTimeMillis() - startTime) < timeout);
 
         // if no results found after timeout
-        if(results.size()==0){
-            out.write("$-1\r\n".getBytes());
+        if(results.isEmpty()){
+            // if no results found, return nil
+            out.write("*0\r\n".getBytes());
             out.flush();
             return;
         }
