@@ -99,8 +99,8 @@ public class Xread implements Command {
                 String streamid = streamids.get(i);
                 String entryid = entryids.get(i);
                 if (!streamMap.containsKey(streamid)) {
-                    results.add(new ArrayList<>());
-                    out.write(("*" + results.size() + "\r\n").getBytes());
+//                    results.add(new ArrayList<>());
+//                    out.write(("*-1\r\n").getBytes());
                     continue;
                 }
                 if (entryid.equals("-")) entryid = "0-0";
