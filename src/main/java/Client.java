@@ -55,12 +55,14 @@ public class Client {
                         out.flush();
                         continue;
                     }
+                    out.write(("*" + transaction.size() + "\r\n").getBytes());
+                    out.flush();
                     for(List<String> cmd : transaction){
                         this.commandHandler.handleCommand(cmd, out);
                     }
                     transaction.clear();
-                    out.write("+OK\r\n".getBytes());
-                    out.flush();
+//                    out.write("+OK\r\n".getBytes());
+//                    out.flush();
                 }else if(isInTransaction && command.get(0).equalsIgnoreCase("DISCARD")){
                     isInTransaction = false;
                     transaction.clear();
