@@ -40,18 +40,14 @@ public class Client {
                 if(command.isEmpty()) continue;
                 if(command.get(0).equalsIgnoreCase("MULTI")){
                     isInTransaction = true;
-                    transaction.add(command);
                     out.write("+OK\r\n".getBytes());
                     out.flush();
                 }else if(command.get(0).equalsIgnoreCase("EXEC")){
-                    isInTransaction = false;
-                    if(transaction.isEmpty() || !transaction.get(0).get(0).equals("MULTI")){ // handle case for exec without multi
+                    if(!isInTransaction){ // handle case for exec without multi
                         out.write("-ERR EXEC without MULTI\r\n".getBytes());
                         out.flush();
-                        transaction.clear();
                         continue;
                     }
-                    transaction.remove(0); // remove multi from transaction
                     if(transaction.isEmpty()){
                         // reply with empty array
                         out.write("*0\r\n".getBytes());
