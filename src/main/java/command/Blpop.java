@@ -68,7 +68,6 @@ public class Blpop implements Command {
                     String value = lists.get(key).remove(0);
                     out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
                     out.flush();
-                    threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
                     found = true;
                     break;
                 }
@@ -78,7 +77,6 @@ public class Blpop implements Command {
         if(!found){
             out.write("*-1\r\n".getBytes());
             out.flush();
-            threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
         }
     }
 }
