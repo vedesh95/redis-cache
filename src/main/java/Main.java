@@ -5,11 +5,12 @@ import java.net.Socket;
 public class Main {
     public static void main(String[] args){
         System.out.println("Logs from your program will appear here!");
-        System.out.println("args:" + String.join(" ", args));
+        int port = 6379;
+        if(args[0].equals("port")) port = Integer.parseInt(args[1]);
 
         Cache cache = new Cache();
         ServerSocket serverSocket = null;
-        int port = 6379;
+
 
         try {
             serverSocket = new ServerSocket(port);
