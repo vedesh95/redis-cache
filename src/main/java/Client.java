@@ -44,6 +44,12 @@ public class Client {
                     out.flush();
                 }else if(isInTransaction && command.get(0).equalsIgnoreCase("EXEC")){
                     isInTransaction = false;
+                    if(!transaction.get(0).get(0).equals("MULTI")){
+                        out.write("-ERR EXEC without MULTI\r\n".getBytes());
+                        out.flush();
+                        transaction.clear();
+                        continue;
+                    }
                     for(List<String> cmd : transaction){
                         this.commandHandler.handleCommand(cmd, out);
                     }
