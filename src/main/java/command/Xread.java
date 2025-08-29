@@ -136,6 +136,7 @@ public class Xread implements Command {
         // if no results found after timeout
         System.out.println("results=" + results);
         if(results.isEmpty()){
+            System.out.println("got empty results");
             out.write("$-1\r\n".getBytes());
             out.flush();
             return;
