@@ -32,7 +32,7 @@ public class Rpush implements Command{
         for(int i = 2; i < command.size(); i++){
             String value = command.get(i);
             if(!lists.containsKey(key)){
-                lists.put(key, Collections.synchronizedList(new ArrayList<>()));
+                lists.put(key, new ArrayList<>());
             }
             lists.get(key).add(value);
         }
