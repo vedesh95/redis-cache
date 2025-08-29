@@ -69,16 +69,18 @@ public class Xread implements Command {
             // entry id should be greater than the last entry id in the stream
             for (int i = 0; i < n; i++) {
                 String streamid = streamids.get(i);
-                if (!streamMap.containsKey(streamid) || streamMap.get(streamid).isEmpty()) {
-                    streamids.add("0-0");
-                } else {
-                    String lastEntryId = null;
-                    for (String key : streamMap.get(streamid).keySet()) {
-                        lastEntryId = key;
+                synchronized (streamMap){
+                    if (!streamMap.containsKey(streamid) || streamMap.get(streamid).isEmpty()) {
+                        streamids.add("0-0");
+                    } else {
+                        String lastEntryId = null;
+                        for (String key : streamMap.get(streamid).keySet()) {
+                            lastEntryId = key;
+                        }
+                        String[] lastEntryIdParts = lastEntryId.split("-");
+                        String entryid = lastEntryIdParts[0] + "-" + Integer.parseInt(lastEntryIdParts[1]);
+                        streamids.add(entryid);
                     }
-                    String[] lastEntryIdParts = lastEntryId.split("-");
-                    String entryid = lastEntryIdParts[0] + "-" + Integer.parseInt(lastEntryIdParts[1]);
-                    streamids.add(entryid);
                 }
             }
             System.out.println("XREAD fetchNew: streamids=" + streamids);
