@@ -24,7 +24,7 @@ public class Blpop implements Command {
     }
 
     @Override
-    public void execute(List<String> command, OutputStream out) throws IOException {
+    public synchronized void execute(List<String> command, OutputStream out) throws IOException {
         String key = command.get(1);
         double timeout = Double.parseDouble(command.get(2)) * 1000; // convert to milliseconds
         boolean waitForever = timeout == 0;
@@ -35,18 +35,17 @@ public class Blpop implements Command {
         long startTime = System.currentTimeMillis();
         boolean found = false;
         while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
-            synchronized (this){
-                if(threadsWaitingForBLPOP.get(key).peek() == Thread.currentThread()){
-                    if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
-                        String value = lists.get(key).remove(0);
-                        out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
-                        out.flush();
-                        threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
-                        found = true;
-                        break;
-                    }
+            if(threadsWaitingForBLPOP.get(key).peek() == Thread.currentThread()){
+                if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
+                    String value = lists.get(key).remove(0);
+                    out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                    out.flush();
+                    threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
+                    found = true;
+                    break;
                 }
             }
+
         }
 
         if(!found){
