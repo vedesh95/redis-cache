@@ -9,9 +9,9 @@ public class ServerInfo {
     private int repl_backlog_active;
     private int repl_backlog_size;
     private long repl_backlog_first_byte_offset;
-    private long repl_backlog_histlen;
+    private Long repl_backlog_histlen;
 
-    public ServerInfo(String role, int connected_slaves, String master_replid, long master_repl_offset, long second_repl_offset, int repl_backlog_active, int repl_backlog_size, long repl_backlog_first_byte_offset, long repl_backlog_histlen) {
+    public ServerInfo(String role, int connected_slaves, String master_replid, long master_repl_offset, long second_repl_offset, int repl_backlog_active, int repl_backlog_size, long repl_backlog_first_byte_offset, Long repl_backlog_histlen) {
         this.role = role;
         this.connected_slaves = connected_slaves;
         this.master_replid = master_replid;
@@ -32,7 +32,7 @@ public class ServerInfo {
         this.repl_backlog_active = 0;
         this.repl_backlog_size = 0;
         this.repl_backlog_first_byte_offset = 0;
-        this.repl_backlog_histlen = 0;
+        this.repl_backlog_histlen = null;
     }
 
     public int getConnected_slaves() {
