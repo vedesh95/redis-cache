@@ -62,8 +62,8 @@ public class Blpop implements Command {
 
         long startTime = System.currentTimeMillis();
         boolean found = false;
-        while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
-            synchronized (lists){
+        synchronized (lists){
+            while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
                 if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
                     String value = lists.get(key).remove(0);
                     out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
