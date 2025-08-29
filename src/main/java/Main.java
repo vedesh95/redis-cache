@@ -8,13 +8,32 @@ public class Main {
     public static void main(String[] args){
         int port = 6379;
         if(args.length>=2 && args[0].equalsIgnoreCase("--port")) port = Integer.parseInt(args[1]);
-        // args as --port 6380 --replicaof "localhost 6379"
-        boolean isreplica = false;
-        if(args.length>=4 && args[2].equalsIgnoreCase("--replicaof")) isreplica = true;
+
         Cache cache = new Cache();
+        ServerSocket serverSocket = null;
+
+        if(args.length>=4 && args[2].equalsIgnoreCase("--replicaof")){
+            port = Integer.parseInt(args[1]);
+            String[] address = args[3].split(" ");
+            try{
+                Socket slave = new Socket(address[0], Integer.parseInt(address[1])); // to connect to master
+                slave.setReuseAddress(true);
+                slave.getOutputStream().write("*1\r\n$4\r\nPING\r\n".getBytes());
+                slave.getOutputStream().flush();
+                slave.close();
+                cache.getInfo().setRole("slave");
+            }catch (Exception e){
+                System.out.println("Failed to connect to master: " + e.getMessage());
+                return;
+            }
+
+        }
+
+
+
         if(isreplica) cache.getInfo().setRole("slave");
 
-        ServerSocket serverSocket = null;
+
 
         try {
             serverSocket = new ServerSocket(port);
