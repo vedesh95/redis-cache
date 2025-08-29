@@ -32,7 +32,7 @@ public class Blpop implements Command {
             threadsWaitingForBLPOP.put(key, new ConcurrentLinkedQueue<>());
         }
         threadsWaitingForBLPOP.get(key).offer(Thread.currentThread());
-        threadsWaitingForBLPOP.get(key).stream().forEach(x -> System.out.println("blpop waiting threads - " +x.getName())); // println
+//        threadsWaitingForBLPOP.get(key).stream().forEach(x -> System.out.println("blpop waiting threads - " +x.getName())); // println
         long startTime = System.currentTimeMillis();
         boolean found = false;
         while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
@@ -49,7 +49,7 @@ public class Blpop implements Command {
         }
 
         if(!found){
-            out.write("$-1\r\n".getBytes());
+            out.write("*-1\r\n".getBytes());
             out.flush();
             threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
         }
