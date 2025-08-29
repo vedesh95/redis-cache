@@ -130,6 +130,7 @@ public class Xread implements Command {
 
                 // write RESP array for this stream
                 if(result.size()!=0) results.add(result);
+                System.out.println("iteration results: " + results);
             }
         }while(blocking && results.size()==0 && (System.currentTimeMillis() - startTime) < timeout);
 
