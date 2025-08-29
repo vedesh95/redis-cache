@@ -135,8 +135,7 @@ public class Xread implements Command {
 
         // if no results found after timeout
         if(results.isEmpty()){
-            // if no results found, return nil
-            out.write("*0\r\n".getBytes());
+            out.write("$-1\r\n".getBytes());
             out.flush();
             return;
         }
