@@ -51,6 +51,7 @@ public class Client {
                         continue;
                     }
                     transaction.remove(0); // remove the multi command
+                    transaction.remove(transaction.size()-1); // remove the exec command
                     if(transaction.isEmpty()){
                         // reply with empty array
                         out.write("*0\r\n".getBytes());
