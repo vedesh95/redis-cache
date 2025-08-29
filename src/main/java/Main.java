@@ -7,10 +7,9 @@ public class Main {
         System.out.println("Logs from your program will appear here!");
         int port = 6379;
         if(args[0].equalsIgnoreCase("port")) port = Integer.parseInt(args[1]);
-
+        System.out.println("Starting server on port: " + port);
         Cache cache = new Cache();
         ServerSocket serverSocket = null;
-
 
         try {
             serverSocket = new ServerSocket(port);
