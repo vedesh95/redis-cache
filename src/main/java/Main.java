@@ -29,12 +29,6 @@ public class Main {
 
         }
 
-
-
-        if(isreplica) cache.getInfo().setRole("slave");
-
-
-
         try {
             serverSocket = new ServerSocket(port);
             serverSocket.setReuseAddress(true);
