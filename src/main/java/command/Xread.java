@@ -26,6 +26,7 @@ public class Xread implements Command {
 
     @Override
     public void execute(List<String> command, OutputStream out) throws IOException {
+        long startTime = System.currentTimeMillis();
         int count = Integer.MAX_VALUE;
         int index = 1;
 
@@ -58,13 +59,10 @@ public class Xread implements Command {
         List<String> streamids = new ArrayList<>();
         List<String> entryids = new ArrayList<>();
         List<List<String>> results = new ArrayList<>();
-
-        long startTime = System.currentTimeMillis();
         while(index < command.size()){
             streamids.add(command.get(index));
             index++;
         }
-
 
         if(fetchNew) {
             int n = streamids.size();
@@ -113,8 +111,6 @@ public class Xread implements Command {
                     entryid = entryIdParts[0] + "-0";
                     entryIdParts = entryid.split("-");
                 }
-
-
 
                 // XREAD returns an array where each element is an array composed of two elements, which are the ID and the list of fields and values.
                 List<String> result = new ArrayList<>();
