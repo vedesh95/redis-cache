@@ -94,15 +94,11 @@ public class Xread implements Command {
             return;
         }
         do{
-            // command for xread goes something like [XREAD, streams, stream-1, stream-2, range-1, range-2
             for(int i = 0; i < streamids.size(); i++) {
                 String streamid = streamids.get(i);
                 String entryid = entryids.get(i);
-                if (!streamMap.containsKey(streamid)) {
-//                    results.add(new ArrayList<>());
-//                    out.write(("*-1\r\n").getBytes());
-                    continue;
-                }
+                if (!streamMap.containsKey(streamid)) continue;
+
                 if (entryid.equals("-")) entryid = "0-0";
                 if (entryid.equals("+")) entryid = Integer.MAX_VALUE + "-" + Integer.MAX_VALUE;
 
