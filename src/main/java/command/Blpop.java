@@ -59,7 +59,9 @@ public class Blpop implements Command {
         if(!found){
             out.write("*-1\r\n".getBytes());
             out.flush();
-            threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
+            synchronized (threadsWaitingForBLPOP){
+                threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
+            }
         }
     }
 }
