@@ -125,6 +125,7 @@ public class Client {
     public static List<String> parseCommand(BufferedReader reader) throws IOException {
         String line;
         line = reader.readLine();
+        System.out.println("Parsing line: " + line);
         List<String> command = new java.util.ArrayList<>();
         if (line != null && line.startsWith("*")) {
             int n = Integer.parseInt(line.substring(1));
@@ -133,6 +134,13 @@ public class Client {
                 line = reader.readLine();
                 command.add(line);
             }
+        }
+        // if line starts with $ ex $x then fetch next x bytes
+        else if (line != null && line.startsWith("$")) {
+            int n = Integer.parseInt(line.substring(1));
+            char[] buf = new char[n];
+            reader.read(buf, 0, n);
+            reader.readLine(); // read the trailing \r\n
         }
         return command;
     }
