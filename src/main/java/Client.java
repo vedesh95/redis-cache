@@ -94,8 +94,9 @@ public class Client {
                             sb.append(arg).append("\r\n");
                         }
                         totalBytes += sb.toString().getBytes().length;
-                        lastcommandsBytes.add(totalBytes);
+
                     }
+                    lastcommandsBytes.add(totalBytes);
                     lastcommands.clear();
                     // calculate sum of elements in lastcommandsBytes
                     System.out.println("lastcommandsBytes: " + lastcommandsBytes);
