@@ -80,7 +80,8 @@ public class Main {
 
                 // first replconf
                 // check if readline contains REPLCONF
-                if(reader.readLine().contains("$")){
+                String line = reader.readLine();
+                if(line!=null && line.contains("$")){
                     // read next line
                     for(int i=0;i<8;i++) reader.readLine();
                     slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
