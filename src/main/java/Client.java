@@ -41,7 +41,7 @@ public class Client {
                 if(command.get(0).equalsIgnoreCase("MULTI")){
                     isInTransaction = true;
                     out.write("+OK\r\n".getBytes());
-                    out.flush();
+                    out.flush();x
                 }else if(command.get(0).equalsIgnoreCase("EXEC")){
                     if(!isInTransaction){ // handle case for exec without multi
                         out.write("-ERR EXEC without MULTI\r\n".getBytes());
@@ -103,6 +103,10 @@ public class Client {
         String line;
         line = reader.readLine();
         List<String> command = new java.util.ArrayList<>();
+        if(line!=null && line.startsWith("REPLCONF GETACK")){
+            command = Arrays.asList(line.split(" "));
+            return command;
+        }
         if (line != null && line.startsWith("*")) {
             int n = Integer.parseInt(line.substring(1));
             for (int i = 0; i < n; i++) {
