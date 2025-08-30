@@ -92,10 +92,7 @@ public class Client {
                             sb.append(arg).append("\r\n");
                         }
                         totalBytes += sb.toString().getBytes().length;
-                        System.out.println("bytes for command " + cmd + ": " + sb.toString().getBytes().length);
                     }
-                    lastcommands.stream().forEach(x -> System.out.println("Last command: " + x));
-                    lastcommands.clear();
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 }else {
