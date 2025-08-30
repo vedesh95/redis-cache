@@ -1,3 +1,5 @@
+import struct.ClientType;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -16,7 +18,6 @@ public class Main {
         } catch (Exception e) {
             System.out.println("IOException: " + e);
         }
-
 
         if(args.length>=4 && args[2].equalsIgnoreCase("--replicaof")){
             port = Integer.parseInt(args[1]);
@@ -62,7 +63,7 @@ public class Main {
                     slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
                     slave.getOutputStream().flush();
                 }
-                cache.addClient(slave);
+                cache.addClient(slave, ClientType.DBCLIENT);
             }catch(Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
             }
@@ -71,7 +72,7 @@ public class Main {
         try {
             while (true){
                 Socket clientSocket = serverSocket.accept();
-                cache.addClient(clientSocket);
+                cache.addClient(clientSocket, ClientType.NONDBCLIENT);
             }
         } catch (Exception e) {
             System.out.println("IOException: " + e);

@@ -1,3 +1,4 @@
+import struct.ClientType;
 import struct.ServerInfo;
 import struct.KeyValue;
 import struct.Pair;
@@ -29,8 +30,8 @@ public class RedisCache {
         this.slaves = new HashMap<>();
     }
 
-    public void addClient(Socket clientSocket){
-        Client client = new Client(commandHandler, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves);
+    public void addClient(Socket clientSocket, ClientType clientType){
+        Client client = new Client(commandHandler, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves, clientType);
         new Thread(client::listen).start();
     }
 

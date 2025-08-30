@@ -1,4 +1,5 @@
 import command.Command;
+import struct.ClientType;
 import struct.KeyValue;
 import struct.Pair;
 
@@ -17,8 +18,9 @@ public class Client {
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private List<List<String> > transaction;
     private Map<Socket, Integer> slaves;
+    private ClientType clientType;
 
-    public Client(CommandHandler commandHandler, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, Map<Socket, Integer> slaves) {
+    public Client(CommandHandler commandHandler, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, Map<Socket, Integer> slaves, ClientType clientType) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -27,6 +29,7 @@ public class Client {
         this.streamMap = streamMap;
         this.transaction = new ArrayList<>();
         this.slaves = slaves;
+        this.clientType = clientType;
     }
 
     public void listen() {
@@ -97,7 +100,7 @@ public class Client {
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 }else {
-                    if(lastcommands.isEmpty()) this.commandHandler.handleCommand(command, out);
+                    if(this.clientType == ClientType.NONDBCLIENT) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
                         @Override
                         public void write(int b) throws IOException {}
