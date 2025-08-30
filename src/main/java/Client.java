@@ -120,6 +120,7 @@ public class Client {
         List<String> command = new java.util.ArrayList<>();
         while(true){
             line = reader.readLine();
+            System.out.println("line: " + line);
             if (line != null && line.startsWith("*")) {
                 int n = Integer.parseInt(line.substring(1));
                 for (int i = 0; i < n; i++) {
