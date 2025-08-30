@@ -103,7 +103,7 @@ public class Main {
                     reader.read(chars, 0, length);
                     reader.readLine(); // read the trailing \r\n
                     String bulkString = new String(chars);
-                    System.out.println(bulkString);
+//                    System.out.println(bulkString);
                 }
             } else {
                 System.out.println("Unexpected line: " + line);
