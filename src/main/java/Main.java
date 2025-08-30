@@ -57,6 +57,7 @@ public class Main {
                 slave.close();
             }catch (Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
+
                 return;
             }
         }
