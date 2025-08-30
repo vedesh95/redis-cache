@@ -3,8 +3,10 @@ import struct.KeyValue;
 import struct.Pair;
 
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -15,6 +17,7 @@ public class Cache {
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private ServerInfo info;
+    private Map<Socket, Integer> slaves;
 
     public Cache(){
         this.map = new ConcurrentHashMap<>();
@@ -22,12 +25,13 @@ public class Cache {
         this.threadsWaitingForBLPOP = new ConcurrentHashMap<>();
         this.streamMap = new ConcurrentHashMap<>();
         this.info = new ServerInfo();
-
+        this.
         commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info);
+        this.slaves = new HashMap<>();
     }
 
     public void addClient(Socket clientSocket){
-        Client client = new Client(commandHandler, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap);
+        Client client = new Client(commandHandler, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves);
         new Thread(client::listen).start();
     }
 

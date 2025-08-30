@@ -7,9 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -21,8 +19,9 @@ public class Client {
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private List<List<String> > transaction;
+    private Map<Socket, Integer> slaves;
 
-    public Client(CommandHandler commandHandler, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap){
+    public Client(CommandHandler commandHandler, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, Map<Socket, Integer> slaves) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -30,12 +29,12 @@ public class Client {
         this.threadsWaitingForBLPOP = threadsWaitingForBLPOP;
         this.streamMap = streamMap;
         this.transaction = new ArrayList<>();
+        this.slaves = slaves;
     }
 
     public void listen() {
         try (clientSocket; BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); OutputStream out = clientSocket.getOutputStream()) {
             boolean isInTransaction = false;
-            boolean propogateToSlaves = false;
             while(true){
                 List<String> command = parseCommand(reader);
                 if(command.isEmpty()) continue;
@@ -85,12 +84,14 @@ public class Client {
                 System.out.println("Received command: " + command);
                 // if command is PSYNC or SYNC, set propogateToSlaves to true
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
-                    System.out.println("Setting propogateToSlaves to true");
-                    propogateToSlaves = true;
+                    // add clientSocket to slaves map with value 1
+                    this.slaves.put(clientSocket, 1);
+                    System.out.println("Added slave: " + clientSocket);
+
                 }
-                if(propogateToSlaves && !command.get(0).equalsIgnoreCase("PSYNC") && !command.get(0).equalsIgnoreCase("SYNC")){
-                    System.out.println("Propogating command to slaves: " + command);
-                    this.commandHandler.propagateToSlaves(command, out);
+                // propogate command to all slaves through their sockets
+                if(this.slaves.containsKey(clientSocket) && this.slaves.get(clientSocket)==1 && !command.get(0).equalsIgnoreCase("PSYNC") && !command.get(0).equalsIgnoreCase("SYNC") && !command.get(0).equalsIgnoreCase("REPLCONF") && !command.get(0).equalsIgnoreCase("MULTI") && !command.get(0).equalsIgnoreCase("EXEC") && !command.get(0).equalsIgnoreCase("DISCARD")){
+                    this.commandHandler.handleCommand(command, clientSocket.getOutputStream());
                 }
             }
         } catch (IOException e) {
