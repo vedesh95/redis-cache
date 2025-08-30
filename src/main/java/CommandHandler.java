@@ -86,6 +86,12 @@ public class CommandHandler {
                     // send +FULLRESYNC <REPL_ID> <master_repl_offset>\r\n
                     out.write(("+FULLRESYNC " + this.info.getMaster_replid() + " " + this.info.getMaster_repl_offset() + "\r\n").getBytes());
                     out.flush();
+                    // send an empty hardcoded RDB file
+                    byte[] rdb = new byte[]{0x52, 0x45, 0x44, 0x42, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                    // format is $<length_of_file>\r\n<binary_contents_of_file>
+                    out.write(("$" + rdb.length + "\r\n").getBytes());
+                    out.write(rdb);
+                    out.flush();
                     break;
                 default:
                     out.write("-ERR unknown command\r\n".getBytes());
