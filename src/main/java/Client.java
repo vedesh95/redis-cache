@@ -2,10 +2,7 @@ import command.Command;
 import struct.KeyValue;
 import struct.Pair;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -113,5 +110,54 @@ public class Client {
             }
         }
         return command;
+    }
+
+    public static Object parseRESP(InputStream in) throws IOException {
+        int type = in.read();
+        if (type == -1) return null;
+
+        String line = readLine(in);
+        switch (type) {
+            case '+': // Simple String
+            case '-': // Error
+            case ':': // Integer
+                return line;
+            case '$': { // Bulk String
+                int length = Integer.parseInt(line);
+                if (length == -1) return null;
+                byte[] buf = new byte[length];
+                int read = 0;
+                while (read < length) {
+                    int r = in.read(buf, read, length - read);
+                    if (r == -1) throw new IOException("Incomplete bulk string");
+                    read += r;
+                }
+                readLine(in); // consume \r\n
+                return new String(buf);
+            }
+            case '*': { // Array
+                int count = Integer.parseInt(line);
+                List<Object> arr = new ArrayList<>();
+                for (int i = 0; i < count; i++) {
+                    arr.add(parseRESP(in));
+                }
+                return arr;
+            }
+            default:
+                throw new IOException("Unknown RESP type: " + (char)type);
+        }
+    }
+
+    private static String readLine(InputStream in) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int b;
+        while ((b = in.read()) != -1) {
+            if (b == '\r') {
+                in.read(); // consume \n
+                break;
+            }
+            baos.write(b);
+        }
+        return baos.toString();
     }
 }
