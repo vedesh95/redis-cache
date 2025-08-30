@@ -26,6 +26,7 @@ public class Set implements Command{
 
     @Override
     public void execute(List<String> command, OutputStream out) throws IOException {
+        System.out.println("SET command: " + command);
         if(command.size()==5){
             String key = command.get(1);
             String value = command.get(2);
