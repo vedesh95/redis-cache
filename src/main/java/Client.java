@@ -146,12 +146,14 @@ public class Client {
             System.out.println("Parsed line-" + parsedline + "-");
             if(parsedline.equalsIgnoreCase("REPLCONF")){
                 command.add(parsedline);
+                line = reader.readLine();
                 n = Integer.parseInt(line.substring(1));
                 buf = new char[n];
                 reader.read(buf, 0, n);
                 reader.readLine(); // read the trailing \r\n
                 parsedline = new String(buf);
                 command.add(parsedline);
+                line = reader.readLine();
                 n = Integer.parseInt(line.substring(1));
                 buf = new char[n];
                 reader.read(buf, 0, n);
