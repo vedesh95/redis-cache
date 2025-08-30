@@ -104,7 +104,7 @@ public class Client {
                     out.flush();
                 } else if(command.get(0).equalsIgnoreCase("WAIT")){
                     // write integer 0 to out
-                    out.write(":0\r\n".getBytes());
+                    out.write((":"+ this.slaves.size() + "\r\n").getBytes());
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
