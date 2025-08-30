@@ -41,7 +41,7 @@ public class Client {
                 if(command.get(0).equalsIgnoreCase("MULTI")){
                     isInTransaction = true;
                     out.write("+OK\r\n".getBytes());
-                    out.flush();x
+                    out.flush();
                 }else if(command.get(0).equalsIgnoreCase("EXEC")){
                     if(!isInTransaction){ // handle case for exec without multi
                         out.write("-ERR EXEC without MULTI\r\n".getBytes());
