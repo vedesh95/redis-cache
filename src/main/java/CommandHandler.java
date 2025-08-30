@@ -61,6 +61,7 @@ public class CommandHandler {
     }
 
     public void handleCommand(List<String> command, OutputStream out){
+        System.out.println("in handleCommand, command: " + command);
         try{
             switch (command.get(0).toUpperCase(Locale.ROOT)) {
                 case "PING": ping.execute(command, out); break;
