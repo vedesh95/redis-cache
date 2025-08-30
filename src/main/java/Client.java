@@ -119,6 +119,7 @@ public class Client {
         int length = Integer.parseInt(lenLine.substring(1));
         if (length == -1) return null; // Null bulk string
         String arg = reader.readLine();
+        System.out.println("arg: " + arg);
         if (arg == null || arg.length() != length) throw new IOException("Bulk string length mismatch");
         return arg;
     }
