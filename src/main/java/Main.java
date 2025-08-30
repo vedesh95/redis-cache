@@ -68,8 +68,10 @@ public class Main {
 //                    slave.getOutputStream().flush();
 //                }
                 // reader can contains bulk strings now. read string from reader until null
-                if(reader.readLine().startsWith("$")) System.out.println("replconf received");
-                System.out.println(reader.readLine());
+                reader.readLine();
+                reader.readLine();
+                reader.readLine();
+                reader.readLine();
                 System.out.println(reader.readLine());
                 System.out.println(reader.readLine());
                 System.out.println(reader.readLine());
