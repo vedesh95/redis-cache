@@ -38,6 +38,7 @@ public class Client {
             while(true){
                 List<String> command = parseCommand(reader);
                 if(command.isEmpty()) continue;
+                System.out.println("Command received: " + command);
                 if(command.get(0).equalsIgnoreCase("MULTI")){
                     isInTransaction = true;
                     out.write("+OK\r\n".getBytes());
@@ -103,12 +104,6 @@ public class Client {
         String line;
         line = reader.readLine();
         List<String> command = new java.util.ArrayList<>();
-        System.out.println("Parsing line: " + line);
-        if(line!=null && line.startsWith("REPLCONF GETACK")){
-            command = Arrays.asList(line.split(" "));
-            System.out.println("Parsed command: " + command + " returning");
-            return command;
-        }
         if (line != null && line.startsWith("*")) {
             int n = Integer.parseInt(line.substring(1));
             for (int i = 0; i < n; i++) {
