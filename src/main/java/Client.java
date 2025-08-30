@@ -85,7 +85,7 @@ public class Client {
                     // return number of bytes of commands processed in lastcommands list;
                     // response lookes like
                     // *3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$3\r\n154\r\n
-                    int totalBytes = 0;
+
                     for(List<String> cmd : lastcommands){
                         StringBuilder sb = new StringBuilder();
                         sb.append("*").append(cmd.size()).append("\r\n");
@@ -93,11 +93,10 @@ public class Client {
                             sb.append("$").append(arg.length()).append("\r\n");
                             sb.append(arg).append("\r\n");
                         }
-                        totalBytes = sb.toString().getBytes().length;
-                        lastcommandsBytes.add(totalBytes);
+                        lastcommandsBytes.add(sb.toString().getBytes().length);
 
                     }
-                    lastcommandsBytes.add(totalBytes);
+
                     lastcommands.clear();
                     // calculate sum of elements in lastcommandsBytes
                     totalBytes = lastcommandsBytes.stream().mapToInt(Integer::intValue).sum();
