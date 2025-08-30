@@ -12,11 +12,13 @@ public class Main {
         Cache cache = new Cache();
         ServerSocket serverSocket = null;
         Socket slave = null;
+        String serveraddress = null;
 
         if(args.length>=4 && args[2].equalsIgnoreCase("--replicaof")){
             port = Integer.parseInt(args[1]);
             String[] address = args[3].split(" ");
             try{
+                serveraddress = address[0];
                 slave = new Socket(address[0], Integer.parseInt(address[1])); // to connect to master
                 slave.setReuseAddress(true);
                 slave.getOutputStream().write("*1\r\n$4\r\nPING\r\n".getBytes());
@@ -60,6 +62,7 @@ public class Main {
 
         try {
             serverSocket = new ServerSocket(port);
+            if(serveraddress!=null) serverSocket = new ServerSocket(port, 50, java.net.InetAddress.getByName(serveraddress));
             serverSocket.setReuseAddress(true);
             while (true){
                 Socket clientSocket = serverSocket.accept();
