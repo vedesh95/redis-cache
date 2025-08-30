@@ -27,7 +27,6 @@ public class Get implements Command{
     @Override
     public void execute(List<String> command, OutputStream out) throws IOException {
         String key = command.get(1);
-        System.out.println("GET " + key);
         if(map.containsKey(key) && (map.get(key).expireTime == null || map.get(key).expireTime + map.get(key).time.getTime() > System.currentTimeMillis())){
             String value = map.get(key).value;
             out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());

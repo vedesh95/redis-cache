@@ -139,12 +139,11 @@ public class Client {
         }
         // if line starts with $x then fetch next x bytes
         else if (line != null && line.startsWith("$")) {
-            System.out.println("line: " + line);
             int n = Integer.parseInt(line.substring(1));
             char[] buf = new char[n];
             reader.read(buf, 0, n);
             String parsedline = new String(buf);
-            System.out.println("parsedline: " + parsedline);
+
             line = reader.readLine(); // read the trailing \r\n
             System.out.println(line);
             if(parsedline.equalsIgnoreCase("REPLCONF")){
@@ -182,7 +181,6 @@ public class Client {
                 command.add(parsedline);
             }
         }
-        System.out.println("Parsed command at end: " + command);
         return command;
     }
 }
