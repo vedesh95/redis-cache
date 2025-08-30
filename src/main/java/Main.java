@@ -84,6 +84,7 @@ public class Main {
                 slave.getOutputStream().flush();
 
                 cache.addClient(slave);
+                return;
             }catch (Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
                 return;
