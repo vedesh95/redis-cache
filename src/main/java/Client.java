@@ -140,6 +140,9 @@ public class Client {
             int n = Integer.parseInt(line.substring(1));
             char[] buf = new char[n];
             reader.read(buf, 0, n);
+            // build string from buf
+            command.add(new String(buf));
+            System.out.println("Parsed command: " + command);
             reader.readLine(); // read the trailing \r\n
         }
         return command;
