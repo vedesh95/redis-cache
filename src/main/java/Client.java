@@ -114,14 +114,15 @@ public class Client {
 
     public static String parseBulkString(BufferedReader reader) throws IOException {
         String lenLine = reader.readLine();
-        System.out.println("lenLine: " + lenLine);
         if (lenLine == null || !lenLine.startsWith("$")) throw new IOException("Expected bulk string");
         int length = Integer.parseInt(lenLine.substring(1));
         if (length == -1) return null; // Null bulk string
-        String arg = reader.readLine();
-        System.out.println("arg: " + arg);
-        if (arg == null || arg.length() != length) throw new IOException("Bulk string length mismatch");
-        return arg;
+
+        char[] buf = new char[length];
+        int read = reader.read(buf, 0, length);
+        if (read != length) throw new IOException("Bulk string length mismatch");
+        reader.readLine(); // consume trailing \r\n
+        return new String(buf);
     }
 
 }
