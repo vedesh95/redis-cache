@@ -63,7 +63,7 @@ public class Main {
 
         try {
 
-            if(serveraddress!=null) serverSocket = new ServerSocket(port, 50, java.net.InetAddress.getByName(serveraddress));
+            if(serveraddress!=null) serverSocket = new ServerSocket(port);
             else serverSocket = new ServerSocket(port);
             serverSocket.setReuseAddress(true);
             while (true){
