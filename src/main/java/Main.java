@@ -68,7 +68,7 @@ public class Main {
 //                    slave.getOutputStream().flush();
 //                }
                 // reader can contains bulk strings now. read string from reader until null
-                readBulkStrings(reader);
+                readBulkStrings(slave.getInputStream());
                 slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
                 slave.getOutputStream().flush();
 //                cache.addClient(slave);
@@ -90,27 +90,17 @@ public class Main {
         }
     }
 
-    public static void readBulkStrings(BufferedReader reader) throws IOException {
+    public static void readBulkStrings(InputStream in) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line;
         while ((line = reader.readLine()) != null) {
             if (line.startsWith("$")) {
                 int len = Integer.parseInt(line.substring(1));
-                if (len == -1) continue; // Null bulk string
-                char[] buf = new char[len];
-                int read = 0;
-                while (read < len) {
-                    int r = reader.read(buf, read, len - read);
-                    if (r == -1) throw new IOException("Bulk string length mismatch");
-                    read += r;
-                }
-                // Consume trailing \r\n
-                for (int i = 0; i < 2; i++) {
-                    if (reader.read() == -1) throw new IOException("Unexpected end of stream after bulk string");
-                }
-                String bulk = new String(buf);
-                System.out.println("Bulk string: " + bulk);
+                if (len == -1) continue;
+                byte[] buf = in.readNBytes(len);
+                in.readNBytes(2); // consume trailing \r\n
+                System.out.println("Bulk string: " + new String(buf));
             } else {
-                // Handle other RESP types or break
                 break;
             }
         }
