@@ -34,6 +34,7 @@ public class Client {
             boolean isInTransaction = false;
 
             List<List<String>> lastcommands = new ArrayList<>();
+            List<Integer> lastcommandsBytes = new ArrayList<>();
 //            int totalBytes = 0;
             while(true){
                 List<String> command = parseCommand(reader);
@@ -93,8 +94,11 @@ public class Client {
                             sb.append(arg).append("\r\n");
                         }
                         totalBytes += sb.toString().getBytes().length;
+                        lastcommandsBytes.add(totalBytes);
                     }
                     lastcommands.clear();
+                    // calculate sum of elements in lastcommandsBytes
+                    totalBytes = lastcommandsBytes.stream().mapToInt(Integer::intValue).sum();
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 }else {
