@@ -94,7 +94,7 @@ public class Client {
                         totalBytes += sb.toString().getBytes().length;
                     }
                     lastcommands.clear();
-                    out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + totalBytes + "\r\n" + totalBytes + "\r\n").getBytes());
+                    out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
 
 
@@ -111,7 +111,7 @@ public class Client {
                     // 4+4+5+4+5+4+4 = 29 bytes
                     // did you understand why 29 bytes are counted?
                     //
-                    /*  based on below lines
+                    /*
                         *3\r\n
                         $3\r\n
                         SET\r\n
