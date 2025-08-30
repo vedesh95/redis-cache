@@ -90,18 +90,23 @@ public class Main {
         }
     }
 
-    public static void readBulkStrings(InputStream in) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+    public static void readBulkStrings(BufferedReader reader) throws IOException {
+        // read a series of bulk strings from reader until null
         String line;
         while ((line = reader.readLine()) != null) {
             if (line.startsWith("$")) {
-                int len = Integer.parseInt(line.substring(1));
-                if (len == -1) continue;
-                byte[] buf = in.readNBytes(len);
-                in.readNBytes(2); // consume trailing \r\n
-                System.out.println("Bulk string: " + new String(buf));
+                int length = Integer.parseInt(line.substring(1));
+                if (length == -1) {
+                    System.out.println("null");
+                } else {
+                    char[] chars = new char[length];
+                    reader.read(chars, 0, length);
+                    reader.readLine(); // read the trailing \r\n
+                    String bulkString = new String(chars);
+                    System.out.println(bulkString);
+                }
             } else {
-                break;
+                System.out.println("Unexpected line: " + line);
             }
         }
     }
