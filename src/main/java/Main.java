@@ -86,6 +86,11 @@ public class Main {
                 System.out.println(reader.readLine());
                 System.out.println(reader.readLine());
                 System.out.println(reader.readLine());
+                System.out.println(reader.readLine());
+                System.out.println(reader.readLine());
+                System.out.println(reader.readLine());
+                System.out.println(reader.readLine());
+                System.out.println(reader.readLine());
 
 //                cache.addClient(slave);
             }catch (Exception e){
