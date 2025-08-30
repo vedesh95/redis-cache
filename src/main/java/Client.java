@@ -91,7 +91,7 @@ public class Client {
                 }
                 // propogate command to all slaves through their sockets
                 if(this.slaves.containsKey(clientSocket) && this.slaves.get(clientSocket)==1 && !command.get(0).equalsIgnoreCase("PSYNC") && !command.get(0).equalsIgnoreCase("SYNC") && !command.get(0).equalsIgnoreCase("REPLCONF") && !command.get(0).equalsIgnoreCase("MULTI") && !command.get(0).equalsIgnoreCase("EXEC") && !command.get(0).equalsIgnoreCase("DISCARD")){
-                    this.commandHandler.handleCommand(command, clientSocket.getOutputStream());
+                    this.commandHandler.propagateToSlaves(command, clientSocket.getOutputStream());
                 }
             }
         } catch (IOException e) {
