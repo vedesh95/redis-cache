@@ -103,8 +103,10 @@ public class Client {
         String line;
         line = reader.readLine();
         List<String> command = new java.util.ArrayList<>();
+        System.out.println("Parsing line: " + line);
         if(line!=null && line.startsWith("REPLCONF GETACK")){
             command = Arrays.asList(line.split(" "));
+            System.out.println("Parsed command: " + command + " returning");
             return command;
         }
         if (line != null && line.startsWith("*")) {
