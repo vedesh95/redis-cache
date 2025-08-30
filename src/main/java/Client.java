@@ -32,9 +32,12 @@ public class Client {
     public void listen() {
         try (clientSocket; BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); OutputStream out = clientSocket.getOutputStream()) {
             boolean isInTransaction = false;
+
+            List<List<String>> lastcommands = new ArrayList<>();
             while(true){
                 List<String> command = parseCommand(reader);
                 if(command.isEmpty()) continue;
+                lastcommands.add(command);
                 System.out.println("Command received: " + command);
                 if(command.get(0).equalsIgnoreCase("MULTI")){
                     isInTransaction = true;
@@ -75,6 +78,22 @@ public class Client {
                 }else if(isInTransaction) {
                     transaction.add(command);
                     out.write("+QUEUED\r\n".getBytes());
+                    out.flush();
+                } else if(command.get(0).equalsIgnoreCase("REPLCONF")){
+                    // return number of bytes of commands processed in lastcommands list;
+                    // response lookes like
+                    // *3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$3\r\n154\r\n
+                    int totalBytes = 0;
+                    for(List<String> cmd : lastcommands){
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("*").append(cmd.size()).append("\r\n");
+                        for(String arg : cmd){
+                            sb.append("$").append(arg.length()).append("\r\n");
+                            sb.append(arg).append("\r\n");
+                        }
+                        totalBytes += sb.toString().getBytes().length;
+                    }
+                    out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 }
                 else this.commandHandler.handleCommand(command, out);

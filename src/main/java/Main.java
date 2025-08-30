@@ -68,31 +68,22 @@ public class Main {
 //                    slave.getOutputStream().flush();
 //                }
                 // reader can contains bulk strings now. read string from reader until null
-                reader.readLine();
-                reader.readLine();
-                reader.readLine();
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
+//                reader.readLine();
+//                reader.readLine();
+//                reader.readLine();
+//                System.out.println(reader.readLine());
+//                System.out.println(reader.readLine());
+//                System.out.println(reader.readLine());
+//                System.out.println(reader.readLine());
+//                System.out.println(reader.readLine());
+//                System.out.println(reader.readLine());
 
+                // first replconf
+                for(int i=0;i<9;i++) reader.readLine();
                 slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
                 slave.getOutputStream().flush();
 
-
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-
-//                cache.addClient(slave);
+                cache.addClient(slave);
             }catch (Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
                 return;
