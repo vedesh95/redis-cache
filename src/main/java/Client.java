@@ -93,7 +93,8 @@ public class Client {
                             sb.append("$").append(arg.length()).append("\r\n");
                             sb.append(arg).append("\r\n");
                         }
-                        totalBytes += sb.toString().getBytes().length;
+                        totalBytes = sb.toString().getBytes().length;
+                        lastcommandsBytes.add(totalBytes);
 
                     }
                     lastcommandsBytes.add(totalBytes);
