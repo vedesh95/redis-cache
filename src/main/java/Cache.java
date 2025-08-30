@@ -33,6 +33,7 @@ public class Cache {
     public void addClient(Socket clientSocket){
         Client client = new Client(commandHandler, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves);
         new Thread(client::listen).start();
+        System.out.println("New client connected: " + clientSocket.getRemoteSocketAddress());
     }
 
     public ServerInfo getInfo() {
