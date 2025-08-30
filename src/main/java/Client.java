@@ -35,6 +35,7 @@ public class Client {
     public void listen() {
         try (clientSocket; BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); OutputStream out = clientSocket.getOutputStream()) {
             boolean isInTransaction = false;
+            boolean propogateToSlaves = false;
             while(true){
                 List<String> command = parseCommand(reader);
                 if(command.isEmpty()) continue;
@@ -80,6 +81,13 @@ public class Client {
                     out.flush();
                 }
                 else this.commandHandler.handleCommand(command, out);
+
+                if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
+                    propogateToSlaves = true;
+                }
+                if(propogateToSlaves && !command.get(0).equalsIgnoreCase("PSYNC") && !command.get(0).equalsIgnoreCase("SYNC") && !command.get(0).equalsIgnoreCase("REPLCONF") && !command.get(0).equalsIgnoreCase("INFO")){
+                    this.commandHandler.propagateToSlaves(command);
+                }
             }
         } catch (IOException e) {
             System.err.println(e);
