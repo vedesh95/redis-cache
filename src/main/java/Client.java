@@ -43,10 +43,9 @@ public class Client {
             while(true){
 
                 List<String> command = new ArrayList<>();
-                System.out.println("Parsed command: " + command );
                 command = parseCommand(reader);
                 if(command.isEmpty()) continue;
-                System.out.println("Parsed command: " + command );
+
                 if(!lastcommands.isEmpty() && !command.get(0).equalsIgnoreCase("REPLCONF"))  lastcommands.add(command);
 
                 if(command.get(0).equalsIgnoreCase("MULTI")){
@@ -140,6 +139,7 @@ public class Client {
         }
         // if line starts with $x then fetch next x bytes
         else if (line != null && line.startsWith("$")) {
+            System.out.println("line: " + line);
             int n = Integer.parseInt(line.substring(1));
             char[] buf = new char[n];
             reader.read(buf, 0, n);
