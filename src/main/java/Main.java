@@ -55,6 +55,7 @@ public class Main {
                 response = reader.readLine();
                 cache.getInfo().setRole("slave");
                 cache.addClient(slave);
+
             }catch (Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
 
