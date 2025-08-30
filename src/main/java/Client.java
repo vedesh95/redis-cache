@@ -143,7 +143,7 @@ public class Client {
             // build string from buf
             String parsedline = new String(buf);
             reader.readLine(); // read the trailing \r\n
-            System.out.println("Parsed line: " + parsedline);
+            System.out.println("Parsed line-" + parsedline + "-");
             if(parsedline.equalsIgnoreCase("REPLCONF")){
                 command.add(parsedline);
                 n = Integer.parseInt(line.substring(1));
