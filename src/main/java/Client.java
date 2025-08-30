@@ -100,6 +100,7 @@ public class Client {
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 }else {
+                    System.out.println("Received command: " + command + " from " + clientSocket);
                     if(this.clientType == ClientType.NONDBCLIENT) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
                         @Override
