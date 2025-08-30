@@ -66,7 +66,7 @@ public class Main {
                 while(true){
                     String line=reader.readLine();
                     System.out.println("line: " + line);
-                    if(line==null) break;
+                    if(line==null || line.contains("*")) break;
                     repl += line;
                 }
                 if(repl.contains("REPLCONF") && repl.contains("GETACK") && repl.contains("*")){
