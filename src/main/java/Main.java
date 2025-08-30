@@ -79,9 +79,13 @@ public class Main {
 //                System.out.println(reader.readLine());
 
                 // first replconf
-                for(int i=0;i<9;i++) reader.readLine();
-                slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
-                slave.getOutputStream().flush();
+                // check if readline contains REPLCONF
+                if(reader.readLine().contains("REPLCONF")){
+                    // read next line
+                    for(int i=0;i<8;i++) reader.readLine();
+                    slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
+                    slave.getOutputStream().flush();
+                }
 
                 cache.addClient(slave);
                 return;
