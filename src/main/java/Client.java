@@ -44,7 +44,7 @@ public class Client {
                 List<String> command = new ArrayList<>();
                 command = parseCommand(reader);
                 if(command.isEmpty()) continue;
-                if(!lastcommands.isEmpty())  lastcommands.add(command);
+                if(!lastcommands.isEmpty() && !command.get(0).equalsIgnoreCase("REPLCONF"))  lastcommands.add(command);
 
                 if(command.get(0).equalsIgnoreCase("MULTI")){
                     isInTransaction = true;
