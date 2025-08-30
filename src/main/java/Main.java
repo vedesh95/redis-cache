@@ -6,10 +6,18 @@ public class Main {
     public static void main(String[] args){
         int port = 6379;
         RedisCache cache = new RedisCache();
-        ServerSocket serverSocket;
+        ServerSocket serverSocket = null;
         Socket slave = null;
 
         if(args.length>=2 && args[0].equalsIgnoreCase("--port")) port = Integer.parseInt(args[1]);
+        try {
+            serverSocket = new ServerSocket(port);
+            serverSocket.setReuseAddress(true);
+        } catch (Exception e) {
+            System.out.println("IOException: " + e);
+        }
+
+
         if(args.length>=4 && args[2].equalsIgnoreCase("--replicaof")){
             port = Integer.parseInt(args[1]);
             String[] address = args[3].split(" ");
@@ -61,9 +69,6 @@ public class Main {
         }
 
         try {
-            serverSocket = new ServerSocket(port);
-            serverSocket.setReuseAddress(true);
-            System.out.println("Server started on port " + port);
             while (true){
                 Socket clientSocket = serverSocket.accept();
                 cache.addClient(clientSocket);
