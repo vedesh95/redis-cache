@@ -34,6 +34,7 @@ public class Client {
             boolean isInTransaction = false;
 
             List<List<String>> lastcommands = new ArrayList<>();
+            int totalBytes = 0;
             while(true){
                 List<String> command = parseCommand(reader);
                 if(command.isEmpty()) continue;
@@ -83,7 +84,7 @@ public class Client {
                     // return number of bytes of commands processed in lastcommands list;
                     // response lookes like
                     // *3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$3\r\n154\r\n
-                    int totalBytes = 0;
+//                    int totalBytes = 0;
                     for(List<String> cmd : lastcommands){
                         StringBuilder sb = new StringBuilder();
                         sb.append("*").append(cmd.size()).append("\r\n");
