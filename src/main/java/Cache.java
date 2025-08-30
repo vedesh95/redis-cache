@@ -25,8 +25,7 @@ public class Cache {
         this.threadsWaitingForBLPOP = new ConcurrentHashMap<>();
         this.streamMap = new ConcurrentHashMap<>();
         this.info = new ServerInfo();
-        this.
-        commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info);
+        this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info);
         this.slaves = new HashMap<>();
     }
 
