@@ -117,6 +117,7 @@ public class Client {
         if (type == -1) return null;
 
         String line = readLine(in);
+        System.out.println("Parsing RESP line: " + (char)type + line);
         switch (type) {
             case '+': // Simple String
             case '-': // Error
