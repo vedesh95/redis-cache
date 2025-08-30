@@ -41,7 +41,9 @@ public class Client {
             List<Integer> lastcommandsBytes = new ArrayList<>();
 
             while(true){
+
                 List<String> command = new ArrayList<>();
+                System.out.println("Parsed command: " + command );
                 command = parseCommand(reader);
                 if(command.isEmpty()) continue;
                 System.out.println("Parsed command: " + command );
