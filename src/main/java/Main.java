@@ -67,7 +67,7 @@ public class Main {
 //                    slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
 //                    slave.getOutputStream().flush();
 //                }
-
+                System.out.println(readLineFrom(slave.getInputStream()));
                 slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
                 slave.getOutputStream().flush();
                 cache.addClient(slave);
@@ -87,6 +87,17 @@ public class Main {
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
         }
+    }
+
+    private static String readLineFrom(InputStream in) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int c;
+        while ((c = in.read()) != -1) {
+            sb.append((char) c);
+            if (c == '\n')
+                break; // stop at end of line
+        }
+        return sb.toString();
     }
 
 

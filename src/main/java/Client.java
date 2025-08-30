@@ -111,25 +111,4 @@ public class Client {
         }
         return command;
     }
-
-    public static String parseBulkString(BufferedReader reader) throws IOException {
-        String lenLine = reader.readLine();
-        if (lenLine == null || !lenLine.startsWith("$")) throw new IOException("Expected bulk string");
-        int length = Integer.parseInt(lenLine.substring(1));
-        if (length == -1) return null; // Null bulk string
-
-        char[] buf = new char[length];
-        int read = 0;
-        while (read < length) {
-            int r = reader.read(buf, read, length - read);
-            if (r == -1) throw new IOException("Bulk string length mismatch");
-            read += r;
-        }
-        // Consume trailing \r\n
-        for (int i = 0; i < 2; i++) {
-            if (reader.read() == -1) throw new IOException("Unexpected end of stream after bulk string");
-        }
-        return new String(buf);
-    }
-
 }
