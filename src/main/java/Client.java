@@ -93,36 +93,10 @@ public class Client {
                         }
                         totalBytes += sb.toString().getBytes().length;
                     }
+                    lastcommands.stream().forEach(x -> System.out.println("Last command: " + x));
                     lastcommands.clear();
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
-
-
-                    //SET, raspberry, pineapple
-                    // resp encoded = *3\r\n$3\r\nSET\r\n$9\r\nraspberry\r\n$9\r\npineapple\r\n = 29 bytes
-                    // SET, banana, orange
-                    // resp encoded = *3\r\n$3\r\nSET\r\n$6\r\nbanana\r\n$6\r\norange\r\n = 27 bytes
-                    // REPLCONF, GETACK, *
-                    // resp encoded = *3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n0\r\n = 35 bytes
-                    // total = 91 bytes
-
-                    // set foo 1
-                    // resp encoded = *3\r\n$3\r\nSET\r\n$3\r\nfoo\r\n$1\r\n1\r\n = 29 bytes
-                    // 4+4+5+4+5+4+4 = 29 bytes
-                    // did you understand why 29 bytes are counted?
-                    //
-                    /*
-                        *3\r\n
-                        $3\r\n
-                        SET\r\n
-                        $3\r\n
-                        foo\r\n
-                        $1\r\n
-                        1\r\n
-                    */
-                    // why 29 bytes are counted till now instead of 25 bytes?
-                    //
-
                 }else {
                     if(lastcommands.isEmpty()) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
