@@ -69,9 +69,19 @@ public class Main {
 //                }
                 // reader can contains bulk strings now. read string from reader until null
                 while(true){
+                    // starting with $
                     String line = reader.readLine();
-                    if(line == null) break;
-                    System.out.println("Master: " + line);
+                    while(line.charAt(0)=='$') {
+                        int len = Integer.parseInt(line.substring(1));
+                        char[] buf = new char[len];
+                        reader.read(buf, 0, len);
+                        String cmd = new String(buf);
+                        reader.readLine(); // read \r\n
+                        System.out.println("Received command from master: " + cmd);
+//                        List<String> command = Client.parseCommand(cmd);
+//                        cache.getCommandHandler().handleCommand(command, slave.getOutputStream());
+                    }
+                    if(line==null) break;
                 }
                 slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
                 slave.getOutputStream().flush();
