@@ -58,6 +58,7 @@ public class Main {
 //                cache.addClient(slave);
 
                 response = reader.readLine();
+                System.out.println("response after psync: " + response);
                 if(response.startsWith("REPLCONF GETACK")){
                     // send REPLCONF ACK 0
                     slave.getOutputStream().write(("+REPLCONF ACK 0\r\n").getBytes());
