@@ -144,8 +144,8 @@ public class Client {
             char[] buf = new char[n];
             reader.read(buf, 0, n);
             String parsedline = new String(buf);
-            reader.readLine(); // read the trailing \r\n
-
+            line = reader.readLine(); // read the trailing \r\n
+            System.out.println(line);
             if(parsedline.equalsIgnoreCase("REPLCONF")){
                 // hardcoding logic to fetch [REPLCONF, GETACK, *]
                 command.add(parsedline);
