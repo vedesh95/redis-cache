@@ -43,9 +43,8 @@ public class Client {
             while(true){
                 List<String> command = new ArrayList<>();
                 command = parseCommand(reader);
-
                 if(command.isEmpty()) continue;
-                lastcommands.add(command);
+//                lastcommands.add(command);
 
                 if(command.get(0).equalsIgnoreCase("MULTI")){
                     isInTransaction = true;
@@ -84,7 +83,7 @@ public class Client {
                     transaction.add(command);
                     out.write("+QUEUED\r\n".getBytes());
                     out.flush();
-                } else if(command.get(0).equalsIgnoreCase("REPLCONF")){
+                } else if(!lastcommands.isEmpty() && command.get(0).equalsIgnoreCase("REPLCONF")){
                      for(List<String> cmd : lastcommands){
                         StringBuilder sb = new StringBuilder();
                         sb.append("*").append(cmd.size()).append("\r\n");
@@ -101,7 +100,7 @@ public class Client {
                     out.flush();
                 }else {
                     System.out.println("Received command: " + command + " from " + clientSocket);
-                    if(this.clientType == ClientType.NONDBCLIENT) this.commandHandler.handleCommand(command, out);
+                    if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
                         @Override
                         public void write(int b) throws IOException {}
@@ -135,16 +134,16 @@ public class Client {
                 command.add(line);
             }
         }
-        // if line starts with $ ex $x then fetch next x bytes
+        // if line starts with $x then fetch next x bytes
         else if (line != null && line.startsWith("$")) {
             int n = Integer.parseInt(line.substring(1));
             char[] buf = new char[n];
             reader.read(buf, 0, n);
-            // build string from buf
             String parsedline = new String(buf);
             reader.readLine(); // read the trailing \r\n
-            System.out.println("Parsed line-" + parsedline + "-");
+
             if(parsedline.equalsIgnoreCase("REPLCONF")){
+                // hardcoding logic to fetch [REPLCONF, GETACK, *]
                 command.add(parsedline);
                 line = reader.readLine();
                 n = Integer.parseInt(line.substring(1));
@@ -161,7 +160,6 @@ public class Client {
                 parsedline = new String(buf);
                 command.add(parsedline);
             }
-            System.out.println("Parsed command: " + command);
         }
         return command;
     }
