@@ -3,6 +3,8 @@ import struct.ServerInfo;
 import struct.KeyValue;
 import struct.Pair;
 
+import java.io.BufferedReader;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -30,9 +32,11 @@ public class RedisCache {
         this.slaves = new HashMap<>();
     }
 
-    public void addClient(Socket clientSocket, ClientType clientType){
-        Client client = new Client(commandHandler, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves, clientType);
-        new Thread(client::listen).start();
+    public void addClient(Socket clientSocket, ClientType clientType, BufferedReader reader, OutputStream out){
+        new Thread(() -> {
+            Client client = new Client(commandHandler, clientType, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves);
+            client.listen(clientSocket, reader, out);
+        }).start();
     }
 
     public ServerInfo getInfo() {

@@ -63,7 +63,7 @@ public class Main {
 //                    slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
 //                    slave.getOutputStream().flush();
 //                }
-                cache.addClient(slave, ClientType.DBCLIENT);
+                cache.addClient(slave, ClientType.DBCLIENT, reader, slave.getOutputStream());
             }catch(Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
             }
@@ -72,7 +72,7 @@ public class Main {
         try {
             while (true){
                 Socket clientSocket = serverSocket.accept();
-                cache.addClient(clientSocket, ClientType.NONDBCLIENT);
+                cache.addClient(clientSocket, ClientType.NONDBCLIENT, new BufferedReader(new InputStreamReader(clientSocket.getInputStream())), clientSocket.getOutputStream());
             }
         } catch (Exception e) {
             System.out.println("IOException: " + e);

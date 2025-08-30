@@ -20,7 +20,7 @@ public class Client {
     private Map<Socket, Integer> slaves;
     private ClientType clientType;
 
-    public Client(CommandHandler commandHandler, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, Map<Socket, Integer> slaves, ClientType clientType) {
+    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, Map<Socket, Integer> slaves) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -32,9 +32,9 @@ public class Client {
         this.clientType = clientType;
     }
 
-    public void listen() {
+    public void listen(Socket clientSocket, BufferedReader reader, OutputStream out) {
 
-        try (clientSocket; BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); OutputStream out = clientSocket.getOutputStream()) {
+        try (clientSocket; reader; out) {
             boolean isInTransaction = false;
 
             List<List<String>> lastcommands = new ArrayList<>();
