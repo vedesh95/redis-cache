@@ -57,6 +57,7 @@ public class Main {
                 cache.getInfo().setRole("slave");
 //                cache.addClient(slave);
 
+                Thread.sleep(1000);
                 response = reader.readLine();
                 System.out.println("response after psync: " + response);
                 if(response.startsWith("REPLCONF GETACK")){
