@@ -30,17 +30,20 @@ public class Client {
     }
 
     public void listen() {
+
         try (clientSocket; BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); OutputStream out = clientSocket.getOutputStream()) {
             boolean isInTransaction = false;
 
             List<List<String>> lastcommands = new ArrayList<>();
             List<Integer> lastcommandsBytes = new ArrayList<>();
-//            int totalBytes = 0;
+
             while(true){
-                List<String> command = parseCommand(reader);
+                List<String> command = new ArrayList<>();
+                command = parseCommand(reader);
+
                 if(command.isEmpty()) continue;
                 lastcommands.add(command);
-                System.out.println("Command received: " + command);
+
                 if(command.get(0).equalsIgnoreCase("MULTI")){
                     isInTransaction = true;
                     out.write("+OK\r\n".getBytes());
@@ -53,7 +56,6 @@ public class Client {
                     }
                     isInTransaction = false;
                     if(transaction.isEmpty()){
-                        // reply with empty array
                         out.write("*0\r\n".getBytes());
                         out.flush();
                         continue;
@@ -64,8 +66,6 @@ public class Client {
                         this.commandHandler.handleCommand(cmd, out);
                     }
                     transaction.clear();
-//                    out.write("+OK\r\n".getBytes());
-//                    out.flush();
                 }else if(command.get(0).equalsIgnoreCase("DISCARD")){
                     if(!isInTransaction){ // handle case for exec without multi
                         out.write("-ERR DISCARD without MULTI\r\n".getBytes());
@@ -82,11 +82,7 @@ public class Client {
                     out.write("+QUEUED\r\n".getBytes());
                     out.flush();
                 } else if(command.get(0).equalsIgnoreCase("REPLCONF")){
-                    // return number of bytes of commands processed in lastcommands list;
-                    // response lookes like
-                    // *3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$3\r\n154\r\n
-
-                    for(List<String> cmd : lastcommands){
+                     for(List<String> cmd : lastcommands){
                         StringBuilder sb = new StringBuilder();
                         sb.append("*").append(cmd.size()).append("\r\n");
                         for(String arg : cmd){
@@ -104,21 +100,15 @@ public class Client {
                     if(lastcommands.isEmpty()) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
                         @Override
-                        public void write(int b) throws IOException {
-
-                        }
+                        public void write(int b) throws IOException {}
                     });
                 }
 
-//                System.out.println("Received command: " + command);
-                // if command is PSYNC or SYNC, set propogateToSlaves to true
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
-                    // add clientSocket to slaves map with value 1
                     this.slaves.put(clientSocket, 1);
                     System.out.println("Added slave: " + clientSocket);
-
                 }
-                // propogate command to all slaves through their sockets
+
                 for(Socket socket : slaves.keySet()){
                     this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
                 }

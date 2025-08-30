@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Cache {
+public class RedisCache {
     private CommandHandler commandHandler;
     private ConcurrentHashMap<String, Pair> map = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, List<String>> lists = new ConcurrentHashMap<>();
@@ -19,7 +19,7 @@ public class Cache {
     private ServerInfo info;
     private Map<Socket, Integer> slaves;
 
-    public Cache(){
+    public RedisCache(){
         this.map = new ConcurrentHashMap<>();
         this.lists = new ConcurrentHashMap<>();
         this.threadsWaitingForBLPOP = new ConcurrentHashMap<>();
@@ -32,7 +32,6 @@ public class Cache {
     public void addClient(Socket clientSocket){
         Client client = new Client(commandHandler, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves);
         new Thread(client::listen).start();
-        System.out.println("New client connected: " + clientSocket.getRemoteSocketAddress());
     }
 
     public ServerInfo getInfo() {
