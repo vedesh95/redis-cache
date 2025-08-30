@@ -116,7 +116,7 @@ public class CommandHandler {
         }
     }
 
-    public void propagateToSlaves(List<String> command){
+    public void propagateToSlaves(List<String> command, OutputStream out){
         // list of commands to be propogated to replicas
         List<String> commandsToPropogate = List.of("SET", "GET", "RPUSH", "LPUSH", "LPOP", "BLPOP", "XADD", "INCR");
         if(commandsToPropogate.contains(command.get(0).toUpperCase(Locale.ROOT))){

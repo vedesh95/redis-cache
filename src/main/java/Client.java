@@ -86,7 +86,7 @@ public class Client {
                     propogateToSlaves = true;
                 }
                 if(propogateToSlaves && !command.get(0).equalsIgnoreCase("PSYNC") && !command.get(0).equalsIgnoreCase("SYNC") && !command.get(0).equalsIgnoreCase("REPLCONF") && !command.get(0).equalsIgnoreCase("INFO")){
-                    this.commandHandler.propagateToSlaves(command);
+                    this.commandHandler.propagateToSlaves(command, out);
                 }
             }
         } catch (IOException e) {
