@@ -80,6 +80,7 @@ public class CommandHandler {
                 case "INCR": incr.execute(command, out); break;
                 case "INFO": replicationInfo.execute(command, out); break;
                 case "REPLCONF":
+                    // takes care of flow when replica is connecting to master
                     if(command.get(1).equalsIgnoreCase("GETACK")){
                         out.write(("+REPLCONF ACK 0\r\n").getBytes());
                         out.flush();
