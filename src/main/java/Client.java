@@ -44,7 +44,7 @@ public class Client {
                 List<String> command = new ArrayList<>();
                 command = parseCommand(reader);
                 if(command.isEmpty()) continue;
-//                lastcommands.add(command);
+                if(!lastcommands.isEmpty())  lastcommands.add(command);
 
                 if(command.get(0).equalsIgnoreCase("MULTI")){
                     isInTransaction = true;
@@ -83,7 +83,7 @@ public class Client {
                     transaction.add(command);
                     out.write("+QUEUED\r\n".getBytes());
                     out.flush();
-                } else if(!lastcommands.isEmpty() && command.get(0).equalsIgnoreCase("REPLCONF")){
+                } else if(command.get(0).equalsIgnoreCase("REPLCONF")){
                      for(List<String> cmd : lastcommands){
                         StringBuilder sb = new StringBuilder();
                         sb.append("*").append(cmd.size()).append("\r\n");
@@ -94,6 +94,7 @@ public class Client {
                         lastcommandsBytes.add(sb.toString().getBytes().length);
                     }
                     lastcommands.clear();
+                    lastcommands.add(command);
                     // calculate sum of elements in lastcommandsBytes
                     int totalBytes = lastcommandsBytes.stream().mapToInt(Integer::intValue).sum();
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());

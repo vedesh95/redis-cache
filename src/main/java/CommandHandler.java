@@ -80,19 +80,14 @@ public class CommandHandler {
                 case "INCR": incr.execute(command, out); break;
                 case "INFO": replicationInfo.execute(command, out); break;
                 case "REPLCONF":
-                    if(command.get(1).equalsIgnoreCase("GETACK") && command.get(2).equalsIgnoreCase("*")){
-                        out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n").getBytes());
-                        out.flush();
-                        break;
-                    }else if(command.get(1).equalsIgnoreCase("GETACK")){
+                    if(command.get(1).equalsIgnoreCase("GETACK")){
                         out.write(("+REPLCONF ACK 0\r\n").getBytes());
                         out.flush();
                         break;
-                    }else{
-                        out.write("+OK\r\n".getBytes());
-                        out.flush();
-                        break;
                     }
+                    out.write("+OK\r\n".getBytes());
+                    out.flush();
+                    break;
                 case "PSYNC":
                     // send +FULLRESYNC <REPL_ID> <master_repl_offset>\r\n
                     out.write(("+FULLRESYNC " + this.info.getMaster_replid() + " " + this.info.getMaster_repl_offset() + "\r\n").getBytes());
