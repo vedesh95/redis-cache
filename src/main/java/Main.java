@@ -82,8 +82,8 @@ public class Main {
                 slave.getOutputStream().flush();
 
 
-                reader.readLine();
-                reader.readLine();
+                System.out.println(reader.readLine());
+                System.out.println(reader.readLine());
                 reader.readLine();
                 System.out.println(reader.readLine());
 
