@@ -80,7 +80,7 @@ public class CommandHandler {
                 case "INCR": incr.execute(command, out); break;
                 case "INFO": replicationInfo.execute(command, out); break;
                 case "REPLCONF":
-                    if(command.get(1).equalsIgnoreCase("GETACL") && command.get(2).equalsIgnoreCase("*")){
+                    if(command.get(1).equalsIgnoreCase("GETACK") && command.get(2).equalsIgnoreCase("*")){
                         out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n").getBytes());
                         out.flush();
                         break;
