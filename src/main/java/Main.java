@@ -68,21 +68,7 @@ public class Main {
 //                    slave.getOutputStream().flush();
 //                }
                 // reader can contains bulk strings now. read string from reader until null
-                while(true){
-                    // starting with $
-                    String line = reader.readLine();
-                    while(line.charAt(0)=='$') {
-                        int len = Integer.parseInt(line.substring(1));
-                        char[] buf = new char[len];
-                        reader.read(buf, 0, len);
-                        String cmd = new String(buf);
-                        reader.readLine(); // read \r\n
-                        System.out.println("Received command from master: " + cmd);
-//                        List<String> command = Client.parseCommand(cmd);
-//                        cache.getCommandHandler().handleCommand(command, slave.getOutputStream());
-                    }
-                    if(line==null) break;
-                }
+                readBulkStrings(reader);
                 slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
                 slave.getOutputStream().flush();
                 cache.addClient(slave);
@@ -101,6 +87,32 @@ public class Main {
             }
         } catch (IOException e) {
             System.out.println("IOException: " + e.getMessage());
+        }
+    }
+
+    public static void readBulkStrings(BufferedReader reader) throws IOException {
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.startsWith("$")) {
+                int len = Integer.parseInt(line.substring(1));
+                if (len == -1) continue; // Null bulk string
+                char[] buf = new char[len];
+                int read = 0;
+                while (read < len) {
+                    int r = reader.read(buf, read, len - read);
+                    if (r == -1) throw new IOException("Bulk string length mismatch");
+                    read += r;
+                }
+                // Consume trailing \r\n
+                for (int i = 0; i < 2; i++) {
+                    if (reader.read() == -1) throw new IOException("Unexpected end of stream after bulk string");
+                }
+                String bulk = new String(buf);
+                System.out.println("Bulk string: " + bulk);
+            } else {
+                // Handle other RESP types or break
+                break;
+            }
         }
     }
 
