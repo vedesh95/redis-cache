@@ -59,7 +59,7 @@ public class Main {
                 cache.getInfo().setRole("slave");
                 String line = reader.readLine();
                 if(line!=null && line.charAt(0)=='$'){
-                    for(int i=0;i<8;i++) reader.readLine();
+                    for(int i=0;i<8;i++) System.out.println(reader.readLine());
                     slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
                     slave.getOutputStream().flush();
                 }
