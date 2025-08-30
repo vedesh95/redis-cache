@@ -85,7 +85,8 @@ public class Client {
                     transaction.add(command);
                     out.write("+QUEUED\r\n".getBytes());
                     out.flush();
-                } else if(command.get(0).equalsIgnoreCase("REPLCONF")){
+                } else if(command.get(0).equalsIgnoreCase("REPLCONF") && command.get(1).equalsIgnoreCase("GETACK") && command.get(2).equals("*")){
+                    // handle REPLCONF GETACK *
                      for(List<String> cmd : lastcommands){
                         StringBuilder sb = new StringBuilder();
                         sb.append("*").append(cmd.size()).append("\r\n");
@@ -102,7 +103,6 @@ public class Client {
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 }else {
-                    System.out.println("Received command: " + command);
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
                         @Override
