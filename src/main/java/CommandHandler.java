@@ -78,6 +78,10 @@ public class CommandHandler {
                 case "XREAD": xread.execute(command, out); break;
                 case "INCR": incr.execute(command, out); break;
                 case "INFO": replicationInfo.execute(command, out); break;
+                case "REPLCONF":
+                    out.write("+OK\r\n".getBytes());
+                    out.flush();
+                    break;
                 default:
                     out.write("-ERR unknown command\r\n".getBytes());
                     out.flush();
