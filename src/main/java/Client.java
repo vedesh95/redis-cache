@@ -38,6 +38,7 @@ public class Client {
 //            int totalBytes = 0;
             while(true){
                 List<String> command = parseCommand(reader);
+                System.out.println("Parsed command: " + command);
                 if(command.isEmpty()) continue;
                 lastcommands.add(command);
                 System.out.println("Command received: " + command);
