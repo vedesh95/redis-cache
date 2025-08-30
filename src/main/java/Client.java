@@ -81,7 +81,7 @@ public class Client {
                 }
                 else this.commandHandler.handleCommand(command, out);
 
-                System.out.println("Received command: " + command);
+//                System.out.println("Received command: " + command);
                 // if command is PSYNC or SYNC, set propogateToSlaves to true
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
                     // add clientSocket to slaves map with value 1
