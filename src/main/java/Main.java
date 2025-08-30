@@ -21,7 +21,6 @@ public class Main {
                 serveraddress = address[0];
                 slave = new Socket(address[0], Integer.parseInt(address[1])); // to connect to master
                 slave.setReuseAddress(true);
-                cache.addClient(slave);
                 slave.getOutputStream().write("*1\r\n$4\r\nPING\r\n".getBytes());
                 slave.getOutputStream().flush();
                 // wait for +PONG
@@ -35,27 +34,27 @@ public class Main {
                 slave.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$14\r\nlistening-port\r\n$" + String.valueOf(port).length() + "\r\n" + port + "\r\n").getBytes());
                 slave.getOutputStream().flush();
                 // check response
-//                response = reader.readLine();
-//                if(!response.equals("+OK")){
-//                    System.out.println("Failed to connect to master: " + response);
-//                    return;
-//                }
+                response = reader.readLine();
+                if(!response.equals("+OK")){
+                    System.out.println("Failed to connect to master: " + response);
+                    return;
+                }
                 // REPLCONF capa eof
                 slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$4\r\ncapa\r\n$6\r\npsync2\r\n".getBytes());
                 slave.getOutputStream().flush();
                 // check response
-//                response = reader.readLine();
-//                if(!response.equals("+OK")){
-//                    System.out.println("Failed to connect to master: " + response);
-//                    return;
-//                }
+                response = reader.readLine();
+                if(!response.equals("+OK")){
+                    System.out.println("Failed to connect to master: " + response);
+                    return;
+                }
                 // PSYNC ?
                 slave.getOutputStream().write("*3\r\n$5\r\nPSYNC\r\n$1\r\n?\r\n$2\r\n-1\r\n".getBytes());
                 slave.getOutputStream().flush();
                 // check response
-//                response = reader.readLine();
+                response = reader.readLine();
                 cache.getInfo().setRole("slave");
-
+                cache.addClient(slave);
 
             }catch (Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
