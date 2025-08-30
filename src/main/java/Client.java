@@ -141,9 +141,24 @@ public class Client {
             char[] buf = new char[n];
             reader.read(buf, 0, n);
             // build string from buf
-            command.add(new String(buf));
-            System.out.println("Parsed command: " + command);
+            String parsedline = new String(buf);
             reader.readLine(); // read the trailing \r\n
+            if(parsedline == "REPLCONF"){
+                command.add(parsedline);
+                n = Integer.parseInt(line.substring(1));
+                buf = new char[n];
+                reader.read(buf, 0, n);
+                reader.readLine(); // read the trailing \r\n
+                parsedline = new String(buf);
+                command.add(parsedline);
+                n = Integer.parseInt(line.substring(1));
+                buf = new char[n];
+                reader.read(buf, 0, n);
+                reader.readLine(); // read the trailing \r\n
+                parsedline = new String(buf);
+                command.add(parsedline);
+            }
+            System.out.println("Parsed command: " + command);
         }
         return command;
     }
