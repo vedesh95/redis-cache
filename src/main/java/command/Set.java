@@ -29,13 +29,14 @@ public class Set implements Command{
         if(command.size()==5){
             String key = command.get(1);
             String value = command.get(2);
-            map.put(key, new Pair(value, Integer.valueOf(command.get(4))));
+            this.map.put(key, new Pair(value, Integer.valueOf(command.get(4))));
             out.write("+OK\r\n".getBytes());
             out.flush();
         } else {
             String key = command.get(1);
             String value = command.get(2);
-            map.put(key, new Pair(value, null));
+            this.map.put(key, new Pair(value, null));
+            System.out.println("SET " + key + " " + value);
             out.write("+OK\r\n".getBytes());
             out.flush();
         }
