@@ -88,7 +88,7 @@ public class Client {
                     System.out.println("Setting propogateToSlaves to true");
                     propogateToSlaves = true;
                 }
-                if(propogateToSlaves && !command.get(0).equalsIgnoreCase("PSYNC") && !command.get(0).equalsIgnoreCase("SYNC") && !command.get(0).equalsIgnoreCase("REPLCONF") && !command.get(0).equalsIgnoreCase("INFO")){
+                if(propogateToSlaves && !command.get(0).equalsIgnoreCase("PSYNC") && !command.get(0).equalsIgnoreCase("SYNC")){
                     System.out.println("Propogating command to slaves: " + command);
                     this.commandHandler.propagateToSlaves(command, out);
                 }
