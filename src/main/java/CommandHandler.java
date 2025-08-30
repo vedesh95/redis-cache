@@ -3,6 +3,7 @@ import struct.ServerInfo;
 import struct.KeyValue;
 import struct.Pair;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import java.util.List;
