@@ -54,7 +54,14 @@ public class Main {
                 // check response
                 response = reader.readLine();
                 cache.getInfo().setRole("slave");
-                cache.addClient(slave);
+//                cache.addClient(slave);
+
+                response = reader.readLine();
+                if(response.startsWith("REPLCONF GETACK")){
+                    // send REPLCONF ACK 0
+                    slave.getOutputStream().write(("+REPLCONF ACK 0\r\n").getBytes());
+                    slave.getOutputStream().flush();
+                }
 
             }catch (Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
