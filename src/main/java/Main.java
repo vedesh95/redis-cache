@@ -78,7 +78,6 @@ public class Main {
         }
 
         try {
-
             serverSocket = new ServerSocket(port);
             serverSocket.setReuseAddress(true);
             while (true){
