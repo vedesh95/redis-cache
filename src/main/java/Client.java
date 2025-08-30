@@ -112,53 +112,14 @@ public class Client {
         return command;
     }
 
-    public static Object parseRESP(InputStream in) throws IOException {
-        int type = in.read();
-        if (type == -1) return null;
-
-        String line = readLine(in);
-        System.out.println("Parsing RESP line: " + (char)type + line);
-        switch (type) {
-            case '+': // Simple String
-            case '-': // Error
-            case ':': // Integer
-                return line;
-            case '$': { // Bulk String
-                int length = Integer.parseInt(line);
-                if (length == -1) return null;
-                byte[] buf = new byte[length];
-                int read = 0;
-                while (read < length) {
-                    int r = in.read(buf, read, length - read);
-                    if (r == -1) throw new IOException("Incomplete bulk string");
-                    read += r;
-                }
-                readLine(in); // consume \r\n
-                return new String(buf);
-            }
-            case '*': { // Array
-                int count = Integer.parseInt(line);
-                List<Object> arr = new ArrayList<>();
-                for (int i = 0; i < count; i++) {
-                    arr.add(parseRESP(in));
-                }
-                return arr;
-            }
-            default:
-                throw new IOException("Unknown RESP type: " + (char)type);
-        }
+    public static String parseBulkString(BufferedReader reader) throws IOException {
+        String lenLine = reader.readLine();
+        if (lenLine == null || !lenLine.startsWith("$")) throw new IOException("Expected bulk string");
+        int length = Integer.parseInt(lenLine.substring(1));
+        if (length == -1) return null; // Null bulk string
+        String arg = reader.readLine();
+        if (arg == null || arg.length() != length) throw new IOException("Bulk string length mismatch");
+        return arg;
     }
 
-    private static String readLine(InputStream in) throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int b;
-        while ((b = in.read()) != -1) {
-            if (b == '\r') {
-                in.read(); // consume \n
-                break;
-            }
-            baos.write(b);
-        }
-        return baos.toString();
-    }
 }
