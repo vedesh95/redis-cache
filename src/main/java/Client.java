@@ -92,6 +92,7 @@ public class Client {
                             sb.append(arg).append("\r\n");
                         }
                         totalBytes += sb.toString().getBytes().length;
+                        System.out.println("bytes for command " + cmd + ": " + sb.toString().getBytes().length);
                     }
                     lastcommands.stream().forEach(x -> System.out.println("Last command: " + x));
                     lastcommands.clear();
