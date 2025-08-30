@@ -25,12 +25,12 @@ public class Main {
                 slave.getOutputStream().write("*1\r\n$4\r\nPING\r\n".getBytes());
                 slave.getOutputStream().flush();
                 // wait for +PONG
-//                BufferedReader reader = new BufferedReader(new InputStreamReader(slave.getInputStream()));
-//                String response = reader.readLine();
-//                if(!response.equals("+PONG")){
-//                    System.out.println("Failed to connect to master: " + response);
-//                    return;
-//                }
+                BufferedReader reader = new BufferedReader(new InputStreamReader(slave.getInputStream()));
+                String response = reader.readLine();
+                if(!response.equals("+PONG")){
+                    System.out.println("Failed to connect to master: " + response);
+                    return;
+                }
                 // REPLCONF listening-port <PORT>
                 slave.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$14\r\nlistening-port\r\n$" + String.valueOf(port).length() + "\r\n" + port + "\r\n").getBytes());
                 slave.getOutputStream().flush();
