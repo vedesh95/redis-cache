@@ -102,7 +102,7 @@ public class Client {
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 }else {
-                    System.out.println("Received command: " + command + " from " );
+                    System.out.println("Received command: " + command);
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
                         @Override
@@ -144,6 +144,7 @@ public class Client {
             char[] buf = new char[n];
             reader.read(buf, 0, n);
             String parsedline = new String(buf);
+            System.out.println("parsedline: " + parsedline);
             line = reader.readLine(); // read the trailing \r\n
             System.out.println(line);
             if(parsedline.equalsIgnoreCase("REPLCONF")){
