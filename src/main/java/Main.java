@@ -65,6 +65,7 @@ public class Main {
                 String repl = "";
                 while(true){
                     String line=reader.readLine();
+                    System.out.println("line: " + line);
                     if(line==null) break;
                     repl += line;
                 }
