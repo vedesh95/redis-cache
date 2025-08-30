@@ -61,8 +61,8 @@ public class Main {
 //                cache.addClient(slave);
 
 //                Thread.sleep(1000);
-                String cmd = Client.parseBulkString(reader);
-                System.out.println(cmd);
+//                String cmd = Client.parseBulkString(reader);
+//                System.out.println(cmd);
 //                if(repl.contains("REPLCONF") && repl.contains("GETACK")){
 //                    slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
 //                    slave.getOutputStream().flush();
