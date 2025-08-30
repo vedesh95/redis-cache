@@ -105,7 +105,6 @@ public class CommandHandler {
             }
 
         }catch (Exception e){
-            System.out.println("Exception in handleCommand: " + e.getMessage());
             System.out.println(e);
         }
     }
