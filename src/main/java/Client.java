@@ -96,10 +96,9 @@ public class Client {
                         lastcommandsBytes.add(sb.toString().getBytes().length);
 
                     }
-
                     lastcommands.clear();
                     // calculate sum of elements in lastcommandsBytes
-                    totalBytes = lastcommandsBytes.stream().mapToInt(Integer::intValue).sum();
+                    int totalBytes = lastcommandsBytes.stream().mapToInt(Integer::intValue).sum();
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 }else {
