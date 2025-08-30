@@ -85,6 +85,7 @@ public class Client {
                 System.out.println("Received command: " + command);
                 // if command is PSYNC or SYNC, set propogateToSlaves to true
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
+                    System.out.println("Setting propogateToSlaves to true");
                     propogateToSlaves = true;
                 }
                 if(propogateToSlaves && !command.get(0).equalsIgnoreCase("PSYNC") && !command.get(0).equalsIgnoreCase("SYNC") && !command.get(0).equalsIgnoreCase("REPLCONF") && !command.get(0).equalsIgnoreCase("INFO")){
