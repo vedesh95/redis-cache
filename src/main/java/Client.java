@@ -114,6 +114,7 @@ public class Client {
 
     public static String parseBulkString(BufferedReader reader) throws IOException {
         String lenLine = reader.readLine();
+        System.out.println("lenLine: " + lenLine);
         if (lenLine == null || !lenLine.startsWith("$")) throw new IOException("Expected bulk string");
         int length = Integer.parseInt(lenLine.substring(1));
         if (length == -1) return null; // Null bulk string
