@@ -114,23 +114,4 @@ public class Client {
         }
         return command;
     }
-
-    public static List<String> parseCommandTwo(BufferedReader reader) throws IOException {
-        String line;
-        List<String> command = new java.util.ArrayList<>();
-        while(true){
-            line = reader.readLine();
-            System.out.println("line: " + line);
-            if (line != null && line.startsWith("*")) {
-                int n = Integer.parseInt(line.substring(1));
-                for (int i = 0; i < n; i++) {
-                    line = reader.readLine();
-                    line = reader.readLine();
-                    command.add(line);
-                }
-            }
-            if(line==null || line.isEmpty()) break;
-        }
-        return command;
-    }
 }

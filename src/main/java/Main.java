@@ -62,12 +62,19 @@ public class Main {
 //                cache.addClient(slave);
 
 //                Thread.sleep(1000);
-                List<String> cmds = Client.parseCommandTwo(reader);
-                System.out.println(cmds);
+                String repl = "";
+                while(true){
+                    String line=reader.readLine();
+                    if(line==null) break;
+                    repl += line;
+                }
+                if(repl.contains("REPLCONF") && repl.contains("GETACK") && repl.contains("*")){
+                    slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
+                    slave.getOutputStream().flush();
+                }
 
             }catch (Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
-
                 return;
             }
         }
