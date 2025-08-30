@@ -33,7 +33,6 @@ public class Get implements Command{
             out.write(("$" + value.length() + "\r\n" + value + "\r\n").getBytes());
             out.flush();
         } else {
-            System.out.println("Key not found or expired: " + key);
             out.write("$-1\r\n".getBytes());
             out.flush();
         }
