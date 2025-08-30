@@ -77,15 +77,16 @@ public class Main {
                 System.out.println(reader.readLine());
                 System.out.println(reader.readLine());
                 System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
-                System.out.println(reader.readLine());
 
                 slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
                 slave.getOutputStream().flush();
 
 
-                if(reader.readLine().startsWith("$")) System.out.println("replconf received");
+                reader.readLine();
+                reader.readLine();
+                reader.readLine();
+                System.out.println(reader.readLine());
+
 //                cache.addClient(slave);
             }catch (Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
