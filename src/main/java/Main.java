@@ -71,7 +71,6 @@ public class Main {
                 reader.readLine();
                 reader.readLine();
                 reader.readLine();
-                reader.readLine();
                 System.out.println(reader.readLine());
                 System.out.println(reader.readLine());
                 System.out.println(reader.readLine());
