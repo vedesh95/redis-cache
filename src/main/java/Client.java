@@ -44,6 +44,7 @@ public class Client {
                 List<String> command = new ArrayList<>();
                 command = parseCommand(reader);
                 if(command.isEmpty()) continue;
+                System.out.println("Parsed command: " + command );
                 if(!lastcommands.isEmpty() && !command.get(0).equalsIgnoreCase("REPLCONF"))  lastcommands.add(command);
 
                 if(command.get(0).equalsIgnoreCase("MULTI")){
@@ -100,7 +101,7 @@ public class Client {
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 }else {
-                    System.out.println("Received command: " + command + " from " + clientSocket);
+                    System.out.println("Received command: " + command + " from " );
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
                         @Override
