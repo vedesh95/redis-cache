@@ -82,6 +82,11 @@ public class CommandHandler {
                     out.write("+OK\r\n".getBytes());
                     out.flush();
                     break;
+                case "PSYNC":
+                    // send +FULLRESYNC <REPL_ID> <master_repl_offset>\r\n
+                    out.write(("+FULLRESYNC " + this.info.getMaster_replid() + " " + this.info.getMaster_repl_offset()).getBytes());
+                    out.flush();
+                    break;
                 default:
                     out.write("-ERR unknown command\r\n".getBytes());
                     out.flush();
