@@ -56,7 +56,6 @@ public class Main {
                 slave.getOutputStream().flush();
                 // check response
                 response = reader.readLine();
-                System.out.println("response to psync: " + response);
 
                 cache.getInfo().setRole("slave");
 //                cache.addClient(slave);
@@ -66,7 +65,7 @@ public class Main {
                 while(true){
                     String line=reader.readLine();
                     System.out.println("line: " + line);
-                    if(line==null || line.contains("*")) break;
+                    if(line==null) break;
                     repl += line;
                 }
                 if(repl.contains("REPLCONF") && repl.contains("GETACK")){
