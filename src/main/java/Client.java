@@ -34,7 +34,7 @@ public class Client {
             boolean isInTransaction = false;
 
             List<List<String>> lastcommands = new ArrayList<>();
-            int totalBytes = 0;
+//            int totalBytes = 0;
             while(true){
                 List<String> command = parseCommand(reader);
                 if(command.isEmpty()) continue;
