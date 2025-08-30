@@ -93,10 +93,11 @@ public class Client {
                         }
                         totalBytes += sb.toString().getBytes().length;
                     }
+                    lastcommands.clear();
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 }else {
-                    if(lastcommands.size()==0) this.commandHandler.handleCommand(command, out);
+                    if(lastcommands.isEmpty()) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
                         @Override
                         public void write(int b) throws IOException {
