@@ -67,7 +67,12 @@ public class Main {
 //                    slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
 //                    slave.getOutputStream().flush();
 //                }
-                System.out.println(readLineFrom(slave.getInputStream()));
+                // reader can contains bulk strings now. read string from reader until null
+                while(true){
+                    String line = reader.readLine();
+                    if(line == null) break;
+                    System.out.println("Master: " + line);
+                }
                 slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
                 slave.getOutputStream().flush();
                 cache.addClient(slave);
@@ -89,18 +94,6 @@ public class Main {
         }
     }
 
-    private static String readLineFrom(InputStream in) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int c;
-        System.out.println("Reading line from input stream...");
-        while ((c = in.read()) != -1) {
-            System.out.print(c);
-            sb.append((char) c);
-            if (c == '\n')
-                break; // stop at end of line
-        }
-        return sb.toString();
-    }
 
 
 }
