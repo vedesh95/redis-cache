@@ -166,6 +166,7 @@ public class Client {
                 command.add(parsedline);
             }
         }
+        System.out.println("Parsed command at end: " + command);
         return command;
     }
 }
