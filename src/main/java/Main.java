@@ -62,7 +62,7 @@ public class Main {
 //                cache.addClient(slave);
 
 //                Thread.sleep(1000);
-                List<String> cmds = Client.parseCommand(reader);
+                List<String> cmds = Client.parseCommandTwo(reader);
                 System.out.println(cmds);
 
             }catch (Exception e){
