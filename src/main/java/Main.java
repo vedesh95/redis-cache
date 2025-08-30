@@ -60,10 +60,14 @@ public class Main {
 //                cache.addClient(slave);
 
 //                Thread.sleep(1000);
-                response = reader.readLine();
-                System.out.println("response after psync: " + response);
-                response = reader.readLine();
-                System.out.println("response after psync: " + response);
+                while(true){
+                    response = reader.readLine();
+                    System.out.println("response after psync: " + response);
+                    if(response == null) {
+                        System.out.println("Master closed the connection");
+                        return;
+                    }
+                }
 
                 if(response.startsWith("REPLCONF GETACK")){
                     // send REPLCONF ACK 0
