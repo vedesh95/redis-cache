@@ -86,11 +86,14 @@ public class CommandHandler {
                     // send +FULLRESYNC <REPL_ID> <master_repl_offset>\r\n
                     out.write(("+FULLRESYNC " + this.info.getMaster_replid() + " " + this.info.getMaster_repl_offset() + "\r\n").getBytes());
                     out.flush();
-                    // send an empty hardcoded RDB file
-                    byte[] rdb = new byte[]{0x52, 0x45, 0x44, 0x42, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                    // send an hardcoded RDB file
+                    // file content in base64:
+                    // UkVESVMwMDEx+glyZWRpcy12ZXIFNy4yLjD6CnJlZGlzLWJpdHPAQPoFY3RpbWXCbQi8ZfoIdXNlZC1tZW3CsMQQAPoIYW9mLWJhc2XAAP/wbjv+wP9aog==
+                    // send above file
                     // format is $<length_of_file>\r\n<binary_contents_of_file>
-                    out.write(("$" + rdb.length + "\r\n").getBytes());
-                    out.write(rdb);
+                    byte[] contents = java.util.Base64.getDecoder().decode("UkVESVMwMDEx+glyZWRpcy12ZXIFNy4yLjD6CnJlZGlzLWJpdHPAQPoFY3RpbWXCbQi8ZfoIdXNlZC1tZW3CsMQQAPoIYW9mLWJhc2XAAP/wbjv+wP9aog==");
+                    out.write(("$" + contents.length + "\r\n").getBytes());
+                    out.write(contents);
                     out.flush();
                     break;
                 default:
