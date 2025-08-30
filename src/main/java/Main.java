@@ -65,7 +65,7 @@ public class Main {
                     System.out.println("response after psync: " + response);
                     if(response == null) {
                         System.out.println("Master closed the connection");
-                        return;
+                        break;
                     }
                 }
 
