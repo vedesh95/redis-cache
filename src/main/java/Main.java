@@ -26,6 +26,7 @@ public class Main {
                 // wait for +PONG
                 BufferedReader reader = new BufferedReader(new InputStreamReader(slave.getInputStream()));
                 String response = reader.readLine();
+                System.out.println("response to ping: " + response);
                 if(!response.equals("+PONG")){
                     System.out.println("Failed to connect to master: " + response);
                     return;
