@@ -97,6 +97,19 @@ public class CommandHandler {
                     out.flush();
                     break;
             }
+            // list of commands to be propogated to replicas
+            List<String> commandsToPropogate = List.of("SET", "GET", "RPUSH", "LPUSH", "LPOP", "BLPOP", "XADD", "INCR");
+            if(commandsToPropogate.contains(command.get(0).toUpperCase(Locale.ROOT))){
+                // write command to out
+                StringBuilder sb = new StringBuilder();
+                sb.append("*").append(command.size()).append("\r\n");
+                for(String arg : command){
+                    sb.append("$").append(arg.length()).append("\r\n");
+                    sb.append(arg).append("\r\n");
+                }
+                out.write(sb.toString().getBytes());
+                out.flush();
+            }
         }catch (Exception e){
             // log exception
             System.out.println(e);
