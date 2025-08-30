@@ -95,8 +95,15 @@ public class Client {
                     }
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
+                }else {
+                    if(lastcommands.size()==0) this.commandHandler.handleCommand(command, out);
+                    else this.commandHandler.handleCommand(command, new OutputStream() {
+                        @Override
+                        public void write(int b) throws IOException {
+
+                        }
+                    });
                 }
-                else this.commandHandler.handleCommand(command, out);
 
 //                System.out.println("Received command: " + command);
                 // if command is PSYNC or SYNC, set propogateToSlaves to true
