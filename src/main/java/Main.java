@@ -92,7 +92,9 @@ public class Main {
     private static String readLineFrom(InputStream in) throws IOException {
         StringBuilder sb = new StringBuilder();
         int c;
+        System.out.println("Reading line from input stream...");
         while ((c = in.read()) != -1) {
+            System.out.print(c);
             sb.append((char) c);
             if (c == '\n')
                 break; // stop at end of line
