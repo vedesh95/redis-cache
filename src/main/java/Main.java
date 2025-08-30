@@ -53,6 +53,7 @@ public class Main {
                 slave.getOutputStream().flush();
                 // check response
                 response = reader.readLine();
+                System.out.println("response to psync: " + response);
                 cache.getInfo().setRole("slave");
 //                cache.addClient(slave);
 
