@@ -70,6 +70,7 @@ public class Main {
 
                 slave.getOutputStream().write("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$1\r\n0\r\n".getBytes());
                 slave.getOutputStream().flush();
+                cache.addClient(slave);
             }catch (Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
                 return;
