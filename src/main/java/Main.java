@@ -54,11 +54,13 @@ public class Main {
                 // check response
                 response = reader.readLine();
                 System.out.println("response to psync: " + response);
+                response = reader.readLine();
+                System.out.println("response to psync: " + response);
                 cache.getInfo().setRole("slave");
 //                cache.addClient(slave);
 
-                Thread.sleep(1000);
-                response = reader.readLine();
+//                Thread.sleep(1000);
+                response = reader.;
                 System.out.println("response after psync: " + response);
                 if(response.startsWith("REPLCONF GETACK")){
                     // send REPLCONF ACK 0
