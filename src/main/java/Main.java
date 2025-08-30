@@ -1,8 +1,10 @@
+import command.Command;
 import struct.ServerInfo;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args){
@@ -60,20 +62,8 @@ public class Main {
 //                cache.addClient(slave);
 
 //                Thread.sleep(1000);
-                while(true){
-                    response = reader.readLine();
-                    System.out.println("response after psync: " + response);
-                    if(response == null) {
-                        System.out.println("Master closed the connection");
-                        break;
-                    }
-                }
-
-                if(response.startsWith("REPLCONF GETACK")){
-                    // send REPLCONF ACK 0
-                    slave.getOutputStream().write(("+REPLCONF ACK 0\r\n").getBytes());
-                    slave.getOutputStream().flush();
-                }
+                List<String> cmds = Client.parseCommand(reader);
+                System.out.println(cmds);
 
             }catch (Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
