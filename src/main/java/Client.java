@@ -133,9 +133,10 @@ public class Client {
                     }
 
                     try{
+                        sleep(Integer.parseInt(command.get(1)));
                         out.write((":" + Integer.parseInt(command.get(1)) + "\r\n").getBytes());
                         out.flush();
-                        sleep(Integer.parseInt(command.get(1)));
+
                     }catch (Exception e){
                         System.out.println("Exception in WAIT command: " + e);
                     }
