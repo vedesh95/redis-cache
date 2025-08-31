@@ -114,6 +114,7 @@ public class Client {
                             this.slaves.get(socket).setOutputStream(slaveOut);
                         }
                         slaveOut.write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
+                        System.out.println("Sent REPLCONF GETACK * to slave: ");
                         slaveOut.flush();
                     }
                     out.write((":" + command.get(1) + "\r\n").getBytes());
@@ -128,7 +129,7 @@ public class Client {
 
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
                     this.slaves.put(clientSocket, new SlaveDetails(1, reader, out));
-                    System.out.println("Added slave: " + clientSocket);
+//                    System.out.println("Added slave: " + clientSocket);
                 }
 
                 for(Socket socket : slaves.keySet()){
