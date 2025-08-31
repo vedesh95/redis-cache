@@ -113,7 +113,7 @@ public class Client {
 
                     int replicasReplied = 0;
 
-                    while((System.currentTimeMillis() - startTime) < timeout){
+                    while((System.currentTimeMillis() - startTime) < timeout || replicasReplied < Integer.parseInt(command.get(1))){
                         // monitor input streams of all slaves for incoming data
                         for(Socket socket : slaves.keySet()){
                             if(socket.getInputStream().available() > 0){
