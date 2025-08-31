@@ -108,7 +108,8 @@ public class Client {
                     long startTime = System.currentTimeMillis();
                     while((System.currentTimeMillis() - startTime) < timeout){
                         for(Socket socket : slaves.keySet()){
-                            socket.getOutputStream().write(("+REPLCONF GETACK *").getBytes());
+
+                            socket.getOutputStream().write(("+REPLCONF GETACK *\r\n").getBytes());
                             socket.getOutputStream().flush();
                         }
 
