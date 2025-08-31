@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class RedisCache {
     private CommandHandler commandHandler;
@@ -15,6 +16,7 @@ public class RedisCache {
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private ServerInfo info;
     private Map<Socket, SlaveDetails> slaves;
+    private AtomicInteger ackCounter;
 
     public RedisCache(){
         this.map = new ConcurrentHashMap<>();
@@ -22,13 +24,14 @@ public class RedisCache {
         this.threadsWaitingForBLPOP = new ConcurrentHashMap<>();
         this.streamMap = new ConcurrentHashMap<>();
         this.info = new ServerInfo();
-        this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info);
         this.slaves = new ConcurrentHashMap<>();
+        ackCounter = new AtomicInteger(0);
+        this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info, ackCounter);
     }
 
     public void addClient(Socket clientSocket, ClientType clientType, BufferedReader reader, OutputStream out){
         new Thread(() -> {
-            Client client = new Client(commandHandler, clientType, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves);
+            Client client = new Client(commandHandler, clientType, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves, ackCounter);
             client.listen(clientSocket, reader, out);
         }).start();
     }

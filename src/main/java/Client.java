@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.lang.Thread.sleep;
 
@@ -23,8 +24,9 @@ public class Client {
     private Map<Socket, SlaveDetails> slaves;
 //    private List<Socket> slaves;
     private ClientType clientType;
+    private AtomicInteger ackCounter;
 
-    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves) {
+    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -34,6 +36,7 @@ public class Client {
         this.transaction = new ArrayList<>();
         this.slaves = slaves;
         this.clientType = clientType;
+        this.ackCounter = ackCounter;
     }
 
     public void listen(Socket clientSocket, BufferedReader reader, OutputStream out) {
@@ -109,6 +112,8 @@ public class Client {
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 } else if(command.get(0).equalsIgnoreCase("WAIT")){
+                    long startTime = System.currentTimeMillis();
+                    this.ackCounter.set(0); // reset ack counter
                     for(Socket socket : this.slaves.keySet()){
                         try{
                             socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
@@ -118,16 +123,15 @@ public class Client {
 //                            System.out.println("Exception while sending REPLCONF GETACK * to slave: " + e);
                         }
                     }
-
-                    try{
-//                        out.write((":" + Math.min(replicatedTo, Integer.parseInt(command.get(0))) + "\r\n").getBytes());
-                        out.write((":" + Integer.parseInt(command.get(1)) + "\r\n").getBytes());
-                        out.flush();
-                        sleep(1000);
-
-                    }catch (Exception e){
-//                        System.out.println("Exception in WAIT command: " + e);
+                    // wait for min replicas specified to acknowledge or wait for time specified
+                    while(this.ackCounter.get() < Integer.parseInt(command.get(1)) || (System.currentTimeMillis() - startTime)<Integer.parseInt(command.get(2))){
+                        if(this.ackCounter.get() >= Integer.parseInt(command.get(1))){
+                            break;
+                        }
                     }
+
+                    out.write((":" + this.ackCounter.get() + "\r\n").getBytes());
+                    out.flush();
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
@@ -137,7 +141,7 @@ public class Client {
                 }
 
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
-                    this.slaves.put(clientSocket, new SlaveDetails(1, reader, out));
+                    this.slaves.put(clientSocket, new SlaveDetails(0, reader, out));
                 }
 
                 for(Socket socket : this.slaves.keySet()){

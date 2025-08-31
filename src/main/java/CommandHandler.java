@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class CommandHandler {
     private ConcurrentHashMap<String, Pair> map = new ConcurrentHashMap<>();
@@ -17,6 +18,7 @@ public class CommandHandler {
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap = new ConcurrentHashMap<>();
     private ServerInfo info;
+    private AtomicInteger ackCounter;
 
     Command ping;
     Command echo;
@@ -35,12 +37,13 @@ public class CommandHandler {
     Command incr;
     Command replicationInfo;
 
-    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info) {
+    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter) {
         this.map = map;
         this.lists = lists;
         this.threadsWaitingForBLPOP = threadsWaitingForBLPOP;
         this.streamMap = streamMap;
         this.info = info;
+        this.ackCounter = ackCounter;
 
         this.ping = new Ping();
         this.echo = new Echo();
@@ -90,6 +93,7 @@ public class CommandHandler {
                         out.flush();
                         break;
                     }else if(command.get(1).equalsIgnoreCase("ACK")){
+                        this.ackCounter.incrementAndGet();
                         System.out.println("Replica acknowledged " + command.get(2) + " bytes");
                         break;
                     }
