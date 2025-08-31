@@ -128,16 +128,11 @@ public class Client {
 //                        System.out.println("Exception in WAIT command: " + e);
                     }
 
-                    new Thread(() -> {
-                        try {
-                            sleep(500);
-                            for (Socket socket : this.slaves.keySet()) {
-                                try {; // wait for some time to let slaves respond
-                                    System.out.println("procesing response in thread: "  + this.slaves.get(socket).getReader().readLine());
-                                } catch (Exception e) {}
-                            }
+                    for (Socket socket : this.slaves.keySet()) {
+                        try {; // wait for some time to let slaves respond
+                            System.out.println("procesing response in thread: "  + this.slaves.get(socket).getReader().readLine());
                         } catch (Exception e) {}
-                    }).start();
+                    }
 
 
                 }else {
