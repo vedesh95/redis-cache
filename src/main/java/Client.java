@@ -20,11 +20,11 @@ public class Client {
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private List<List<String> > transaction;
-//    private Map<Socket, SlaveDetails> slaves;
-    private List<Socket> slaves;
+    private Map<Socket, SlaveDetails> slaves;
+//    private List<Socket> slaves;
     private ClientType clientType;
 
-    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, List<Socket> slaves) {
+    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -109,7 +109,7 @@ public class Client {
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 } else if(command.get(0).equalsIgnoreCase("WAIT")){
-                    for(Socket socket : this.slaves){
+                    for(Socket socket : this.slaves.keySet()){
                         try{
                             socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
                             socket.getOutputStream().flush();
@@ -128,13 +128,13 @@ public class Client {
 //                        System.out.println("Exception in WAIT command: " + e);
                     }
 
-                    for(Socket socket: this.slaves){
-                        try{
-                            sleep(100); // wait for some time to let slaves respond
-                            BufferedReader b = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                            System.out.println(b.readLine());
-                        }catch (Exception e){}
-                    }
+//                    for(Socket socket: this.slaves.keySet()){
+//                        try{
+//                            sleep(100); // wait for some time to let slaves respond
+//                            BufferedReader b = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//                            System.out.println(b.readLine());
+//                        }catch (Exception e){}
+//                    }
 
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
@@ -145,10 +145,10 @@ public class Client {
                 }
 
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
-                    this.slaves.add(clientSocket);
+                    this.slaves.put(clientSocket, new SlaveDetails(1, reader, out));
                 }
 
-                for(Socket socket : this.slaves){
+                for(Socket socket : this.slaves.keySet()){
                       try{
 //                          System.out.println(Thread.currentThread().getName()  + " working on slaves.size(): " + this.slaves.size() + " trying to send command: " + command + " to slave: " + socket);
                           this.commandHandler.propagateToSlaves(command, socket.getOutputStream());

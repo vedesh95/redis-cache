@@ -14,7 +14,7 @@ public class RedisCache {
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private ServerInfo info;
-    private List<Socket> slaves;
+    private Map<Socket, SlaveDetails> slaves;
 
     public RedisCache(){
         this.map = new ConcurrentHashMap<>();
@@ -23,7 +23,7 @@ public class RedisCache {
         this.streamMap = new ConcurrentHashMap<>();
         this.info = new ServerInfo();
         this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info);
-        this.slaves = new ArrayList<>();
+        this.slaves = new HashMap<>();
     }
 
     public void addClient(Socket clientSocket, ClientType clientType, BufferedReader reader, OutputStream out){
