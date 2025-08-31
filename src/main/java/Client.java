@@ -111,6 +111,7 @@ public class Client {
                         socket.getOutputStream().flush();
                     }
 
+                    System.out.println("Waiting for replicas to acknowledge");
                     int replicasReplied = 0;
 
                     while((System.currentTimeMillis() - startTime) < timeout || replicasReplied < Integer.parseInt(command.get(1))){
