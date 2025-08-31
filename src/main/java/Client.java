@@ -150,6 +150,7 @@ public class Client {
                       try{
                           this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
                       }catch (Exception e){
+                          System.out.println("Exception in propagating to slaves: " + e);
                           this.slaves.remove(socket);
                       }
 
