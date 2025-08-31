@@ -2,6 +2,7 @@ import command.Command;
 import struct.ClientType;
 import struct.KeyValue;
 import struct.Pair;
+import struct.SlaveDetails;
 
 import java.io.*;
 import java.net.Socket;
@@ -17,10 +18,10 @@ public class Client {
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private List<List<String> > transaction;
-    private Map<Socket, Integer> slaves;
+    private Map<Socket, SlaveDetails> slaves;
     private ClientType clientType;
 
-    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, Map<Socket, Integer> slaves) {
+    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, Map<Socket, SlaveDetails> slaves) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -115,25 +116,15 @@ public class Client {
                     int replicasReplied = 0;
 
                     while((System.currentTimeMillis() - startTime) < timeout || replicasReplied < Integer.parseInt(command.get(1))){
-                        // monitor input streams of all slaves for incoming data
-                        try{
-                            for(Socket socket : slaves.keySet()){
-//                            if(socket.getInputStream().available() > 0){
-                                BufferedReader slaveReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                                String line = slaveReader.readLine();
-                                System.out.println("Received from replica: " + line);
-                                if(line != null && line.contains("OK")){
-                                    replicasReplied++;
-                                }
-                                slaveReader.close();
-//                            }
+                        for(Socket socket : slaves.keySet()){
+                            BufferedReader slaveReader = this.slaves.get(socket).getReader();
+                            String line = slaveReader.readLine();
+                            if(line != null && line.contains("OK")){
+                                replicasReplied++;
                             }
-                        }catch (Exception e){
-                            System.out.println(e);
                         }
                     }
                     System.out.println("Replicas replied: " + replicasReplied);
-                    out.write((":"+ replicasReplied + "\r\n").getBytes());
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
@@ -143,7 +134,7 @@ public class Client {
                 }
 
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
-                    this.slaves.put(clientSocket, 1);
+                    this.slaves.put(clientSocket, new SlaveDetails(1, reader, out));
                     System.out.println("Added slave: " + clientSocket);
                 }
 

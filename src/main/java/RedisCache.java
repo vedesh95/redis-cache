@@ -1,7 +1,4 @@
-import struct.ClientType;
-import struct.ServerInfo;
-import struct.KeyValue;
-import struct.Pair;
+import struct.*;
 
 import java.io.BufferedReader;
 import java.io.OutputStream;
@@ -20,7 +17,7 @@ public class RedisCache {
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private ServerInfo info;
-    private Map<Socket, Integer> slaves;
+    private Map<Socket, SlaveDetails> slaves;
 
     public RedisCache(){
         this.map = new ConcurrentHashMap<>();
