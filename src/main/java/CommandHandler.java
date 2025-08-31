@@ -124,6 +124,8 @@ public class CommandHandler {
             }
             out.write(sb.toString().getBytes());
             out.flush();
+            System.out.println("propogated command: " + sb.toString());
         }
+
     }
 }
