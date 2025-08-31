@@ -150,6 +150,7 @@ public class Client {
 
 
                     try{
+                        sleep(500);
                         System.out.println("reading reader: " + reader.readLine());
                         System.out.println("reading reader: " + reader.readLine());
                         System.out.println("reading reader: " + reader.readLine());
