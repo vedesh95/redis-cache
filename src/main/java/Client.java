@@ -104,15 +104,27 @@ public class Client {
                     out.flush();
                 } else if(command.get(0).equalsIgnoreCase("WAIT")){
                     // write integer 0 to out
+                    for(Socket socket : slaves.keySet()){
+                        socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
+                        socket.getOutputStream().flush();
+                    }
+
+                    int replicasReplied = 0;
                     int timeout = Integer.parseInt(command.get(2));
                     long startTime = System.currentTimeMillis();
-//                    while((System.currentTimeMillis() - startTime) < timeout){
+                    while((System.currentTimeMillis() - startTime) < timeout){
+                        // monitor input streams of all slaves for incoming data
                         for(Socket socket : slaves.keySet()){
-                            socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
-                            socket.getOutputStream().flush();
+                            if(socket.getInputStream().available() > 0){
+                                BufferedReader slaveReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                                String line = slaveReader.readLine();
+                                if(line != null && line.contains("OK")){
+                                    replicasReplied++;
+                                }
+                            }
                         }
-//                    }
-                    out.write((":"+ this.slaves.size() + "\r\n").getBytes());
+                    }
+                    out.write((":"+ replicasReplied + "\r\n").getBytes());
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
