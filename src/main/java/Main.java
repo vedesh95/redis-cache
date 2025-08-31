@@ -12,6 +12,10 @@ public class Main {
         Socket slave = null;
 
         if(args.length>=2 && args[0].equalsIgnoreCase("--port")) port = Integer.parseInt(args[1]);
+        for(int i=0; i<args.length; i++){
+            if(args[i].equalsIgnoreCase("--dir")) cache.getRdbDetails().setDir(args[i+1]);
+            if(args[i].equalsIgnoreCase("--dbfilename")) cache.getRdbDetails().setDbfilename(args[i+1]);
+        }
         try {
             serverSocket = new ServerSocket(port);
             serverSocket.setReuseAddress(true);

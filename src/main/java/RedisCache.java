@@ -17,6 +17,7 @@ public class RedisCache {
     private ServerInfo info;
     private Map<Socket, SlaveDetails> slaves;
     private AtomicInteger ackCounter;
+    private RDBDetails rdbDetails;
 
     public RedisCache(){
         this.map = new ConcurrentHashMap<>();
@@ -31,7 +32,7 @@ public class RedisCache {
 
     public void addClient(Socket clientSocket, ClientType clientType, BufferedReader reader, OutputStream out){
         new Thread(() -> {
-            Client client = new Client(commandHandler, clientType, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves, ackCounter);
+            Client client = new Client(commandHandler, clientType, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves, ackCounter, rdbDetails);
             client.listen(clientSocket, reader, out);
         }).start();
     }
@@ -42,5 +43,13 @@ public class RedisCache {
 
     public void setInfo(ServerInfo info) {
         this.info = info;
+    }
+
+    public RDBDetails getRdbDetails() {
+        return rdbDetails;
+    }
+
+    public void setRdbDetails(RDBDetails rdbDetails) {
+        this.rdbDetails = rdbDetails;
     }
 }

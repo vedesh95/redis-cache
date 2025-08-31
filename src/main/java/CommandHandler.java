@@ -1,4 +1,5 @@
 import command.*;
+import struct.RDBDetails;
 import struct.ServerInfo;
 import struct.KeyValue;
 import struct.Pair;
@@ -19,6 +20,7 @@ public class CommandHandler {
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap = new ConcurrentHashMap<>();
     private ServerInfo info;
     private AtomicInteger ackCounter;
+    private RDBDetails rdbDetails;
 
     Command ping;
     Command echo;
@@ -36,14 +38,16 @@ public class CommandHandler {
     Command xread;
     Command incr;
     Command replicationInfo;
+    Command config;
 
-    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter) {
+    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails) {
         this.map = map;
         this.lists = lists;
         this.threadsWaitingForBLPOP = threadsWaitingForBLPOP;
         this.streamMap = streamMap;
         this.info = info;
         this.ackCounter = ackCounter;
+        this.rdbDetails = rdbDetails;
 
         this.ping = new Ping();
         this.echo = new Echo();
@@ -61,6 +65,7 @@ public class CommandHandler {
         this.xread = new Xread(map, lists, threadsWaitingForBLPOP, streamMap);
         this.incr = new Incr(map, lists, threadsWaitingForBLPOP, streamMap);
         this.replicationInfo = new ReplicationInfo(info);
+        this.config = new Config(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails);
     }
 
     public void handleCommand(List<String> command, OutputStream out){
@@ -93,8 +98,7 @@ public class CommandHandler {
                         out.flush();
                         break;
                     }else if(command.get(1).equalsIgnoreCase("ACK")){
-                        System.out.println(this.ackCounter.incrementAndGet());
-
+                        this.ackCounter.incrementAndGet();
                         break;
                     }
                     break;
@@ -108,6 +112,7 @@ public class CommandHandler {
                     out.write(contents);
                     out.flush();
                     break;
+                case "CONFIG": config.execute(command, out); break;
                 default:
                     out.write("-ERR unknown command\r\n".getBytes());
                     out.flush();

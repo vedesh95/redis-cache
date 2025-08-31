@@ -1,8 +1,5 @@
 import command.Command;
-import struct.ClientType;
-import struct.KeyValue;
-import struct.Pair;
-import struct.SlaveDetails;
+import struct.*;
 
 import java.io.*;
 import java.net.Socket;
@@ -25,8 +22,9 @@ public class Client {
 //    private List<Socket> slaves;
     private ClientType clientType;
     private AtomicInteger ackCounter;
+    private RDBDetails rdbDetails;
 
-    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter) {
+    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter, RDBDetails rdbDetails) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -37,6 +35,7 @@ public class Client {
         this.slaves = slaves;
         this.clientType = clientType;
         this.ackCounter = ackCounter;
+        this.rdbDetails = rdbDetails;
     }
 
     public void listen(Socket clientSocket, BufferedReader reader, OutputStream out) {
@@ -149,7 +148,6 @@ public class Client {
                         out.flush();
                     }
                     commandsBeforeWAIT.clear();
-
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
