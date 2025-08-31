@@ -157,13 +157,16 @@ public class Client {
                       try{
                           this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
                       }catch (IOException e){
+                          e.printStackTrace();
 //                          System.out.println("Exception in propagating to slaves: " + e);
                           try{
                               this.slaves.remove(socket);
                           }catch (Exception ee){
+                              ee.printStackTrace();
 //                              System.out.println("Exception in removing slave: " + ee);
                           }
                       }catch (Exception e){
+                          e.printStackTrace();
 //                          System.out.println("Generic Exception in propogating to slaves " + e);
                       }
 
