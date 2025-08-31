@@ -85,7 +85,7 @@ public class CommandHandler {
                         out.write(("+REPLCONF ACK 0\r\n").getBytes());
                         out.flush();
                         break;
-                    }else if(command.get(1).equalsIgnoreCase("LISTENING-PORT")){
+                    }else if(command.get(1).equalsIgnoreCase("LISTENING-PORT") || command.get(1).equalsIgnoreCase("CAPA") || command.get(1).equalsIgnoreCase("IP")){
                         out.write("+OK\r\n".getBytes());
                         out.flush();
                         break;
