@@ -47,7 +47,9 @@ public class Client {
             while(true){
 
                 List<String> command = new ArrayList<>();
-                command = parseCommand(reader);
+                try{
+                    command = parseCommand(reader);
+                } catch (IOException e) {}
                 if(command.isEmpty()) continue;
 
                 if(!lastcommands.isEmpty() && !command.get(0).equalsIgnoreCase("REPLCONF"))  lastcommands.add(command);
@@ -155,7 +157,7 @@ public class Client {
 
                 for(Socket socket : this.slaves){
                       try{
-                          System.out.println(Thread.currentThread().getName()  + " working on slaves.size(): " + this.slaves.size() + " trying to send command: " + command + " to slave: " + socket);
+//                          System.out.println(Thread.currentThread().getName()  + " working on slaves.size(): " + this.slaves.size() + " trying to send command: " + command + " to slave: " + socket);
                           this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
                       }catch (IOException e){
 //                          e.printStackTrace();
