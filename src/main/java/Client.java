@@ -128,7 +128,7 @@ public class Client {
 //                        System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
                     }
                     try{
-                        out.write((":" + command.get(1) + "\r\n").getBytes());
+                        out.write((":" + Integer.parseInt(command.get(1)) + "\r\n").getBytes());
                         out.flush();
                     }catch (Exception e){
                         System.out.println("Exception in WAIT command: " + e);
