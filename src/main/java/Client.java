@@ -104,6 +104,18 @@ public class Client {
                     out.flush();
                 } else if(command.get(0).equalsIgnoreCase("WAIT")){
                     // write integer 0 to out
+                    int timeout = Integer.parseInt(command.get(2));
+                    long startTime = System.currentTimeMillis();
+                    while((System.currentTimeMillis() - startTime) < timeout){
+                        for(Socket socket : slaves.keySet()){
+                            if(slaves.get(socket) > Integer.parseInt(command.get(1))){
+                                // send replcong getack * to slave
+                                socket.getOutputStream().write(("+REPLCONF GETACK *").getBytes());
+                                socket.getOutputStream().flush();
+                            }
+                        }
+
+                    }
                     out.write((":"+ this.slaves.size() + "\r\n").getBytes());
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
