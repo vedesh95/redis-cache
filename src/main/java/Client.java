@@ -106,7 +106,7 @@ public class Client {
                     out.flush();
                 } else if(command.get(0).equalsIgnoreCase("WAIT")){
 //                    List<Socket> sockets = this.slaves.keySet().stream().toList();
-                    System.out.println("in wait");
+//                    System.out.println("in wait");
                     for(Socket socket : this.slaves){
 //                        OutputStream slaveOut = this.slaves.get(socket).getOutputStream();
 //                        // check if stream is still active otherwise reactivate it
@@ -118,10 +118,10 @@ public class Client {
 //                        System.out.println("Sent REPLCONF GETACK * to slave: ");
 //                        slaveOut.flush();
                         if(!socket.isOutputShutdown()){
-                            System.out.println("Trying to Send REPLCONF GETACK * to slave: " + socket);
+//                            System.out.println("Trying to Send REPLCONF GETACK * to slave: " + socket);
                             socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
                             socket.getOutputStream().flush();
-                            System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
+//                            System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
                         }
 
 //                        System.out.println("Sent REPLCONF GETACK * to slave: " + socket);

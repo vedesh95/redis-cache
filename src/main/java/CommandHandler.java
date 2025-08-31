@@ -112,7 +112,7 @@ public class CommandHandler {
 
     public void propagateToSlaves(List<String> command, OutputStream out) throws IOException {
         // list of commands to be propogated to replicas
-        if(command.get(0).equalsIgnoreCase("SET")) System.out.println(command + " " + command.getClass().getSimpleName());
+//        if(command.get(0).equalsIgnoreCase("SET")) System.out.println(command + " " + command.getClass().getSimpleName());
         List<String> commandsToPropogate = List.of("SET", "GET", "RPUSH", "LPUSH", "LPOP", "BLPOP", "XADD", "INCR");
         if(commandsToPropogate.contains(command.get(0).toUpperCase(Locale.ROOT))){
             // write command to out
