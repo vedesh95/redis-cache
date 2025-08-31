@@ -46,6 +46,7 @@ public class Client {
 
             List<List<String>> lastcommands = new ArrayList<>();
             List<Integer> lastcommandsBytes = new ArrayList<>();
+            List<List<String>> commandsBeforeWAIT = new ArrayList<>();
 
             while(true){
 
@@ -54,6 +55,11 @@ public class Client {
                     command = parseCommand(reader);
                 } catch (IOException e) {}
                 if(command.isEmpty()) continue;
+
+                commandsBeforeWAIT.add(command);
+                if(command.get(0).equalsIgnoreCase("WAIT")){
+                    commandsBeforeWAIT.clear();
+                }
 
                 if(!lastcommands.isEmpty() && !command.get(0).equalsIgnoreCase("REPLCONF"))  lastcommands.add(command);
 
@@ -114,31 +120,39 @@ public class Client {
                 } else if(command.get(0).equalsIgnoreCase("WAIT")){
                     long startTime = System.currentTimeMillis();
                     this.ackCounter.set(0); // reset ack counter
-                    for(Socket socket : this.slaves.keySet()){
-                        try{
-                            socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
-                            socket.getOutputStream().flush();
-                        }
-                        catch (Exception e){
+
+                    if(commandsBeforeWAIT.size()==0){
+                        out.write((":" + this.slaves.size() + "\r\n").getBytes());
+                        out.flush();
+                    }else{
+                        for(Socket socket : this.slaves.keySet()){
+                            try{
+                                socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
+                                socket.getOutputStream().flush();
+                            }
+                            catch (Exception e){
 //                            System.out.println("Exception while sending REPLCONF GETACK * to slave: " + e);
+                            }
                         }
-                    }
-                    // wait for min replicas specified to acknowledge or wait for time specified
-                    // wait till askCounter >= command.get(1) or timeout
-                    int minReplicas = Integer.parseInt(command.get(1));
-                    int timeout = Integer.parseInt(command.get(2));
-                    // if either condition is met, break the loop
-                    while((System.currentTimeMillis() - startTime) < timeout){
-                        if(this.ackCounter.get() >= minReplicas) break;
-                        try{
-                            sleep(10);
-                        }catch (InterruptedException e){
-                            e.printStackTrace();
+                        // wait for min replicas specified to acknowledge or wait for time specified
+                        // wait till askCounter >= command.get(1) or timeout
+                        int minReplicas = Integer.parseInt(command.get(1));
+                        int timeout = Integer.parseInt(command.get(2));
+                        // if either condition is met, break the loop
+                        while((System.currentTimeMillis() - startTime) < timeout){
+                            if(this.ackCounter.get() >= minReplicas) break;
+                            try{
+                                sleep(10);
+                            }catch (InterruptedException e){
+                                e.printStackTrace();
+                            }
                         }
+
+                        out.write((":" + this.ackCounter.get() + "\r\n").getBytes());
+                        out.flush();
                     }
 
-                    out.write((":" + this.ackCounter.get() + "\r\n").getBytes());
-                    out.flush();
+
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
