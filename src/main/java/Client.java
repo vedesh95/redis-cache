@@ -10,6 +10,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static java.lang.Thread.sleep;
+
 public class Client {
     private CommandHandler commandHandler;
     private final Socket clientSocket;
@@ -129,9 +131,11 @@ public class Client {
 
 //                        System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
                     }
+
                     try{
                         out.write((":" + Integer.parseInt(command.get(1)) + "\r\n").getBytes());
                         out.flush();
+                        sleep(Integer.parseInt(command.get(1)));
                     }catch (Exception e){
                         System.out.println("Exception in WAIT command: " + e);
                     }
