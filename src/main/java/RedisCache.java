@@ -26,8 +26,9 @@ public class RedisCache {
         this.streamMap = new ConcurrentHashMap<>();
         this.info = new ServerInfo();
         this.slaves = new ConcurrentHashMap<>();
-        ackCounter = new AtomicInteger(0);
-        this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info, ackCounter);
+        this.ackCounter = new AtomicInteger(0);
+        this.rdbDetails = new RDBDetails();
+        this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info, ackCounter, rdbDetails);
     }
 
     public void addClient(Socket clientSocket, ClientType clientType, BufferedReader reader, OutputStream out){
