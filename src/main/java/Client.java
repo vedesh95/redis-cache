@@ -57,11 +57,6 @@ public class Client {
                 if(command.isEmpty()) continue;
 
                 commandsBeforeWAIT.add(command);
-                if(command.get(0).equalsIgnoreCase("WAIT")){
-                    System.out.println("before clearing - " + commandsBeforeWAIT.size());
-                    commandsBeforeWAIT.clear();
-                    System.out.println("after clearing" + commandsBeforeWAIT.size());
-                }
 
                 if(!lastcommands.isEmpty() && !command.get(0).equalsIgnoreCase("REPLCONF"))  lastcommands.add(command);
 
@@ -123,7 +118,7 @@ public class Client {
                     long startTime = System.currentTimeMillis();
                     this.ackCounter.set(0); // reset ack counter
 
-                    if(commandsBeforeWAIT.isEmpty()){
+                    if(commandsBeforeWAIT.size()==1){
                         out.write((":" + this.slaves.size() + "\r\n").getBytes());
                         out.flush();
                     }else{
@@ -153,7 +148,7 @@ public class Client {
                         out.write((":" + this.ackCounter.get() + "\r\n").getBytes());
                         out.flush();
                     }
-
+                    commandsBeforeWAIT.clear();
 
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
