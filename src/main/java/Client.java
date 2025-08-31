@@ -157,7 +157,7 @@ public class Client {
 //                }
             }
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println("Exception ocuured in Client.java" +e);
         }
     }
 
