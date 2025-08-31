@@ -138,6 +138,7 @@ public class Client {
 
                     for(Socket socket: this.slaves){
                         try{
+                            sleep(100); // wait for some time to let slaves respond
                             BufferedReader b = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                             System.out.println(b.readLine());
                         }catch (Exception e){}
