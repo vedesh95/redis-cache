@@ -144,7 +144,7 @@ public class Client {
                 }
 
 //                for(Socket socket : slaves.keySet()){
-                for(Socket socket : slaves){
+                for(Socket socket : this.slaves){
 //                    if(command.get(0).contains("SET")) System.out.println(command +  " " + command.getClass().getSimpleName());
 //                    OutputStream slaveOut = this.slaves.get(socket).getOutputStream();
 //                    if(socket.isClosed() || !socket.isConnected()){
@@ -152,7 +152,13 @@ public class Client {
 //                        this.slaves.get(socket).setOutputStream(slaveOut);
 //                    }
 //                    this.commandHandler.propagateToSlaves(command, slaveOut);
-                        this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
+                      try{
+                          this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
+                      }catch (Exception e){
+                          // remove slave from list
+                            this.slaves.remove(socket);
+                      }
+
                 }
 //                }
             }
