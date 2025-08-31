@@ -109,33 +109,29 @@ public class Client {
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 } else if(command.get(0).equalsIgnoreCase("WAIT")){
-//                    List<Socket> sockets = this.slaves.keySet().stream().toList();
-//                    System.out.println("in wait");
                     for(Socket socket : this.slaves){
-//                        OutputStream slaveOut = this.slaves.get(socket).getOutputStream();
-//                        // check if stream is still active otherwise reactivate it
-//                        if(socket.isClosed() || !socket.isConnected()){
-//                            slaveOut = socket.getOutputStream();
-//                            this.slaves.get(socket).setOutputStream(slaveOut);
-//                        }
-//                        slaveOut.write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
-//                        System.out.println("Sent REPLCONF GETACK * to slave: ");
-//                        slaveOut.flush();
-
                         try{
                             socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
                             socket.getOutputStream().flush();
-//                            System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
                         }
                         catch (Exception e){
 //                            System.out.println("Exception while sending REPLCONF GETACK * to slave: " + e);
                         }
-
-//                        System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
                     }
 
                     try{
-//                        sleep(Integer.parseInt(command.get(1)));
+                        sleep(Integer.parseInt(command.get(2)));
+                    }catch (Exception ex){}
+
+                    try{
+                        for(Socket socket: this.slaves){
+                            // read input stream available bytes
+                            BufferedReader slaveReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                            System.out.println(slaveReader.readLine());
+                        }
+                    }catch (Exception ex){}
+
+                    try{
                         out.write((":" + Integer.parseInt(command.get(1)) + "\r\n").getBytes());
                         out.flush();
 
@@ -151,7 +147,6 @@ public class Client {
                 }
 
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
-//                    this.slaves.put(clientSocket, new SlaveDetails(1, reader, out));
                     this.slaves.add(clientSocket);
                 }
 
