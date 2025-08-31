@@ -131,13 +131,14 @@ public class Client {
 //                        }
 //                    }catch (Exception ex){}
 
-                    int replicatedTo = 0;
-                    for(Socket socket : this.slaves){
-                        if(socket.isBound() && !socket.isClosed() && socket.isConnected()) replicatedTo++;
-                    }
+//                    int replicatedTo = 0;
+//                    for(Socket socket : this.slaves){
+//                        if(socket.isBound() && !socket.isClosed() && socket.isConnected()) replicatedTo++;
+//                    }
 
                     try{
-                        out.write((":" + Math.min(replicatedTo, Integer.parseInt(command.get(0))) + "\r\n").getBytes());
+//                        out.write((":" + Math.min(replicatedTo, Integer.parseInt(command.get(0))) + "\r\n").getBytes());
+                        out.write((":" + Integer.parseInt(command.get(0)) + "\r\n").getBytes());
                         out.flush();
 
                     }catch (Exception e){
