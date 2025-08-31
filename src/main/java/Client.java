@@ -131,7 +131,9 @@ public class Client {
 
                     for (Socket socket : this.slaves.keySet()) {
                         try {; // wait for some time to let slaves respond
-                            System.out.println("procesing response in thread: "  + this.slaves.get(socket).getReader().readLine());
+//                            System.out.println("procesing response in thread: "  + this.slaves.get(socket).getReader().readLine());
+                            System.out.println("procesing response in thread: " + new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine());
+
                         } catch (Exception e) {}
                     }
 
