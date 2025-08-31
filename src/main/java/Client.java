@@ -119,22 +119,14 @@ public class Client {
                         }
                     }
 
-//                    try{
-//                        sleep(Integer.parseInt(command.get(2)));
-//                    }catch (Exception ex){}
+                    try{
+//                        out.write((":" + Math.min(replicatedTo, Integer.parseInt(command.get(0))) + "\r\n").getBytes());
+                        out.write((":" + Integer.parseInt(command.get(1)) + "\r\n").getBytes());
+                        out.flush();
 
-//                    try{
-//                        for(Socket socket: this.slaves){
-//                            // read input stream available bytes
-//                            BufferedReader slaveReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-//                            System.out.println("read from socker reader - " + slaveReader.readLine());
-//                        }
-//                    }catch (Exception ex){}
-
-//                    int replicatedTo = 0;
-//                    for(Socket socket : this.slaves){
-//                        if(socket.isBound() && !socket.isClosed() && socket.isConnected()) replicatedTo++;
-//                    }
+                    }catch (Exception e){
+//                        System.out.println("Exception in WAIT command: " + e);
+                    }
 
                     for(Socket socket: this.slaves){
                         try{
@@ -144,15 +136,6 @@ public class Client {
                         }catch (Exception e){}
                     }
 
-
-                    try{
-//                        out.write((":" + Math.min(replicatedTo, Integer.parseInt(command.get(0))) + "\r\n").getBytes());
-                        out.write((":" + Integer.parseInt(command.get(1)) + "\r\n").getBytes());
-                        out.flush();
-
-                    }catch (Exception e){
-//                        System.out.println("Exception in WAIT command: " + e);
-                    }
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
