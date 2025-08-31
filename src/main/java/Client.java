@@ -120,6 +120,7 @@ public class Client {
                             try{
                                 BufferedReader slaveReader = this.slaves.get(socket).getReader();
                                 String line = slaveReader.readLine();
+                                System.out.println("Slave response: " + line);
                                 if(line != null && line.contains("OK")){
                                     replicasReplied++;
                                 }
