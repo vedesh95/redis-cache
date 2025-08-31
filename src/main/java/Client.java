@@ -106,12 +106,12 @@ public class Client {
                     // write integer 0 to out
                     int timeout = Integer.parseInt(command.get(2));
                     long startTime = System.currentTimeMillis();
-                    while((System.currentTimeMillis() - startTime) < timeout){
+//                    while((System.currentTimeMillis() - startTime) < timeout){
                         for(Socket socket : slaves.keySet()){
                             socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
                             socket.getOutputStream().flush();
                         }
-                    }
+//                    }
                     out.write((":"+ this.slaves.size() + "\r\n").getBytes());
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
