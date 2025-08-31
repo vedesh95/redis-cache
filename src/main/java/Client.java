@@ -124,7 +124,18 @@ public class Client {
                         }
                     }
                     // wait for min replicas specified to acknowledge or wait for time specified
-                    while(this.ackCounter.get() < Integer.parseInt(command.get(1)) && !((System.currentTimeMillis() - startTime)<Integer.parseInt(command.get(2))-500)){}
+                    // wait till askCounter >= command.get(1) or timeout
+                    int minReplicas = Integer.parseInt(command.get(1));
+                    int timeout = Integer.parseInt(command.get(2));
+                    // if either condition is met, break the loop
+                    while((System.currentTimeMillis() - startTime) < timeout){
+                        if(this.ackCounter.get() >= minReplicas) break;
+                        try{
+                            sleep(10);
+                        }catch (InterruptedException e){
+                            e.printStackTrace();
+                        }
+                    }
 
                     out.write((":" + this.ackCounter.get() + "\r\n").getBytes());
                     out.flush();
