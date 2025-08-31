@@ -119,20 +119,25 @@ public class Client {
                         }
                     }
 
-                    try{
-                        sleep(Integer.parseInt(command.get(2)));
-                    }catch (Exception ex){}
+//                    try{
+//                        sleep(Integer.parseInt(command.get(2)));
+//                    }catch (Exception ex){}
+
+//                    try{
+//                        for(Socket socket: this.slaves){
+//                            // read input stream available bytes
+//                            BufferedReader slaveReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//                            System.out.println("read from socker reader - " + slaveReader.readLine());
+//                        }
+//                    }catch (Exception ex){}
+
+                    int replicatedTo = 0;
+                    for(Socket socket : this.slaves){
+                        if(socket.isBound() && !socket.isClosed() && socket.isConnected()) replicatedTo++;
+                    }
 
                     try{
-                        for(Socket socket: this.slaves){
-                            // read input stream available bytes
-                            BufferedReader slaveReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                            System.out.println(slaveReader.readLine());
-                        }
-                    }catch (Exception ex){}
-
-                    try{
-                        out.write((":" + Integer.parseInt(command.get(1)) + "\r\n").getBytes());
+                        out.write((":" + replicatedTo + "\r\n").getBytes());
                         out.flush();
 
                     }catch (Exception e){
