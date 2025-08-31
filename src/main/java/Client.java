@@ -132,6 +132,7 @@ public class Client {
                 }
 
                 for(Socket socket : slaves.keySet()){
+                    if(command.get(0).contains("SET")) System.out.println(command +  " " + command.getClass().getSimpleName());
                     this.commandHandler.propagateToSlaves(command, this.slaves.get(socket).getOutputStream());
                 }
             }
