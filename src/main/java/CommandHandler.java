@@ -89,6 +89,9 @@ public class CommandHandler {
                         out.write("+OK\r\n".getBytes());
                         out.flush();
                         break;
+                    }else if(command.get(1).equalsIgnoreCase("ACK")){
+                        System.out.println("Replica acknowledged " + command.get(2) + " bytes");
+                        break;
                     }
                     break;
                 case "PSYNC":
