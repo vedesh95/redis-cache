@@ -126,7 +126,7 @@ public class Client {
                             System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
                         }
                         catch (Exception e){
-                            System.out.println("Exception while sending REPLCONF GETACK * to slave: " + e);
+//                            System.out.println("Exception while sending REPLCONF GETACK * to slave: " + e);
                         }
 
 //                        System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
@@ -138,7 +138,7 @@ public class Client {
                         out.flush();
 
                     }catch (Exception e){
-                        System.out.println("Exception in WAIT command: " + e);
+//                        System.out.println("Exception in WAIT command: " + e);
                     }
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
@@ -157,14 +157,14 @@ public class Client {
                       try{
                           this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
                       }catch (IOException e){
-                          System.out.println("Exception in propagating to slaves: " + e);
+//                          System.out.println("Exception in propagating to slaves: " + e);
                           try{
                               this.slaves.remove(socket);
                           }catch (Exception ee){
-                              System.out.println("Exception in removing slave: " + ee);
+//                              System.out.println("Exception in removing slave: " + ee);
                           }
                       }catch (Exception e){
-                          System.out.println("Generic Exception in propogating to slaves " + e);
+//                          System.out.println("Generic Exception in propogating to slaves " + e);
                       }
 
                 }
