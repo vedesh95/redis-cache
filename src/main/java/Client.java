@@ -136,11 +136,7 @@ public class Client {
 //                        if(socket.isBound() && !socket.isClosed() && socket.isConnected()) replicatedTo++;
 //                    }
 
-                    try{
-                        System.out.println("reading reader: " + reader.readLine());
-                        System.out.println("reading reader: " + reader.readLine());
-                        System.out.println("reading reader: " + reader.readLine());
-                    } catch (Exception e) {}
+
 
 
                     try{
@@ -151,6 +147,13 @@ public class Client {
                     }catch (Exception e){
 //                        System.out.println("Exception in WAIT command: " + e);
                     }
+
+
+                    try{
+                        System.out.println("reading reader: " + reader.readLine());
+                        System.out.println("reading reader: " + reader.readLine());
+                        System.out.println("reading reader: " + reader.readLine());
+                    } catch (Exception e) {}
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
