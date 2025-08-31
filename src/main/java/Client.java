@@ -107,15 +107,17 @@ public class Client {
 //                    List<Socket> sockets = this.slaves.keySet().stream().toList();
 
                     for(Socket socket : this.slaves.keySet()){
-                        OutputStream slaveOut = this.slaves.get(socket).getOutputStream();
-                        // check if stream is still active otherwise reactivate it
-                        if(socket.isClosed() || !socket.isConnected()){
-                            slaveOut = socket.getOutputStream();
-                            this.slaves.get(socket).setOutputStream(slaveOut);
-                        }
-                        slaveOut.write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
-                        System.out.println("Sent REPLCONF GETACK * to slave: ");
-                        slaveOut.flush();
+//                        OutputStream slaveOut = this.slaves.get(socket).getOutputStream();
+//                        // check if stream is still active otherwise reactivate it
+//                        if(socket.isClosed() || !socket.isConnected()){
+//                            slaveOut = socket.getOutputStream();
+//                            this.slaves.get(socket).setOutputStream(slaveOut);
+//                        }
+//                        slaveOut.write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
+//                        System.out.println("Sent REPLCONF GETACK * to slave: ");
+//                        slaveOut.flush();
+                        socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
+                        socket.getOutputStream().flush();
                     }
                     out.write((":" + command.get(1) + "\r\n").getBytes());
                     out.flush();
@@ -133,13 +135,14 @@ public class Client {
                 }
 
                 for(Socket socket : slaves.keySet()){
-                    if(command.get(0).contains("SET")) System.out.println(command +  " " + command.getClass().getSimpleName());
-                    OutputStream slaveOut = this.slaves.get(socket).getOutputStream();
-                    if(socket.isClosed() || !socket.isConnected()){
-                        slaveOut = socket.getOutputStream();
-                        this.slaves.get(socket).setOutputStream(slaveOut);
-                    }
-                    this.commandHandler.propagateToSlaves(command, slaveOut);
+//                    if(command.get(0).contains("SET")) System.out.println(command +  " " + command.getClass().getSimpleName());
+//                    OutputStream slaveOut = this.slaves.get(socket).getOutputStream();
+//                    if(socket.isClosed() || !socket.isConnected()){
+//                        slaveOut = socket.getOutputStream();
+//                        this.slaves.get(socket).setOutputStream(slaveOut);
+//                    }
+//                    this.commandHandler.propagateToSlaves(command, slaveOut);
+                    this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
                 }
             }
         } catch (IOException e) {
