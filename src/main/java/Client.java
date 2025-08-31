@@ -133,7 +133,6 @@ public class Client {
 
                 for(Socket socket : slaves.keySet()){
                     System.out.println("propagating to slave: " + socket + " command: " + command);
-
                     this.commandHandler.propagateToSlaves(command, this.slaves.get(socket).getOutputStream());
                 }
             }
