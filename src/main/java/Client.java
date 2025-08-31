@@ -123,7 +123,9 @@ public class Client {
                             socket.getOutputStream().flush();
                             System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
                         }
-                        catch (Exception e){}
+                        catch (Exception e){
+                            System.out.println("Exception while sending REPLCONF GETACK * to slave: " + e);
+                        }
 
 //                        System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
                     }
@@ -151,9 +153,13 @@ public class Client {
                           this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
                       }catch (IOException e){
                           System.out.println("Exception in propagating to slaves: " + e);
-                          this.slaves.remove(socket);
+                          try{
+                              this.slaves.remove(socket);
+                          }catch (Exception e){
+                              System.out.println("Exception in removing slave: " + e);
+                          }
                       }catch (Exception e){
-                          System.out.println("Exception in removing slave: " + e);
+                          System.out.println("Generic Exception in propogating to slaves " + e);
                       }
 
                 }
