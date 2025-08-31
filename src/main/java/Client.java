@@ -120,6 +120,7 @@ public class Client {
 //                            if(socket.getInputStream().available() > 0){
                                 BufferedReader slaveReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                                 String line = slaveReader.readLine();
+                            System.out.println("Received from replica: " + line);
                                 if(line != null && line.contains("OK")){
                                     replicasReplied++;
                                 }
