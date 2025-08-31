@@ -85,10 +85,14 @@ public class CommandHandler {
                         out.write(("+REPLCONF ACK 0\r\n").getBytes());
                         out.flush();
                         break;
+                    }else if(command.get(1).equalsIgnoreCase("LISTENING-PORT")){
+                        out.write("+OK\r\n".getBytes());
+                        out.flush();
+                        break;
                     }
-                    out.write("+OK\r\n".getBytes());
-                    out.flush();
-                    break;
+//                    out.write("+OK\r\n".getBytes());
+//                    out.flush();
+//                    break;
                 case "PSYNC":
                     // send +FULLRESYNC <REPL_ID> <master_repl_offset>\r\n
                     out.write(("+FULLRESYNC " + this.info.getMaster_replid() + " " + this.info.getMaster_repl_offset() + "\r\n").getBytes());
