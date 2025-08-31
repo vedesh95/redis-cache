@@ -117,13 +117,13 @@ public class Client {
                     while((System.currentTimeMillis() - startTime) < timeout || replicasReplied < Integer.parseInt(command.get(1))){
                         // monitor input streams of all slaves for incoming data
                         for(Socket socket : slaves.keySet()){
-                            if(socket.getInputStream().available() > 0){
+//                            if(socket.getInputStream().available() > 0){
                                 BufferedReader slaveReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                                 String line = slaveReader.readLine();
                                 if(line != null && line.contains("OK")){
                                     replicasReplied++;
                                 }
-                            }
+//                            }
                         }
                     }
                     System.out.println("Replicas replied: " + replicasReplied);
