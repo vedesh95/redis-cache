@@ -155,6 +155,7 @@ public class Client {
 
                 for(Socket socket : this.slaves){
                       try{
+                          System.out.println(Thread.currentThread().getName()  + " working on slaves.size(): " + this.slaves.size());
                           this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
                       }catch (IOException e){
 //                          e.printStackTrace();
