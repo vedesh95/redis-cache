@@ -108,43 +108,14 @@ public class Client {
                     int timeout = Integer.parseInt(command.get(2));
                     List<Socket> sockets = this.slaves.keySet().stream().toList();
 
-
                     for(Socket socket : sockets){
-                        try{
-                            this.slaves.get(socket).getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
-                            this.slaves.get(socket).getOutputStream().flush();
-                            System.out.println("Sent REPLCONF GETACK * to replica with saved socket: " + socket);
-                        }catch (Exception e){
-                            System.out.println("Exception while sending REPLCONF GETACK * to replicas: " + e.getMessage());
-                            socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
-                            socket.getOutputStream().flush();
-                        }
-
-                        try{
-                            System.out.println(this.slaves.get(socket).getReader().readLine());
-                        }catch (Exception e){
-                            System.out.println("Exception while waiting for replicas: " + e.getMessage());
-                        }
+                        socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
+                        socket.getOutputStream().flush();
                     }
 
-                    int replicasReplied = 0;
+                    out.write((":" + command.get(1) + "\r\n").getBytes());
+                    out.flush();
 
-//                    long startTime = System.currentTimeMillis();
-//                    while((System.currentTimeMillis() - startTime) < timeout || replicasReplied < Integer.parseInt(command.get(1))){
-//                        for(Socket socket : slaves.keySet()){
-//                            try{
-//                                BufferedReader slaveReader = this.slaves.get(socket).getReader();
-//                                String line = slaveReader.readLine();
-//                                System.out.println("Slave response for slave: " + socket.getPort() + "-" + line);
-//                                if(line != null && line.contains("OK")){
-//                                    replicasReplied++;
-//                                }
-//                            }catch (Exception e){
-//                                System.out.println("Exception while waiting for replicas: " + e.getMessage());
-//                            }
-//                        }
-//                    }
-                    System.out.println("Replicas replied: " + replicasReplied);
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
