@@ -136,11 +136,12 @@ public class Client {
 //                        if(socket.isBound() && !socket.isClosed() && socket.isConnected()) replicatedTo++;
 //                    }
 
-                    for(Socket socket : this.slaves) {
-                        try {
-                            System.out.println("reading reader: " + reader.readLine());
-                        } catch (Exception e) {}
-                    }
+                    try{
+                        System.out.println("reading reader: " + reader.readLine());
+                        System.out.println("reading reader: " + reader.readLine());
+                        System.out.println("reading reader: " + reader.readLine());
+                    } catch (Exception e) {}
+
 
                     try{
 //                        out.write((":" + Math.min(replicatedTo, Integer.parseInt(command.get(0))) + "\r\n").getBytes());
