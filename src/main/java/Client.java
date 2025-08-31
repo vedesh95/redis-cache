@@ -135,7 +135,7 @@ public class Client {
                     }
 
                     try{
-                        sleep(Integer.parseInt(command.get(1)));
+//                        sleep(Integer.parseInt(command.get(1)));
                         out.write((":" + Integer.parseInt(command.get(1)) + "\r\n").getBytes());
                         out.flush();
 
