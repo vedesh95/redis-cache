@@ -104,18 +104,14 @@ public class Client {
                     out.write(("*3\r\n$8\r\nREPLCONF\r\n$3\r\nACK\r\n$" + String.valueOf(totalBytes).length() + "\r\n" + totalBytes + "\r\n").getBytes());
                     out.flush();
                 } else if(command.get(0).equalsIgnoreCase("WAIT")){
-                    // write integer 0 to out
-                    int timeout = Integer.parseInt(command.get(2));
-                    List<Socket> sockets = this.slaves.keySet().stream().toList();
+//                    List<Socket> sockets = this.slaves.keySet().stream().toList();
 
-                    for(Socket socket : sockets){
-                        socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
-                        socket.getOutputStream().flush();
+                    for(Socket socket : this.slaves.keySet()){
+                        this.slaves.get(socket).getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
+                        this.slaves.get(socket).getOutputStream().flush();
                     }
-
                     out.write((":" + command.get(1) + "\r\n").getBytes());
                     out.flush();
-
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
