@@ -123,7 +123,7 @@ public class Client {
 //                        out.write((":" + Math.min(replicatedTo, Integer.parseInt(command.get(0))) + "\r\n").getBytes());
                         out.write((":" + Integer.parseInt(command.get(1)) + "\r\n").getBytes());
                         out.flush();
-                        sleep(500);
+                        sleep(1000);
 
                     }catch (Exception e){
 //                        System.out.println("Exception in WAIT command: " + e);
