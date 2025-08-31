@@ -125,6 +125,7 @@ public class Client {
                             }
                         }
                     }
+                    System.out.println("Replicas replied: " + replicasReplied);
                     out.write((":"+ replicasReplied + "\r\n").getBytes());
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
