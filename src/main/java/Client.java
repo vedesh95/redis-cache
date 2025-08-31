@@ -128,12 +128,17 @@ public class Client {
 //                        System.out.println("Exception in WAIT command: " + e);
                     }
 
-                    for(Socket socket: this.slaves.keySet()){
-                        try{
-//                            sleep(100); // wait for some time to let slaves respond
-                            System.out.println(this.slaves.get(socket).getReader().readLine());
-                        }catch (Exception e){}
-                    }
+                    new Thread(() -> {
+                        try {
+                            sleep(500);
+                            for (Socket socket : this.slaves.keySet()) {
+                                try {; // wait for some time to let slaves respond
+                                    System.out.println(this.slaves.get(socket).getReader().readLine());
+                                } catch (Exception e) {}
+                            }
+                        } catch (Exception e) {}
+                    }).start();
+
 
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
