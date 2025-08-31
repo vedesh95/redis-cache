@@ -111,6 +111,7 @@ public class Client {
                         try{
                             this.slaves.get(socket).getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
                             this.slaves.get(socket).getOutputStream().flush();
+                            System.out.println("Sent REPLCONF GETACK * to replica with saved socket: " + socket);
                         }catch (Exception e){
                             System.out.println("Exception while sending REPLCONF GETACK * to replicas: " + e.getMessage());
                             socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
