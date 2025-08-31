@@ -38,7 +38,7 @@ public class Client {
 
     public void listen(Socket clientSocket, BufferedReader reader, OutputStream out) {
 
-        try (clientSocket; reader; out) {
+        try (clientSocket) {
             boolean isInTransaction = false;
 
             List<List<String>> lastcommands = new ArrayList<>();
