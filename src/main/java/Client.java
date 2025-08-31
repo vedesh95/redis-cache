@@ -127,8 +127,12 @@ public class Client {
 
 //                        System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
                     }
-                    out.write((":" + command.get(1) + "\r\n").getBytes());
-                    out.flush();
+                    try{
+                        out.write((":" + command.get(1) + "\r\n").getBytes());
+                        out.flush();
+                    }catch (Exception e){
+                        System.out.println("Exception in WAIT command: " + e);
+                    }
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
@@ -140,27 +144,16 @@ public class Client {
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
 //                    this.slaves.put(clientSocket, new SlaveDetails(1, reader, out));
                     this.slaves.add(clientSocket);
-//                    System.out.println("Added slave: " + clientSocket);
                 }
 
-//                for(Socket socket : slaves.keySet()){
                 for(Socket socket : this.slaves){
-//                    if(command.get(0).contains("SET")) System.out.println(command +  " " + command.getClass().getSimpleName());
-//                    OutputStream slaveOut = this.slaves.get(socket).getOutputStream();
-//                    if(socket.isClosed() || !socket.isConnected()){
-//                        slaveOut = socket.getOutputStream();
-//                        this.slaves.get(socket).setOutputStream(slaveOut);
-//                    }
-//                    this.commandHandler.propagateToSlaves(command, slaveOut);
                       try{
                           this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
                       }catch (Exception e){
-                          // remove slave from list
-                            this.slaves.remove(socket);
+                          this.slaves.remove(socket);
                       }
 
                 }
-//                }
             }
         } catch (IOException e) {
             System.out.println("Exception ocuured in Client.java" +e);
