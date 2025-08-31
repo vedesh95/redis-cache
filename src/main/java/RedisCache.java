@@ -23,7 +23,7 @@ public class RedisCache {
         this.streamMap = new ConcurrentHashMap<>();
         this.info = new ServerInfo();
         this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info);
-        this.slaves = new ConcurrentHashMap<>();
+        this.slaves = new HashMap<>();
     }
 
     public void addClient(Socket clientSocket, ClientType clientType, BufferedReader reader, OutputStream out){
