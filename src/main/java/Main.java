@@ -59,6 +59,7 @@ public class Main {
 
                 cache.getInfo().setRole("slave");
                 cache.addClient(slave, ClientType.DBCLIENT, reader, slave.getOutputStream());
+                return;
             }catch(Exception e){
                 System.out.println("Failed to connect to master: " + e.getMessage());
             }
