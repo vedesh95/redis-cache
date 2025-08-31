@@ -18,10 +18,11 @@ public class Client {
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private List<List<String> > transaction;
-    private Map<Socket, SlaveDetails> slaves;
+//    private Map<Socket, SlaveDetails> slaves;
+    private List<Socket> slaves;
     private ClientType clientType;
 
-    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, Map<Socket, SlaveDetails> slaves) {
+    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, List<Socket> slaves) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -106,7 +107,7 @@ public class Client {
                 } else if(command.get(0).equalsIgnoreCase("WAIT")){
 //                    List<Socket> sockets = this.slaves.keySet().stream().toList();
                     System.out.println("in wait");
-                    for(Socket socket : this.slaves.keySet()){
+                    for(Socket socket : this.slaves){
 //                        OutputStream slaveOut = this.slaves.get(socket).getOutputStream();
 //                        // check if stream is still active otherwise reactivate it
 //                        if(socket.isClosed() || !socket.isConnected()){
@@ -131,11 +132,13 @@ public class Client {
                 }
 
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
-                    this.slaves.put(clientSocket, new SlaveDetails(1, reader, out));
+//                    this.slaves.put(clientSocket, new SlaveDetails(1, reader, out));
+                    this.slaves.add(clientSocket);
 //                    System.out.println("Added slave: " + clientSocket);
                 }
 
-                for(Socket socket : slaves.keySet()){
+//                for(Socket socket : slaves.keySet()){
+                for(Socket socket : slaves){
 //                    if(command.get(0).contains("SET")) System.out.println(command +  " " + command.getClass().getSimpleName());
 //                    OutputStream slaveOut = this.slaves.get(socket).getOutputStream();
 //                    if(socket.isClosed() || !socket.isConnected()){
@@ -143,8 +146,9 @@ public class Client {
 //                        this.slaves.get(socket).setOutputStream(slaveOut);
 //                    }
 //                    this.commandHandler.propagateToSlaves(command, slaveOut);
-                    this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
+                        this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
                 }
+//                }
             }
         } catch (IOException e) {
             System.out.println(e);

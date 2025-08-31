@@ -3,10 +3,7 @@ import struct.*;
 import java.io.BufferedReader;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -17,7 +14,7 @@ public class RedisCache {
     private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private ServerInfo info;
-    private Map<Socket, SlaveDetails> slaves;
+    private List<Socket> slaves;
 
     public RedisCache(){
         this.map = new ConcurrentHashMap<>();
@@ -26,7 +23,7 @@ public class RedisCache {
         this.streamMap = new ConcurrentHashMap<>();
         this.info = new ServerInfo();
         this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info);
-        this.slaves = new HashMap<>();
+        this.slaves = new ArrayList<>();
     }
 
     public void addClient(Socket clientSocket, ClientType clientType, BufferedReader reader, OutputStream out){
