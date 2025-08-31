@@ -130,7 +130,7 @@ public class Client {
 
                     for(Socket socket: this.slaves.keySet()){
                         try{
-                            sleep(100); // wait for some time to let slaves respond
+//                            sleep(100); // wait for some time to let slaves respond
                             System.out.println(this.slaves.get(socket).getReader().readLine());
                         }catch (Exception e){}
                     }
