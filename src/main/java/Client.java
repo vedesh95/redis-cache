@@ -155,8 +155,8 @@ public class Client {
                           System.out.println("Exception in propagating to slaves: " + e);
                           try{
                               this.slaves.remove(socket);
-                          }catch (Exception e){
-                              System.out.println("Exception in removing slave: " + e);
+                          }catch (Exception ee){
+                              System.out.println("Exception in removing slave: " + ee);
                           }
                       }catch (Exception e){
                           System.out.println("Generic Exception in propogating to slaves " + e);
