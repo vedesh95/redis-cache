@@ -149,9 +149,11 @@ public class Client {
                 for(Socket socket : this.slaves){
                       try{
                           this.commandHandler.propagateToSlaves(command, socket.getOutputStream());
-                      }catch (Exception e){
+                      }catch (IOException e){
                           System.out.println("Exception in propagating to slaves: " + e);
                           this.slaves.remove(socket);
+                      }catch (Exception e){
+                          System.out.println("Exception in removing slave: " + e);
                       }
 
                 }
