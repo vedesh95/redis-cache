@@ -52,6 +52,7 @@ public class Main {
                     return;
                 }
                 // PSYNC ?
+                System.out.println("Connected to master, sending PSYNC");
                 slave.getOutputStream().write("*3\r\n$5\r\nPSYNC\r\n$1\r\n?\r\n$2\r\n-1\r\n".getBytes());
                 slave.getOutputStream().flush();
                 reader.readLine();
