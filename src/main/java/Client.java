@@ -133,7 +133,7 @@ public class Client {
                             sleep(500);
                             for (Socket socket : this.slaves.keySet()) {
                                 try {; // wait for some time to let slaves respond
-                                    System.out.println(this.slaves.get(socket).getReader().readLine());
+                                    System.out.println("procesing response in thread: "  + this.slaves.get(socket).getReader().readLine());
                                 } catch (Exception e) {}
                             }
                         } catch (Exception e) {}
