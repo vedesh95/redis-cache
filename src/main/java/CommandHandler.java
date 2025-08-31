@@ -93,8 +93,8 @@ public class CommandHandler {
                         out.flush();
                         break;
                     }else if(command.get(1).equalsIgnoreCase("ACK")){
-                        this.ackCounter.incrementAndGet();
-                        System.out.println("Replica acknowledged " + command.get(2) + " bytes");
+                        System.out.println(this.ackCounter.incrementAndGet());
+
                         break;
                     }
                     break;
