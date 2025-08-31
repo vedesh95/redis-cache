@@ -110,25 +110,31 @@ public class Client {
                     for(Socket socket : slaves.keySet()){
                         this.slaves.get(socket).getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
                         this.slaves.get(socket).getOutputStream().flush();
+
+                        try{
+                            System.out.println(this.slaves.get(socket).getReader().readLine());
+                        }catch (Exception e){
+                            System.out.println("Exception while waiting for replicas: " + e.getMessage());
+                        }
                     }
 
                     int replicasReplied = 0;
 
-                    long startTime = System.currentTimeMillis();
-                    while((System.currentTimeMillis() - startTime) < timeout || replicasReplied < Integer.parseInt(command.get(1))){
-                        for(Socket socket : slaves.keySet()){
-                            try{
-                                BufferedReader slaveReader = this.slaves.get(socket).getReader();
-                                String line = slaveReader.readLine();
-                                System.out.println("Slave response for slave: " + socket.getPort() + "-" + line);
-                                if(line != null && line.contains("OK")){
-                                    replicasReplied++;
-                                }
-                            }catch (Exception e){
-                                System.out.println("Exception while waiting for replicas: " + e.getMessage());
-                            }
-                        }
-                    }
+//                    long startTime = System.currentTimeMillis();
+//                    while((System.currentTimeMillis() - startTime) < timeout || replicasReplied < Integer.parseInt(command.get(1))){
+//                        for(Socket socket : slaves.keySet()){
+//                            try{
+//                                BufferedReader slaveReader = this.slaves.get(socket).getReader();
+//                                String line = slaveReader.readLine();
+//                                System.out.println("Slave response for slave: " + socket.getPort() + "-" + line);
+//                                if(line != null && line.contains("OK")){
+//                                    replicasReplied++;
+//                                }
+//                            }catch (Exception e){
+//                                System.out.println("Exception while waiting for replicas: " + e.getMessage());
+//                            }
+//                        }
+//                    }
                     System.out.println("Replicas replied: " + replicasReplied);
                 }else {
                     if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
