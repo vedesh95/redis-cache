@@ -107,8 +107,14 @@ public class Client {
 //                    List<Socket> sockets = this.slaves.keySet().stream().toList();
 
                     for(Socket socket : this.slaves.keySet()){
-                        this.slaves.get(socket).getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
-                        this.slaves.get(socket).getOutputStream().flush();
+                        OutputStream slaveOut = this.slaves.get(socket).getOutputStream();
+                        // check if stream is still active otherwise reactivate it
+                        if(socket.isClosed() || !socket.isConnected()){
+                            slaveOut = socket.getOutputStream();
+                            this.slaves.get(socket).setOutputStream(slaveOut);
+                        }
+                        slaveOut.write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
+                        slaveOut.flush();
                     }
                     out.write((":" + command.get(1) + "\r\n").getBytes());
                     out.flush();
