@@ -129,6 +129,25 @@ public class Client {
                             System.out.println("reading response:" + socket.getInputStream().read());
                             System.out.println("reading response:" + socket.getInputStream().read());
                             System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+                            System.out.println("reading response:" + socket.getInputStream().read());
+
+
+
+
 //                            System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
                         }
                         catch (Exception e){
