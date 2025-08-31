@@ -125,7 +125,7 @@ public class Client {
                         try{
                             socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
                             socket.getOutputStream().flush();
-                            System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
+//                            System.out.println("Sent REPLCONF GETACK * to slave: " + socket);
                         }
                         catch (Exception e){
 //                            System.out.println("Exception while sending REPLCONF GETACK * to slave: " + e);
