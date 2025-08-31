@@ -112,15 +112,18 @@ public class Client {
                         socket.getOutputStream().flush();
                     }
 
-                    System.out.println("Waiting for replicas to acknowledge");
                     int replicasReplied = 0;
 
                     while((System.currentTimeMillis() - startTime) < timeout || replicasReplied < Integer.parseInt(command.get(1))){
                         for(Socket socket : slaves.keySet()){
-                            BufferedReader slaveReader = this.slaves.get(socket).getReader();
-                            String line = slaveReader.readLine();
-                            if(line != null && line.contains("OK")){
-                                replicasReplied++;
+                            try{
+                                BufferedReader slaveReader = this.slaves.get(socket).getReader();
+                                String line = slaveReader.readLine();
+                                if(line != null && line.contains("OK")){
+                                    replicasReplied++;
+                                }
+                            }catch (Exception e){
+                                System.out.println("Exception while waiting for replicas: " + e.getMessage());
                             }
                         }
                     }
