@@ -123,7 +123,6 @@ public class CommandHandler {
                 sb.append(arg).append("\r\n");
             }
             out.write(sb.toString().getBytes());
-            System.out.println("Propagated to slaves: " + sb);
             out.flush();
         }
 
