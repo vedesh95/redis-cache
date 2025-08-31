@@ -108,8 +108,14 @@ public class Client {
                     int timeout = Integer.parseInt(command.get(2));
 
                     for(Socket socket : slaves.keySet()){
-                        this.slaves.get(socket).getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
-                        this.slaves.get(socket).getOutputStream().flush();
+                        try{
+                            this.slaves.get(socket).getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
+                            this.slaves.get(socket).getOutputStream().flush();
+                        }catch (Exception e){
+                            System.out.println("Exception while sending REPLCONF GETACK * to replicas: " + e.getMessage());
+                            socket.getOutputStream().write(("*3\r\n$8\r\nREPLCONF\r\n$6\r\nGETACK\r\n$1\r\n*\r\n").getBytes());
+                            socket.getOutputStream().flush();
+                        }
 
                         try{
                             System.out.println(this.slaves.get(socket).getReader().readLine());
