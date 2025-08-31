@@ -137,7 +137,7 @@ public class Client {
                     }
 
                     try{
-                        out.write((":" + replicatedTo + "\r\n").getBytes());
+                        out.write((":" + Math.min(replicatedTo, Integer.parseInt(command.get(0))) + "\r\n").getBytes());
                         out.flush();
 
                     }catch (Exception e){
