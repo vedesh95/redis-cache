@@ -17,7 +17,7 @@ public class Zrank implements Command{
         String member = command.get(2);
         int ans = this.sortedSet.getRank(key, member);
 
-        out.write((":" +ans+"\r\n").getBytes());
+        out.write(("$" +ans+"\r\n").getBytes());
         out.flush();
     }
 }
