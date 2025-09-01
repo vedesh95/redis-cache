@@ -56,7 +56,7 @@ public class CommandHandler {
         this.ping = new Ping();
         this.echo = new Echo();
         this.set = new Set(map, lists, threadsWaitingForBLPOP, streamMap);
-        this.get = new Get(map, lists, threadsWaitingForBLPOP, streamMap);
+        this.get = new Get(map, lists, threadsWaitingForBLPOP, streamMap, rdbparser);
         this.rpush = new Rpush(map, lists, threadsWaitingForBLPOP, streamMap);
         this.lrange = new Lrange(map, lists, threadsWaitingForBLPOP, streamMap);
         this.lpush = new Lpush(map, lists, threadsWaitingForBLPOP, streamMap);
