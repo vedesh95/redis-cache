@@ -20,8 +20,8 @@ public class RedisCache {
     private AtomicInteger ackCounter;
     private RDBDetails rdbDetails;
     private RDBParser rdbparser;
-    private Map<String, List<Socket> > pubSubMap;
-    private Map<Socket, List<String> > subPubMap;
+    private Map<String, Set<Socket> > pubSubMap;
+    private Map<Socket, Set<String> > subPubMap;
 
     public RedisCache(){
         this.map = new ConcurrentHashMap<>();

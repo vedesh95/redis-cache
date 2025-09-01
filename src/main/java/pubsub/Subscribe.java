@@ -19,10 +19,10 @@ public class Subscribe implements PubSubCommand{
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private RDBDetails rdbDetails;
     private RDBParser rdbparser;
-    private Map<String, List<Socket >> pubSubMap;
-    private Map<Socket, List<String>> subPubMap;
+    private Map<String, Set<Socket>> pubSubMap;
+    private Map<Socket, Set<String>> subPubMap;
 
-    public Subscribe(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, List<Socket>> pubSubMap, Map<Socket, List<String>> subPubMap){
+    public Subscribe(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, Set<Socket>> pubSubMap, Map<Socket, Set<String>> subPubMap){
         this.map = map;
         this.lists = lists;
         this.threadsWaitingForBLPOP = threadsWaitingForBLPOP;
@@ -37,8 +37,8 @@ public class Subscribe implements PubSubCommand{
     @Override
     public void execute(List<String> command, OutputStream out, Socket socket) throws IOException {
         String channel = command.get(1);
-        if(!this.pubSubMap.containsKey(channel)) this.pubSubMap.put(channel, Collections.synchronizedList(new ArrayList<>()));
-        if(!this.subPubMap.containsKey(socket)) this.subPubMap.put(socket, Collections.synchronizedList(new ArrayList<>()));
+        if(!this.pubSubMap.containsKey(channel)) this.pubSubMap.put(channel, Collections.synchronizedSet(new HashSet<>()));
+        if(!this.subPubMap.containsKey(socket)) this.subPubMap.put(socket, Collections.synchronizedSet(new HashSet<>()));
         this.pubSubMap.get(channel).add(socket);
         this.subPubMap.get(socket).add(channel);
 
