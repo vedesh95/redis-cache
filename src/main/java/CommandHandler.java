@@ -1,7 +1,7 @@
 import command.*;
 import pubsub.PubSubCommand;
 import pubsub.PubSubPing;
-import pubsub.Subscribe;
+import pubsub.UnSubscribe;
 import rdbparser.RDBParser;
 import struct.RDBDetails;
 import struct.ServerInfo;
@@ -84,7 +84,7 @@ public class CommandHandler {
         this.config = new Config(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails);
         this.keys = new Keys(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser);
 
-        this.subscribe = new Subscribe(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
+        this.subscribe = new UnSubscribe(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
         this.pubsubPing = new PubSubPing(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
         this.publish = new pubsub.Publish(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
 
