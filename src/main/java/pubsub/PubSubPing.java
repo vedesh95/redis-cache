@@ -40,7 +40,7 @@ public class PubSubPing implements PubSubCommand {
     public void execute(List<String> command, OutputStream out, Socket socket) throws IOException {
         // resp array of pong and empty string
         out.write("*2\r\n".getBytes());
-        out.write("$4\r\nPONG\r\n".getBytes());
+        out.write("$4\r\npong\r\n".getBytes());
         out.write("$0\r\n\r\n".getBytes());
         out.flush();
     }
