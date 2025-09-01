@@ -51,11 +51,12 @@ public class SortedSet {
     }
 
     public List<String> getRange(String key, int start, int end) {
+        if(!sortedMembers.containsKey(key)) return new ArrayList<>();
+
         int size = sortedMembers.get(key).size();
-        if(!sortedMembers.containsKey(key) || start >= size || start > end) return new ArrayList<>();
+        if(start >= size || start > end) return new ArrayList<>();
         if(end >= size) end = size - 1;
 
-        // iterate on scoremembers to get members in range
         Map<Double, Set<String>> scores = scoreMembers.get(key);
         List<String> result = new java.util.ArrayList<>();
         int index = 0;
