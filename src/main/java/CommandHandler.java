@@ -1,4 +1,6 @@
 import command.*;
+import pubsub.PubSubCommand;
+import pubsub.Subscribe;
 import rdbparser.RDBParser;
 import struct.RDBDetails;
 import struct.ServerInfo;
@@ -7,9 +9,11 @@ import struct.Pair;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -42,8 +46,11 @@ public class CommandHandler {
     Command replicationInfo;
     Command config;
     Command keys;
+    PubSubCommand subscribe;
+    PubSubCommand publish;
 
-    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser) {
+
+    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, Socket> pubSubMap, Map<Socket, String> subPubMap) {
         this.map = map;
         this.lists = lists;
         this.threadsWaitingForBLPOP = threadsWaitingForBLPOP;
@@ -71,9 +78,12 @@ public class CommandHandler {
         this.replicationInfo = new ReplicationInfo(info);
         this.config = new Config(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails);
         this.keys = new Keys(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser);
+
+        this.subscribe = new Subscribe(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
+
     }
 
-    public void handleCommand(List<String> command, OutputStream out){
+    public void handleCommand(List<String> command, OutputStream out, Socket socket){
         try{
             switch (command.get(0).toUpperCase(Locale.ROOT)) {
                 case "PING": ping.execute(command, out); break;

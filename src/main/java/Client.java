@@ -24,8 +24,10 @@ public class Client {
     private AtomicInteger ackCounter;
     private RDBDetails rdbDetails;
     private RDBParser rdbparser;
+    private Map<String, Socket> pubSubMap;
+    private Map<Socket, String> subPubMap;
 
-    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser) {
+    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, Socket> pubSubMap, Map<Socket, String> subPubMap) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -38,9 +40,12 @@ public class Client {
         this.ackCounter = ackCounter;
         this.rdbDetails = rdbDetails;
         this.rdbparser = rdbparser;
+        this.pubSubMap = pubSubMap;
+        this.subPubMap = subPubMap;
     }
 
     public void listen(Socket clientSocket, BufferedReader reader, OutputStream out) {
+
 
         try (clientSocket; reader; out) {
             boolean isInTransaction = false;
@@ -80,7 +85,7 @@ public class Client {
                     out.write(("*" + transaction.size() + "\r\n").getBytes());
                     out.flush();
                     for(List<String> cmd : transaction){
-                        this.commandHandler.handleCommand(cmd, out);
+                        this.commandHandler.handleCommand(cmd,out, clientSocket);
                     }
                     transaction.clear();
                 }else if(command.get(0).equalsIgnoreCase("DISCARD")){
@@ -151,11 +156,11 @@ public class Client {
                     }
                     commandsBeforeWAIT.clear();
                 }else {
-                    if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
+                    if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out,clientSocket);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
                         @Override
                         public void write(int b) throws IOException {}
-                    });
+                    }, clientSocket);
                 }
 
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
