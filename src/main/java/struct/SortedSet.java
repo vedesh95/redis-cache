@@ -1,5 +1,6 @@
 package struct;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
@@ -28,8 +29,6 @@ public class SortedSet {
 
     public int getRank(String key, String member) {
         if(!sortedMembers.containsKey(key) || !sortedMembers.get(key).containsKey(member)) return -1;
-
-//        Map<String, Double> members = sortedMembers.get(key);
         double score = sortedMembers.get(key).get(member);
         Map<Double, Set<String>> scores = scoreMembers.get(key);
         int rank = 0;
@@ -48,5 +47,13 @@ public class SortedSet {
             }
         }
         return rank;
+    }
+
+    public List<String> getRange(String key, int start, int end) {
+        int size = sortedMembers.get(key).size();
+        if(!sortedMembers.containsKey(key) || start >= size || start > end) return List.of();
+        if(end >= size) end = size - 1;
+        return sortedMembers.get(key).keySet().stream().skip(start).limit(end - start + 1).toList();
+
     }
 }
