@@ -24,10 +24,10 @@ public class Client {
     private AtomicInteger ackCounter;
     private RDBDetails rdbDetails;
     private RDBParser rdbparser;
-    private Map<String, List<Socket >> pubSubMap;
-    private Map<Socket, List<String>> subPubMap;
+    private Map<String, Set<Socket >> pubSubMap;
+    private Map<Socket, Set<String>> subPubMap;
 
-    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, List<Socket>> pubSubMap, Map<Socket, List<String>> subPubMap) {
+    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, Set<Socket>> pubSubMap, Map<Socket, Set<String>> subPubMap) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
