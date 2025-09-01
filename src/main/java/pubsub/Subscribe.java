@@ -45,7 +45,7 @@ public class Subscribe implements PubSubCommand{
         out.write("*3\r\n".getBytes());
         out.write("$9\r\nsubscribe\r\n".getBytes());
         out.write(("$" + channel.length() + "\r\n" + channel + "\r\n").getBytes());
-        out.write((":" + subPubMap.get(socket).size() + "\r\n" + subPubMap.get(socket) + "\r\n").getBytes());
+        out.write((":" + subPubMap.get(socket).size() + "\r\n").getBytes());
         out.flush();
     }
 
