@@ -41,11 +41,12 @@ public class UnSubscribe implements PubSubCommand{
 //        if(!this.subPubMap.containsKey(socket)) this.subPubMap.put(socket, Collections.synchronizedSet(new HashSet<>()));
         if(this.pubSubMap.containsKey(channel)) this.pubSubMap.get(channel).remove(socket);
         if(this.subPubMap.containsKey(socket)) this.subPubMap.get(socket).remove(channel);
+        int subs = subPubMap.containsKey(socket) ? subPubMap.get(socket).size() : 0;
 
         out.write("*3\r\n".getBytes());
         out.write("$9\r\nsubscribe\r\n".getBytes());
         out.write(("$" + channel.length() + "\r\n" + channel + "\r\n").getBytes());
-        out.write((":" + subPubMap.get(socket).size() + "\r\n").getBytes());
+        out.write((":" + subs + "\r\n").getBytes());
         out.flush();
     }
 
