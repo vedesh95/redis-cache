@@ -174,6 +174,7 @@ public class RDBParser {
                         String key = readString(dis);
                         String value = readString(dis);
                         entries.add(new RedisEntry(key, value, expiry*1000, currentDb));
+                        System.out.println("Key " + key + " expires at in secs" + (expiry));
                         expiry = null;
                         break;
                     }
@@ -184,6 +185,7 @@ public class RDBParser {
                         String key = readString(dis);
                         String value = readString(dis);
                         entries.add(new RedisEntry(key, value, expiry, currentDb));
+                        System.out.println("Key " + key + " expires at in ms" + (expiry));
                         expiry = null;
                         break;
                     }
