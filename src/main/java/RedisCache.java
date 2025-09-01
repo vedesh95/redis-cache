@@ -1,5 +1,6 @@
 import rdbparser.RDBParser;
 import struct.*;
+import struct.SortedSet;
 
 import java.io.BufferedReader;
 import java.io.OutputStream;
@@ -7,8 +8,6 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentSkipListMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RedisCache {
@@ -24,7 +23,7 @@ public class RedisCache {
     private RDBParser rdbparser;
     private Map<String, Set<Socket> > pubSubMap;
     private Map<Socket, Set<String> > subPubMap;
-    private Map<String, Set<SortedSetElement>> sortedSet;
+    private SortedSet sortedSet;
 
     public RedisCache(){
         this.map = new ConcurrentHashMap<>();
@@ -38,7 +37,7 @@ public class RedisCache {
         this.rdbparser = new RDBParser();
         this.pubSubMap = new ConcurrentHashMap<>();
         this.subPubMap = new ConcurrentHashMap<>();
-        this.sortedSet  = new ConcurrentSkipListMap<>();
+        this.sortedSet  = new SortedSet();
         this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info, ackCounter, rdbDetails, rdbparser, pubSubMap, subPubMap, sortedSet);
     }
 

@@ -28,7 +28,7 @@ public class CommandHandler {
     private RDBParser rdbparser;
     private Map<String, java.util.Set<Socket> > pubSubMap;
     private Map<Socket, java.util.Set<String>> subPubMap;
-    private  Map<String, java.util.Set<SortedSetElement>> sortedSet;
+    private SortedSet sortedSet;
 
     Command ping;
     Command echo;
@@ -56,7 +56,7 @@ public class CommandHandler {
     // sortedset commands
     Command zadd;
 
-    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, java.util.Set<Socket> > pubSubMap, Map<Socket, java.util.Set<String>> subPubMap,   Map<String, java.util.Set<SortedSetElement>> sortedSet) {
+    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, java.util.Set<Socket> > pubSubMap, Map<Socket, java.util.Set<String>> subPubMap, SortedSet sortedSet) {
         this.map = map;
         this.lists = lists;
         this.threadsWaitingForBLPOP = threadsWaitingForBLPOP;
