@@ -26,8 +26,9 @@ public class Client {
     private RDBParser rdbparser;
     private Map<String, Set<Socket >> pubSubMap;
     private Map<Socket, Set<String>> subPubMap;
+    private Map<String, Set<SortedSetElement>> sortedSet;
 
-    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, Set<Socket>> pubSubMap, Map<Socket, Set<String>> subPubMap) {
+    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, Set<Socket>> pubSubMap, Map<Socket, Set<String>> subPubMap, Map<String, Set<SortedSetElement>> sortedSet) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -42,6 +43,7 @@ public class Client {
         this.rdbparser = rdbparser;
         this.pubSubMap = pubSubMap;
         this.subPubMap = subPubMap;
+        this.sortedSet = sortedSet;
     }
 
     public void listen(Socket clientSocket, BufferedReader reader, OutputStream out) {

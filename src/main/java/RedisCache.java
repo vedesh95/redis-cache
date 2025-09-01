@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RedisCache {
@@ -22,6 +24,7 @@ public class RedisCache {
     private RDBParser rdbparser;
     private Map<String, Set<Socket> > pubSubMap;
     private Map<Socket, Set<String> > subPubMap;
+    private Map<String, Set<SortedSetElement>> sortedSet;
 
     public RedisCache(){
         this.map = new ConcurrentHashMap<>();
@@ -35,12 +38,14 @@ public class RedisCache {
         this.rdbparser = new RDBParser();
         this.pubSubMap = new ConcurrentHashMap<>();
         this.subPubMap = new ConcurrentHashMap<>();
-        this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info, ackCounter, rdbDetails, rdbparser, pubSubMap, subPubMap);
+        this.sortedSet  = new ConcurrentSkipListMap<>();
+        this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info, ackCounter, rdbDetails, rdbparser, pubSubMap, subPubMap, sortedSet);
+
     }
 
     public void addClient(Socket clientSocket, ClientType clientType, BufferedReader reader, OutputStream out){
         new Thread(() -> {
-            Client client = new Client(commandHandler, clientType, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves, ackCounter, rdbDetails, rdbparser, pubSubMap, subPubMap);
+            Client client = new Client(commandHandler, clientType, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves, ackCounter, rdbDetails, rdbparser, pubSubMap, subPubMap, sortedSet);
             client.listen(clientSocket, reader, out);
         }).start();
     }

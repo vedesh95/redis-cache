@@ -4,10 +4,7 @@ import pubsub.PubSubPing;
 import pubsub.Subscribe;
 import pubsub.UnSubscribe;
 import rdbparser.RDBParser;
-import struct.RDBDetails;
-import struct.ServerInfo;
-import struct.KeyValue;
-import struct.Pair;
+import struct.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,6 +28,7 @@ public class CommandHandler {
     private RDBParser rdbparser;
     private Map<String, java.util.Set<Socket> > pubSubMap;
     private Map<Socket, java.util.Set<String>> subPubMap;
+    private  Map<String, java.util.Set<SortedSetElement>> sortedSet;
 
     Command ping;
     Command echo;
@@ -50,12 +48,15 @@ public class CommandHandler {
     Command replicationInfo;
     Command config;
     Command keys;
+    // pubsub commands
     PubSubCommand subscribe;
     PubSubCommand publish;
     PubSubCommand pubsubPing;
     PubSubCommand unsubscribe;
+    // sortedset commands
+    Command zadd;
 
-    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, java.util.Set<Socket> > pubSubMap, Map<Socket, java.util.Set<String>> subPubMap) {
+    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, java.util.Set<Socket> > pubSubMap, Map<Socket, java.util.Set<String>> subPubMap,   Map<String, java.util.Set<SortedSetElement>> sortedSet) {
         this.map = map;
         this.lists = lists;
         this.threadsWaitingForBLPOP = threadsWaitingForBLPOP;
@@ -66,6 +67,7 @@ public class CommandHandler {
         this.rdbparser = rdbparser;
         this.pubSubMap = pubSubMap;
         this.subPubMap = subPubMap;
+        this.sortedSet = sortedSet;
 
         this.ping = new Ping();
         this.echo = new Echo();
@@ -90,6 +92,8 @@ public class CommandHandler {
         this.pubsubPing = new PubSubPing(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
         this.publish = new pubsub.Publish(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
         this.unsubscribe = new UnSubscribe(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
+
+        this.zadd = new Zadd(sortedSet);
     }
 
     public void handleCommand(List<String> command, OutputStream out, Socket socket){
@@ -143,6 +147,7 @@ public class CommandHandler {
                 case "SUBSCRIBE": subscribe.execute(command, out, socket); break;
                 case "PUBLISH": publish.execute(command, out, socket); break;
                 case "UNSUBSCRIBE": unsubscribe.execute(command, out, socket); break;
+                case "ZADD": zadd.execute(command, out); break;
                 case "QUIT":
                     out.write("+OK\r\n".getBytes());
                     out.flush();
