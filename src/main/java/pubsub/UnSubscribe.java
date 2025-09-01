@@ -42,7 +42,7 @@ public class UnSubscribe implements PubSubCommand{
 
         int subs = subPubMap.containsKey(socket) ? subPubMap.get(socket).size() : 0;
         out.write("*3\r\n".getBytes());
-        out.write("$9\r\nsubscribe\r\n".getBytes());
+        out.write("$9\r\nunsubscribe\r\n".getBytes());
         out.write(("$" + channel.length() + "\r\n" + channel + "\r\n").getBytes());
         out.write((":" + subs + "\r\n").getBytes());
         out.flush();
