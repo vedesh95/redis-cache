@@ -53,7 +53,20 @@ public class SortedSet {
         int size = sortedMembers.get(key).size();
         if(!sortedMembers.containsKey(key) || start >= size || start > end) return List.of();
         if(end >= size) end = size - 1;
-        return sortedMembers.get(key).keySet().stream().skip(start).limit(end - start + 1).toList();
 
+        // iterate on scoremembers to get members in range
+        Map<Double, Set<String>> scores = scoreMembers.get(key);
+        List<String> result = new java.util.ArrayList<>();
+        int index = 0;
+        outer: for(Map.Entry<Double, Set<String>> entry : scores.entrySet()) {
+            for (String member : entry.getValue()) {
+                if (index >= start && index <= end) {
+                    result.add(member);
+                }
+                index++;
+                if (index > end) break outer;
+            }
+        }
+        return result;
     }
 }
