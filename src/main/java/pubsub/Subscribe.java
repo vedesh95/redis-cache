@@ -8,9 +8,7 @@ import struct.RDBDetails;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -21,10 +19,10 @@ public class Subscribe implements PubSubCommand{
     private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap = new ConcurrentHashMap<>();
     private RDBDetails rdbDetails;
     private RDBParser rdbparser;
-    private Map<String, Socket> pubSubMap;
-    private Map<Socket, String> subPubMap;
+    private Map<String, List<Socket >> pubSubMap;
+    private Map<Socket, List<String>> subPubMap;
 
-    public Subscribe(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, Socket> pubSubMap, Map<Socket, String> subPubMap){
+    public Subscribe(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, List<Socket>> pubSubMap, Map<Socket, List<String>> subPubMap){
         this.map = map;
         this.lists = lists;
         this.threadsWaitingForBLPOP = threadsWaitingForBLPOP;
@@ -39,13 +37,15 @@ public class Subscribe implements PubSubCommand{
     @Override
     public void execute(List<String> command, OutputStream out, Socket socket) throws IOException {
         String channel = command.get(1);
-        this.pubSubMap.put(channel, socket);
-        this.subPubMap.put(socket, channel);
+        if(!this.pubSubMap.containsKey(channel)) this.pubSubMap.put(channel, Collections.synchronizedList(new ArrayList<>()));
+        if(!this.subPubMap.containsKey(socket)) this.subPubMap.put(socket, Collections.synchronizedList(new ArrayList<>()));
+        this.pubSubMap.get(channel).add(socket);
+        this.subPubMap.get(socket).add(channel);
 
         out.write("*3\r\n".getBytes());
         out.write("$9\r\nsubscribe\r\n".getBytes());
         out.write(("$" + channel.length() + "\r\n" + channel + "\r\n").getBytes());
-        out.write(("$" + subPubMap.get(socket).length() + "\r\n" + subPubMap.get(socket) + "\r\n").getBytes());
+        out.write((":" + subPubMap.get(socket).size() + "\r\n" + subPubMap.get(socket) + "\r\n").getBytes());
         out.flush();
     }
 
