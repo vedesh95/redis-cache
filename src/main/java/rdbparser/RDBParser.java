@@ -208,6 +208,7 @@ public class RDBParser {
                 }
             }
         }
+        printData();
     }
 
     public void printData() {
@@ -232,7 +233,7 @@ public class RDBParser {
 //    public static void main(String[] args) throws IOException {
 //        rdbparser.RDBParser parser = new rdbparser.RDBParser();
 //        parser.parse("/Users/vedesh/vedeshg/codecrafters-redis-java/dump.rdb");
-////        parser.printData();
+//        parser.printData();
 //    }
 
 
