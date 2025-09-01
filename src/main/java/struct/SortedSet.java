@@ -25,4 +25,35 @@ public class SortedSet {
         scores.get(score).add(member);
         return isNewMember;
     }
+
+    public int getRank(String key, String member) {
+        if(!sortedMembers.containsKey(key) || !sortedMembers.get(key).containsKey(member)) return -1;
+        Map<String, Double> members = sortedMembers.get(key);
+        int i=0;
+        for(String m : members.keySet()) {
+            if(m.equals(member)) {
+                return i;
+            }
+            i++;
+        }
+        return i;
+//        double score = members.get(member);
+//        Map<Double, Set<String>> scores = scoreMembers.get(key);
+//        int rank = 0;
+//        for(Map.Entry<Double, Set<String>> entry : scores.entrySet()) {
+//            if(entry.getKey() < score) {
+//                rank += entry.getValue().size();
+//            } else if(entry.getKey().equals(score)) {
+//                for(String m : entry.getValue()) {
+//                    if(m.equals(member)) {
+//                        return rank;
+//                    }
+//                    rank++;
+//                }
+//            } else {
+//                break;
+//            }
+//        }
+//        return rank;
+    }
 }
