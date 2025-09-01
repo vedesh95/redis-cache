@@ -54,8 +54,12 @@ public class SortedSet {
         if(!sortedMembers.containsKey(key)) return new ArrayList<>();
 
         int size = sortedMembers.get(key).size();
-        if(start >= size || start > end) return new ArrayList<>();
+
         if(end >= size) end = size - 1;
+        if(start < 0) start = size + start;
+        if(end< 0) end = size + end;
+        if(start < 0) start = 0;
+        if(start >= size || start > end) return new ArrayList<>();
 
         Map<Double, Set<String>> scores = scoreMembers.get(key);
         List<String> result = new java.util.ArrayList<>();
