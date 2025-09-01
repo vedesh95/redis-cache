@@ -41,8 +41,6 @@ public class Subscribe implements PubSubCommand{
         if(!this.subPubMap.containsKey(socket)) this.subPubMap.put(socket, Collections.synchronizedSet(new HashSet<>()));
         this.pubSubMap.get(channel).add(socket);
         this.subPubMap.get(socket).add(channel);
-        System.out.println("Subscribed to channel: " + channel + " total subscribers: " + this.pubSubMap.get(channel).size());
-        System.out.println(" Total channels for this socket: " + this.subPubMap.get(socket).size());
 
         out.write("*3\r\n".getBytes());
         out.write("$9\r\nsubscribe\r\n".getBytes());

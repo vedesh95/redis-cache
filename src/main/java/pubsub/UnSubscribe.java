@@ -37,12 +37,10 @@ public class UnSubscribe implements PubSubCommand{
     @Override
     public void execute(List<String> command, OutputStream out, Socket socket) throws IOException {
         String channel = command.get(1);
-//        if(!this.pubSubMap.containsKey(channel)) this.pubSubMap.put(channel, Collections.synchronizedSet(new HashSet<>()));
-//        if(!this.subPubMap.containsKey(socket)) this.subPubMap.put(socket, Collections.synchronizedSet(new HashSet<>()));
         if(this.pubSubMap.containsKey(channel)) this.pubSubMap.get(channel).remove(socket);
         if(this.subPubMap.containsKey(socket)) this.subPubMap.get(socket).remove(channel);
-        int subs = subPubMap.containsKey(socket) ? subPubMap.get(socket).size() : 0;
 
+        int subs = subPubMap.containsKey(socket) ? subPubMap.get(socket).size() : 0;
         out.write("*3\r\n".getBytes());
         out.write("$9\r\nsubscribe\r\n".getBytes());
         out.write(("$" + channel.length() + "\r\n" + channel + "\r\n").getBytes());
