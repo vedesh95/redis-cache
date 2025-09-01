@@ -65,7 +65,7 @@ public class Client {
                 if(subPubMap.containsKey(clientSocket) && subPubMap.get(clientSocket).size()> 0){
                     List<String> pubsubCommands = Arrays.asList("SUBSCRIBE", "UNSUBSCRIBE", "PSUBSCRIBE", "PUNSUBSCRIBE", "PING", "QUIT");
                     if(!pubsubCommands.contains(command.get(0).toUpperCase())){
-                        out.write("-ERR Can't execute 'echo': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context\r\n".getBytes());
+                        out.write(("-ERR Can't execute '" + command.get(0).toLowerCase() + "': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context\r\n").getBytes());
                         out.flush();
                         continue;
                     }
