@@ -40,7 +40,6 @@ public class RedisCache {
         this.subPubMap = new ConcurrentHashMap<>();
         this.sortedSet  = new ConcurrentSkipListMap<>();
         this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info, ackCounter, rdbDetails, rdbparser, pubSubMap, subPubMap, sortedSet);
-
     }
 
     public void addClient(Socket clientSocket, ClientType clientType, BufferedReader reader, OutputStream out){
