@@ -93,7 +93,7 @@ public class CommandHandler {
         try{
             switch (command.get(0).toUpperCase(Locale.ROOT)) {
                 case "PING":
-                    if(this.subPubMap.containsKey(socket)) {ping.execute(command, out); break;}
+                    if(!this.subPubMap.containsKey(socket)) {ping.execute(command, out); break;}
                     pubsubPing.execute(command, out, socket);break;
                 case "ECHO": echo.execute(command, out); break;
                 case "SET": set.execute(command, out); break;
