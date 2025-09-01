@@ -1,3 +1,4 @@
+import rdbparser.RDBParser;
 import struct.*;
 
 import java.io.BufferedReader;
@@ -18,6 +19,7 @@ public class RedisCache {
     private Map<Socket, SlaveDetails> slaves;
     private AtomicInteger ackCounter;
     private RDBDetails rdbDetails;
+    private RDBParser rdbparser;
 
     public RedisCache(){
         this.map = new ConcurrentHashMap<>();
@@ -28,12 +30,21 @@ public class RedisCache {
         this.slaves = new ConcurrentHashMap<>();
         this.ackCounter = new AtomicInteger(0);
         this.rdbDetails = new RDBDetails();
-        this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info, ackCounter, rdbDetails);
+
+        if(this.rdbDetails.getDir() != null && this.rdbDetails.getDbfilename() != null) {
+            this.rdbparser = new RDBParser();
+            try {
+                this.rdbparser.parse(this.rdbDetails.getDir() + "/" + this.rdbDetails.getDbfilename());
+            } catch (Exception e) {
+                System.out.println("Error parsing RDB file: " + e.getMessage());
+            }
+        }
+        this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info, ackCounter, rdbDetails, rdbparser);
     }
 
     public void addClient(Socket clientSocket, ClientType clientType, BufferedReader reader, OutputStream out){
         new Thread(() -> {
-            Client client = new Client(commandHandler, clientType, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves, ackCounter, rdbDetails);
+            Client client = new Client(commandHandler, clientType, clientSocket, map, lists, threadsWaitingForBLPOP, streamMap, slaves, ackCounter, rdbDetails, rdbparser);
             client.listen(clientSocket, reader, out);
         }).start();
     }
@@ -52,5 +63,13 @@ public class RedisCache {
 
     public void setRdbDetails(RDBDetails rdbDetails) {
         this.rdbDetails = rdbDetails;
+    }
+
+    public RDBParser getRdbparser() {
+        return rdbparser;
+    }
+
+    public void setRdbparser(RDBParser rdbparser) {
+        this.rdbparser = rdbparser;
     }
 }

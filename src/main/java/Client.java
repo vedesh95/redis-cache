@@ -1,4 +1,4 @@
-import command.Command;
+import rdbparser.RDBParser;
 import struct.*;
 
 import java.io.*;
@@ -23,8 +23,9 @@ public class Client {
     private ClientType clientType;
     private AtomicInteger ackCounter;
     private RDBDetails rdbDetails;
+    private RDBParser rdbparser;
 
-    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter, RDBDetails rdbDetails) {
+    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -36,6 +37,7 @@ public class Client {
         this.clientType = clientType;
         this.ackCounter = ackCounter;
         this.rdbDetails = rdbDetails;
+        this.rdbparser = rdbparser;
     }
 
     public void listen(Socket clientSocket, BufferedReader reader, OutputStream out) {

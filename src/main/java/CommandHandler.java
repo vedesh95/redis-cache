@@ -1,4 +1,5 @@
 import command.*;
+import rdbparser.RDBParser;
 import struct.RDBDetails;
 import struct.ServerInfo;
 import struct.KeyValue;
@@ -21,6 +22,7 @@ public class CommandHandler {
     private ServerInfo info;
     private AtomicInteger ackCounter;
     private RDBDetails rdbDetails;
+    private RDBParser rdbparser;
 
     Command ping;
     Command echo;
@@ -39,8 +41,9 @@ public class CommandHandler {
     Command incr;
     Command replicationInfo;
     Command config;
+    Command keys;
 
-    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails) {
+    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser) {
         this.map = map;
         this.lists = lists;
         this.threadsWaitingForBLPOP = threadsWaitingForBLPOP;
@@ -48,6 +51,7 @@ public class CommandHandler {
         this.info = info;
         this.ackCounter = ackCounter;
         this.rdbDetails = rdbDetails;
+        this.rdbparser = rdbparser;
 
         this.ping = new Ping();
         this.echo = new Echo();
@@ -66,6 +70,7 @@ public class CommandHandler {
         this.incr = new Incr(map, lists, threadsWaitingForBLPOP, streamMap);
         this.replicationInfo = new ReplicationInfo(info);
         this.config = new Config(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails);
+        this.keys = new Keys(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser);
     }
 
     public void handleCommand(List<String> command, OutputStream out){
@@ -113,6 +118,7 @@ public class CommandHandler {
                     out.flush();
                     break;
                 case "CONFIG": config.execute(command, out); break;
+                case "KEYS": keys.execute(command, out); break;
                 default:
                     out.write("-ERR unknown command\r\n".getBytes());
                     out.flush();
