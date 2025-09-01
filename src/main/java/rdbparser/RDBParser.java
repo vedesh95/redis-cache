@@ -173,7 +173,7 @@ public class RDBParser {
                         if (valueType != 0x00) throw new IOException("Only string supported");
                         String key = readString(dis);
                         String value = readString(dis);
-                        entries.add(new RedisEntry(key, value, expiry, currentDb));
+                        entries.add(new RedisEntry(key, value, expiry*1000, currentDb));
                         expiry = null;
                         break;
                     }
@@ -208,7 +208,7 @@ public class RDBParser {
                 }
             }
         }
-        printData();
+//        printData();
     }
 
     public void printData() {
