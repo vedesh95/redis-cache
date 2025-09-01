@@ -86,6 +86,7 @@ public class CommandHandler {
 
         this.subscribe = new Subscribe(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
         this.pubsubPing = new PubSubPing(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
+        this.publish = new pubsub.Publish(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
 
     }
 
@@ -138,6 +139,7 @@ public class CommandHandler {
                 case "CONFIG": config.execute(command, out); break;
                 case "KEYS": keys.execute(command, out); break;
                 case "SUBSCRIBE": subscribe.execute(command, out, socket); break;
+                case "PUBLISH": publish.execute(command, out, socket); break;
                 default:
                     out.write("-ERR unknown command\r\n".getBytes());
                     out.flush();
