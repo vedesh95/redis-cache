@@ -75,4 +75,9 @@ public class SortedSet {
         }
         return result;
     }
+
+    public int getZCard(String key){
+        if(!sortedMembers.containsKey(key)) return 0;
+        return sortedMembers.get(key).size();
+    }
 }
