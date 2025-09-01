@@ -128,7 +128,8 @@ public class CommandHandler {
                     out.flush();
                     break;
                 case "CONFIG": config.execute(command, out); break;
-                case "KEYS": keys.execute(command, out); break;
+                case "KEYS": keys.execute(command, out); break;s
+                case "SUBSCRIBE": subscribe.execute(command, out, socket); break;
                 default:
                     out.write("-ERR unknown command\r\n".getBytes());
                     out.flush();
