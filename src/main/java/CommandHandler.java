@@ -1,5 +1,6 @@
 import command.*;
 import pubsub.PubSubCommand;
+import pubsub.PubSubPing;
 import pubsub.Subscribe;
 import rdbparser.RDBParser;
 import struct.RDBDetails;
@@ -27,6 +28,8 @@ public class CommandHandler {
     private AtomicInteger ackCounter;
     private RDBDetails rdbDetails;
     private RDBParser rdbparser;
+    private Map<String, java.util.Set<Socket> > pubSubMap;
+    private Map<Socket, java.util.Set<String>> subPubMap;
 
     Command ping;
     Command echo;
@@ -48,7 +51,7 @@ public class CommandHandler {
     Command keys;
     PubSubCommand subscribe;
     PubSubCommand publish;
-
+    PubSubCommand pubsubPing;
 
     public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, java.util.Set<Socket> > pubSubMap, Map<Socket, java.util.Set<String>> subPubMap) {
         this.map = map;
@@ -59,6 +62,8 @@ public class CommandHandler {
         this.ackCounter = ackCounter;
         this.rdbDetails = rdbDetails;
         this.rdbparser = rdbparser;
+        this.pubSubMap = pubSubMap;
+        this.subPubMap = subPubMap;
 
         this.ping = new Ping();
         this.echo = new Echo();
@@ -80,13 +85,16 @@ public class CommandHandler {
         this.keys = new Keys(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser);
 
         this.subscribe = new Subscribe(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
+        this.pubsubPing = new PubSubPing(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
 
     }
 
     public void handleCommand(List<String> command, OutputStream out, Socket socket){
         try{
             switch (command.get(0).toUpperCase(Locale.ROOT)) {
-                case "PING": ping.execute(command, out); break;
+                case "PING":
+                    if(this.subPubMap.containsKey(socket)) {ping.execute(command, out); break;}
+                    pubsubPing.execute(command, out, socket);break;
                 case "ECHO": echo.execute(command, out); break;
                 case "SET": set.execute(command, out); break;
                 case "GET": get.execute(command, out); break;
