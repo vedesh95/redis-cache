@@ -62,6 +62,15 @@ public class Client {
                 } catch (IOException e) {}
                 if(command.isEmpty()) continue;
 
+                if(subPubMap.containsKey(clientSocket) && subPubMap.get(clientSocket).size()> 0){
+                    List<String> pubsubCommands = Arrays.asList("SUBSCRIBE", "UNSUBSCRIBE", "PSUBSCRIBE", "PUNSUBSCRIBE", "PING", "QUIT");
+                    if(!pubsubCommands.contains(command.get(0).toUpperCase())){
+                        out.write("-ERR only (UN)SUBSCRIBE allowed in this context\r\n".getBytes());
+                        out.flush();
+                        continue;
+                    }
+                }
+
                 commandsBeforeWAIT.add(command);
 
                 if(!lastcommands.isEmpty() && !command.get(0).equalsIgnoreCase("REPLCONF"))  lastcommands.add(command);
