@@ -43,7 +43,23 @@ public class Publish implements PubSubCommand{
         int numSubscribers = 0;
         if (this.pubSubMap.containsKey(channel))
             numSubscribers = this.pubSubMap.get(channel).size();
-
         out.write((":" + numSubscribers + "\r\n").getBytes());
+
+        // produce message to all subscribers
+        if (this.pubSubMap.containsKey(channel)) {
+            String message = command.get(2);
+            for (Socket subscriberSocket : this.pubSubMap.get(channel)) {
+                try {
+                    OutputStream subscriberOut = subscriberSocket.getOutputStream();
+                    subscriberOut.write("*3\r\n".getBytes());
+                    subscriberOut.write("$7\r\nmessage\r\n".getBytes());
+                    subscriberOut.write(("$" + channel.length() + "\r\n" + channel + "\r\n").getBytes());
+                    subscriberOut.write(("$" + message.length() + "\r\n" + message + "\r\n").getBytes());
+                    subscriberOut.flush();
+                } catch (IOException e) {
+                    // Handle exception if needed
+                }
+            }
+        }
     }
 }
