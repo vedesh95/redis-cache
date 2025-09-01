@@ -6,7 +6,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 public class SortedSet {
-    public Map<String, Map<String, Double>> sortedMembers;
+    public Map<String, Map<String, Double>> sortedMembers; // fast lookup by key member
     public Map<String, Map<Double, Set<String>>> scoreMembers;
     public SortedSet() {
         this.sortedMembers = new ConcurrentSkipListMap<>();
@@ -28,32 +28,25 @@ public class SortedSet {
 
     public int getRank(String key, String member) {
         if(!sortedMembers.containsKey(key) || !sortedMembers.get(key).containsKey(member)) return -1;
-        Map<String, Double> members = sortedMembers.get(key);
-        int i=0;
-        for(String m : members.keySet()) {
-            if(m.equals(member)) {
-                return i;
+
+//        Map<String, Double> members = sortedMembers.get(key);
+        double score = sortedMembers.get(key).get(member);
+        Map<Double, Set<String>> scores = scoreMembers.get(key);
+        int rank = 0;
+        for(Map.Entry<Double, Set<String>> entry : scores.entrySet()) {
+            if(entry.getKey() < score) {
+                rank += entry.getValue().size();
+            } else if(entry.getKey().equals(score)) {
+                for(String m : entry.getValue()) {
+                    if(m.equals(member)) {
+                        return rank;
+                    }
+                    rank++;
+                }
+            } else {
+                break;
             }
-            i++;
         }
-        return i;
-//        double score = members.get(member);
-//        Map<Double, Set<String>> scores = scoreMembers.get(key);
-//        int rank = 0;
-//        for(Map.Entry<Double, Set<String>> entry : scores.entrySet()) {
-//            if(entry.getKey() < score) {
-//                rank += entry.getValue().size();
-//            } else if(entry.getKey().equals(score)) {
-//                for(String m : entry.getValue()) {
-//                    if(m.equals(member)) {
-//                        return rank;
-//                    }
-//                    rank++;
-//                }
-//            } else {
-//                break;
-//            }
-//        }
-//        return rank;
+        return rank;
     }
 }
