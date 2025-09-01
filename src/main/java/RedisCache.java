@@ -30,15 +30,7 @@ public class RedisCache {
         this.slaves = new ConcurrentHashMap<>();
         this.ackCounter = new AtomicInteger(0);
         this.rdbDetails = new RDBDetails();
-
-        if(this.rdbDetails.getDir() != null && this.rdbDetails.getDbfilename() != null) {
-            this.rdbparser = new RDBParser();
-            try {
-                this.rdbparser.parse(this.rdbDetails.getDir() + "/" + this.rdbDetails.getDbfilename());
-            } catch (Exception e) {
-                System.out.println("Error parsing RDB file: " + e.getMessage());
-            }
-        }
+        this.rdbparser = new RDBParser();
         this.commandHandler = new CommandHandler(map, lists, threadsWaitingForBLPOP, streamMap, info, ackCounter, rdbDetails, rdbparser);
     }
 
@@ -55,6 +47,16 @@ public class RedisCache {
 
     public void setInfo(ServerInfo info) {
         this.info = info;
+    }
+
+    public void initRDBParser() {
+        if(this.rdbDetails.getDir() != null && this.rdbDetails.getDbfilename() != null) {
+            try {
+                this.rdbparser.parse(this.rdbDetails.getDir() + "/" + this.rdbDetails.getDbfilename());
+            } catch (Exception e) {
+                System.out.println("Error parsing RDB file: " + e.getMessage());
+            }
+        }
     }
 
     public RDBDetails getRdbDetails() {
