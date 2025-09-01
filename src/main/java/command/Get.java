@@ -37,8 +37,8 @@ public class Get implements Command{
         }
         if(value == null){
             for(RDBParser.RedisEntry entry : rdbparser.entries){
-                if(entry.key.equals(key) && entry.expiry > System.currentTimeMillis()){
-                    value = entry.value;
+                if(entry.key.equals(key) ){
+                    if(entry.expiry!=null && entry.expiry > System.currentTimeMillis()) value = entry.value;
                 }
             }
         }
