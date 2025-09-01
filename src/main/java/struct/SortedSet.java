@@ -1,5 +1,6 @@
 package struct;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,7 +52,7 @@ public class SortedSet {
 
     public List<String> getRange(String key, int start, int end) {
         int size = sortedMembers.get(key).size();
-        if(!sortedMembers.containsKey(key) || start >= size || start > end) return List.of();
+        if(!sortedMembers.containsKey(key) || start >= size || start > end) return new ArrayList<>();
         if(end >= size) end = size - 1;
 
         // iterate on scoremembers to get members in range
