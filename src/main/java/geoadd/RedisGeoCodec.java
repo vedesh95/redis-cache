@@ -7,10 +7,10 @@ import java.util.List;
 
 public class RedisGeoCodec {
 
-    private static final double MIN_LAT = -85.05112878;
-    private static final double MAX_LAT = 85.05112878;
-    private static final double MIN_LON = -180.0;
-    private static final double MAX_LON = 180.0;
+    public static final double MIN_LAT = -85.05112878;
+    public static final double MAX_LAT = 85.05112878;
+    public static final double MIN_LON = -180.0;
+    public static final double MAX_LON = 180.0;
     private static final double LAT_RANGE = MAX_LAT - MIN_LAT;
     private static final double LON_RANGE = MAX_LON - MIN_LON;
     private static final long GRID_SIZE = 1L << 26; // 2^26
