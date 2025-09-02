@@ -15,7 +15,7 @@ public class RedisGeoCodec {
     private static final double LON_RANGE = MAX_LON - MIN_LON;
     private static final long GRID_SIZE = 1L << 26; // 2^26
 
-    public static long encode(double lat, double lon) {
+    public static long encode(double lon, double lat) {
         long x = normalize(lat, MIN_LAT, LAT_RANGE);
         long y = normalize(lon, MIN_LON, LON_RANGE);
         return interleaveBits(x, y);

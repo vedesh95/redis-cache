@@ -29,7 +29,7 @@ public class Geoadd implements GeoCommand {
         }
 
         String member = command.get(4);
-        double score = RedisGeoCodec.encode(latitude, longitude);
+        double score = RedisGeoCodec.encode(longitude, latitude);
         int ans = this.sortedSet.put(key, score, member);
         // output
         out.write((":" + ans + "\r\n").getBytes());
