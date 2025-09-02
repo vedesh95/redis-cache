@@ -34,15 +34,17 @@ public class Blpop implements Command {
         threadsWaitingForBLPOP.get(key).offer(Thread.currentThread());
         long startTime = System.currentTimeMillis();
         boolean found = false;
-        while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
-            if (threadsWaitingForBLPOP.get(key).peek() == Thread.currentThread()) {
-                if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
-                    String value = lists.get(key).remove(0);
-                    out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
-                    out.flush();
-                    threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
-                    found = true;
-                    break;
+        outer: while (waitForever || (System.currentTimeMillis() - startTime) < timeout) {
+            synchronized (threadsWaitingForBLPOP){
+                if (threadsWaitingForBLPOP.get(key).peek() == Thread.currentThread()) {
+                    if (lists.containsKey(key) && !lists.get(key).isEmpty()) {
+                        String value = lists.get(key).remove(0);
+                        out.write(("*2\r\n$" + key.length() + "\r\n" + key + "\r\n" + "$" + value.length() + "\r\n" + value + "\r\n").getBytes());
+                        out.flush();
+                        threadsWaitingForBLPOP.get(key).remove(Thread.currentThread());
+                        found = true;
+                        break outer;
+                    }
                 }
             }
         }
