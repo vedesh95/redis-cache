@@ -17,7 +17,7 @@ public class Geopos implements GeoCommand {
     @Override
     public void execute(List<String> command, OutputStream out, Socket socket) throws IOException {
         out.write(("*"+command.size()/2+"\r\n").getBytes());
-        for(int i=0;i<command.size();i=i+2){
+        for(int i=1;i<command.size();i=i+2){
             String key = command.get(i);
             String member = command.get(i+1);
             double score = this.sortedSet.getZScore(key, member);
