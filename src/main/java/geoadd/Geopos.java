@@ -17,23 +17,19 @@ public class Geopos implements GeoCommand {
     @Override
     public void execute(List<String> command, OutputStream out, Socket socket) throws IOException {
         List<Double> res = new ArrayList<>();
-        for(int i=1;i<=command.size()-2;i=i+2){
-            String key = command.get(i);
-            String member = command.get(i+1);
+        String key = command.get(0);
+        out.write(("*" + (command.size() - 2) + "\r\n").getBytes());
+        for(int i=1;i<=command.size();i++){
+            String member = command.get(i);
             double score = this.sortedSet.getZScore(key, member);
             if(score == -1){
-                res.add(score);
+                out.write("*-1\r\n".getBytes());
                 continue;
             }
             List<Double> coords = RedisGeoCodec.decode((long) score);
-            res.addAll(coords);
-        }
-        // output res as array where each element is resp bulk string
-        out.write(("*" + res.size() + "\r\n").getBytes());
-        for(Double coord : res){
-            if(coord == -1){
-                out.write("$-1\r\n".getBytes());
-            } else {
+            // write coords as array of two bulk strings
+            out.write(("*2\r\n").getBytes());
+            for(Double coord : coords){
                 String coordStr = String.valueOf(coord);
                 out.write(("$" + coordStr.length() + "\r\n").getBytes());
                 out.write((coordStr + "\r\n").getBytes());
