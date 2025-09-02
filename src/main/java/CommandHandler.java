@@ -1,14 +1,18 @@
 import command.*;
-import struct.RDBDetails;
-import struct.ServerInfo;
-import struct.KeyValue;
-import struct.Pair;
+import pubsub.PubSubCommand;
+import pubsub.PubSubPing;
+import pubsub.Subscribe;
+import pubsub.UnSubscribe;
+import rdbparser.RDBParser;
+import struct.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.Socket;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,6 +25,10 @@ public class CommandHandler {
     private ServerInfo info;
     private AtomicInteger ackCounter;
     private RDBDetails rdbDetails;
+    private RDBParser rdbparser;
+    private Map<String, java.util.Set<Socket> > pubSubMap;
+    private Map<Socket, java.util.Set<String>> subPubMap;
+    private SortedSet sortedSet;
 
     Command ping;
     Command echo;
@@ -39,8 +47,21 @@ public class CommandHandler {
     Command incr;
     Command replicationInfo;
     Command config;
+    Command keys;
+    // pubsub commands
+    PubSubCommand subscribe;
+    PubSubCommand publish;
+    PubSubCommand pubsubPing;
+    PubSubCommand unsubscribe;
+    // sortedset commands
+    Command zadd;
+    Command zrank;
+    Command zrange;
+    Command zcard;
+    Command zscore;
+    Command zrem;
 
-    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails) {
+    public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, java.util.Set<Socket> > pubSubMap, Map<Socket, java.util.Set<String>> subPubMap, SortedSet sortedSet) {
         this.map = map;
         this.lists = lists;
         this.threadsWaitingForBLPOP = threadsWaitingForBLPOP;
@@ -48,11 +69,15 @@ public class CommandHandler {
         this.info = info;
         this.ackCounter = ackCounter;
         this.rdbDetails = rdbDetails;
+        this.rdbparser = rdbparser;
+        this.pubSubMap = pubSubMap;
+        this.subPubMap = subPubMap;
+        this.sortedSet = sortedSet;
 
         this.ping = new Ping();
         this.echo = new Echo();
         this.set = new Set(map, lists, threadsWaitingForBLPOP, streamMap);
-        this.get = new Get(map, lists, threadsWaitingForBLPOP, streamMap);
+        this.get = new Get(map, lists, threadsWaitingForBLPOP, streamMap, rdbparser);
         this.rpush = new Rpush(map, lists, threadsWaitingForBLPOP, streamMap);
         this.lrange = new Lrange(map, lists, threadsWaitingForBLPOP, streamMap);
         this.lpush = new Lpush(map, lists, threadsWaitingForBLPOP, streamMap);
@@ -66,12 +91,27 @@ public class CommandHandler {
         this.incr = new Incr(map, lists, threadsWaitingForBLPOP, streamMap);
         this.replicationInfo = new ReplicationInfo(info);
         this.config = new Config(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails);
+        this.keys = new Keys(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser);
+
+        this.subscribe = new Subscribe(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
+        this.pubsubPing = new PubSubPing(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
+        this.publish = new pubsub.Publish(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
+        this.unsubscribe = new UnSubscribe(map, lists, threadsWaitingForBLPOP, streamMap, rdbDetails, rdbparser, pubSubMap, subPubMap);
+
+        this.zadd = new Zadd(sortedSet);
+        this.zrank = new Zrank(sortedSet);
+        this.zrange = new Zrange(sortedSet);
+        this.zcard = new Zcard(sortedSet);
+        this.zscore = new Zscore(sortedSet);
+        this.zrem = new Zrem(sortedSet);
     }
 
-    public void handleCommand(List<String> command, OutputStream out){
+    public void handleCommand(List<String> command, OutputStream out, Socket socket){
         try{
             switch (command.get(0).toUpperCase(Locale.ROOT)) {
-                case "PING": ping.execute(command, out); break;
+                case "PING":
+                    if(!this.subPubMap.containsKey(socket)) {ping.execute(command, out); break;}
+                    pubsubPing.execute(command, out, socket);break;
                 case "ECHO": echo.execute(command, out); break;
                 case "SET": set.execute(command, out); break;
                 case "GET": get.execute(command, out); break;
@@ -113,6 +153,21 @@ public class CommandHandler {
                     out.flush();
                     break;
                 case "CONFIG": config.execute(command, out); break;
+                case "KEYS": keys.execute(command, out); break;
+                case "SUBSCRIBE": subscribe.execute(command, out, socket); break;
+                case "PUBLISH": publish.execute(command, out, socket); break;
+                case "UNSUBSCRIBE": unsubscribe.execute(command, out, socket); break;
+                case "ZADD": zadd.execute(command, out); break;
+                case "ZRANK": zrank.execute(command, out); break;
+                case "ZRANGE": zrange.execute(command, out); break;
+                case "ZCARD": zcard.execute(command, out); break;
+                case "ZSCORE": zscore.execute(command, out); break;
+                case "ZREM": zrem.execute(command, out); break;
+                case "QUIT":
+                    out.write("+OK\r\n".getBytes());
+                    out.flush();
+                    socket.close();
+                    break;
                 default:
                     out.write("-ERR unknown command\r\n".getBytes());
                     out.flush();

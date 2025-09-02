@@ -84,7 +84,7 @@ public class Xread implements Command {
                     }
                 }
             }
-            System.out.println("XREAD fetchNew: streamids=" + streamids);
+//            System.out.println("XREAD fetchNew: streamids=" + streamids);
         }
 
 

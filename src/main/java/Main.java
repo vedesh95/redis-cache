@@ -16,6 +16,7 @@ public class Main {
             if(args[i].equalsIgnoreCase("--dir")) cache.getRdbDetails().setDir(args[i+1]);
             if(args[i].equalsIgnoreCase("--dbfilename")) cache.getRdbDetails().setDbfilename(args[i+1]);
         }
+        cache.initRDBParser(); // parse RDB file if dir and dbfilename are set
         try {
             serverSocket = new ServerSocket(port);
             serverSocket.setReuseAddress(true);

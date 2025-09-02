@@ -1,5 +1,6 @@
-import command.Command;
+import rdbparser.RDBParser;
 import struct.*;
+import struct.SortedSet;
 
 import java.io.*;
 import java.net.Socket;
@@ -23,8 +24,12 @@ public class Client {
     private ClientType clientType;
     private AtomicInteger ackCounter;
     private RDBDetails rdbDetails;
+    private RDBParser rdbparser;
+    private Map<String, Set<Socket >> pubSubMap;
+    private Map<Socket, Set<String>> subPubMap;
+    private SortedSet sortedSet;
 
-    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter, RDBDetails rdbDetails) {
+    public Client(CommandHandler commandHandler, ClientType clientType, Socket clientSocket, ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue> >> streamMap,Map<Socket, SlaveDetails> slaves, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, Set<Socket>> pubSubMap, Map<Socket, Set<String>> subPubMap, SortedSet sortedSet) {
         this.commandHandler = commandHandler;
         this.clientSocket = clientSocket;
         this.map = map;
@@ -36,9 +41,14 @@ public class Client {
         this.clientType = clientType;
         this.ackCounter = ackCounter;
         this.rdbDetails = rdbDetails;
+        this.rdbparser = rdbparser;
+        this.pubSubMap = pubSubMap;
+        this.subPubMap = subPubMap;
+        this.sortedSet = sortedSet;
     }
 
     public void listen(Socket clientSocket, BufferedReader reader, OutputStream out) {
+
 
         try (clientSocket; reader; out) {
             boolean isInTransaction = false;
@@ -54,6 +64,15 @@ public class Client {
                     command = parseCommand(reader);
                 } catch (IOException e) {}
                 if(command.isEmpty()) continue;
+
+                if(subPubMap.containsKey(clientSocket) && subPubMap.get(clientSocket).size()> 0){
+                    List<String> pubsubCommands = Arrays.asList("SUBSCRIBE", "UNSUBSCRIBE", "PSUBSCRIBE", "PUNSUBSCRIBE", "PING", "QUIT");
+                    if(!pubsubCommands.contains(command.get(0).toUpperCase())){
+                        out.write(("-ERR Can't execute '" + command.get(0).toLowerCase() + "': only (P|S)SUBSCRIBE / (P|S)UNSUBSCRIBE / PING / QUIT / RESET are allowed in this context\r\n").getBytes());
+                        out.flush();
+                        continue;
+                    }
+                }
 
                 commandsBeforeWAIT.add(command);
 
@@ -78,7 +97,7 @@ public class Client {
                     out.write(("*" + transaction.size() + "\r\n").getBytes());
                     out.flush();
                     for(List<String> cmd : transaction){
-                        this.commandHandler.handleCommand(cmd, out);
+                        this.commandHandler.handleCommand(cmd,out, clientSocket);
                     }
                     transaction.clear();
                 }else if(command.get(0).equalsIgnoreCase("DISCARD")){
@@ -149,11 +168,11 @@ public class Client {
                     }
                     commandsBeforeWAIT.clear();
                 }else {
-                    if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out);
+                    if(this.clientType == ClientType.NONDBCLIENT || (this.clientType == ClientType.DBCLIENT && command.get(0).equalsIgnoreCase("REPLCONF"))) this.commandHandler.handleCommand(command, out,clientSocket);
                     else this.commandHandler.handleCommand(command, new OutputStream() {
                         @Override
                         public void write(int b) throws IOException {}
-                    });
+                    }, clientSocket);
                 }
 
                 if(command.get(0).equalsIgnoreCase("PSYNC") || command.get(0).equalsIgnoreCase("SYNC")){
