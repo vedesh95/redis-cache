@@ -80,4 +80,10 @@ public class SortedSet {
         if(!sortedMembers.containsKey(key)) return 0;
         return sortedMembers.get(key).size();
     }
+
+    public double getZScore(String key, String member){
+        if(!sortedMembers.containsKey(key) || !sortedMembers.get(key).containsKey(member)) return -1;
+        return sortedMembers.get(key).get(member);
+
+    }
 }
