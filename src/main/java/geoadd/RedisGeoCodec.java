@@ -21,14 +21,16 @@ public class RedisGeoCodec {
         return interleaveBits(x, y);
     }
 
+    // step 1 2
     private static long normalize(double value, double min, double range) {
         double norm = GRID_SIZE * ((value - min) / range);
         return (long) norm; // truncation
     }
 
+    // step 3
     private static long interleaveBits(long x, long y) {
-        long a = spreadBits(x);
-        long b = spreadBits(y) << 1;
+        long a = (spreadBits(x));
+        long b = (spreadBits(y) << 1);
         return a | b;
     }
 
@@ -109,12 +111,17 @@ public class RedisGeoCodec {
         return min + range * ((grid + 1) / (double) GRID_SIZE);
     }
 
-    public static void main(String[] args) {
-        // Test example: New Delhi (28.6667, 77.2167)
-        long code = encode(2.2944692, 48.8584625);
-        System.out.println("Encoded score: " + code);
+//    public static void main(String[] args) {
+//        // Test example: New Delhi (28.6667, 77.2167)
+//        long code = encode(48.8584625, 2.2944692);
+//        System.out.println("Encoded score: " + code);
+//
+//        List<Double> decoded = decode(code);
+//        System.out.printf("Decoded lat: %.6f, lon: %.6f%n", decoded.get(0), decoded.get(1));
+//
+//        double[] center = decodeToCellCenter(3663832614298053L);
+//        System.out.printf("Cell center lat: %.6f, lon: %.6f%n", center[0], center[1]);
+//    }
 
-        List<Double> decoded = decode(code);
-        System.out.printf("Decoded lat: %.6f, lon: %.6f%n", decoded.get(0), decoded.get(1));
-    }
+
 }
