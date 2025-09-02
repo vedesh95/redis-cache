@@ -27,6 +27,7 @@ public class Geopos implements GeoCommand {
                 continue;
             }
             List<Double> coords = RedisGeoCodec.decode((long) score);
+            System.out.println(coords);
             out.write(("*2\r\n").getBytes());
             for(Double coord : coords){
                 String coordStr = String.valueOf(coord);
