@@ -111,17 +111,18 @@ public class RedisGeoCodec {
         return min + range * ((grid + 1) / (double) GRID_SIZE);
     }
 
-//    public static void main(String[] args) {
-//        // Test example: New Delhi (28.6667, 77.2167)
-//        long code = encode(48.8584625, 2.2944692);
-//        System.out.println("Encoded score: " + code);
-//
-//        List<Double> decoded = decode(code);
-//        System.out.printf("Decoded lat: %.6f, lon: %.6f%n", decoded.get(0), decoded.get(1));
-//
-//        double[] center = decodeToCellCenter(3663832614298053L);
-//        System.out.printf("Cell center lat: %.6f, lon: %.6f%n", center[0], center[1]);
-//    }
+    public static void main(String[] args) {
+        // Test example: New Delhi (28.6667, 77.2167)
+
+        long code = encode(51.506479, -0.0884948 );
+        System.out.println("Encoded score: " + code);
+
+        List<Double> decoded = decode(code);
+        System.out.printf("Decoded lat: %.6f, lon: %.6f%n", decoded.get(0), decoded.get(1));
+
+        double[] center = decodeToCellCenter(3663832614298053L);
+        System.out.printf("Cell center lat: %.6f, lon: %.6f%n", center[0], center[1]);
+    }
 
 
 }
