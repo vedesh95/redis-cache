@@ -16,7 +16,6 @@ public class Geopos implements GeoCommand {
     }
     @Override
     public void execute(List<String> command, OutputStream out, Socket socket) throws IOException {
-
         String key = command.get(1);
         out.write(("*" + (command.size() - 2) + "\r\n").getBytes());
         for(int i=2;i<command.size();i++){
