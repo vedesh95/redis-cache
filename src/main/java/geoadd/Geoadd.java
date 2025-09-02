@@ -19,8 +19,8 @@ public class Geoadd implements GeoCommand {
         double longitude = Double.parseDouble(command.get(2));
         double latitude = Double.parseDouble(command.get(3));
         // check for valid latitude
-        boolean isValidLongitude = (longitude >=RedisGeoCodec.MIN_LAT  && longitude <= RedisGeoCodec.MAX_LAT);
-        boolean isValidLatitude = (latitude >=RedisGeoCodec.MIN_LON  && latitude <= RedisGeoCodec.MAX_LON);
+        boolean isValidLongitude = (longitude >=RedisGeoCodec.MIN_LON  && longitude <= RedisGeoCodec.MAX_LON);
+        boolean isValidLatitude = (latitude >=RedisGeoCodec.MIN_LAT  && latitude <= RedisGeoCodec.MAX_LAT);
         // if not valid, return error
         if (!isValidLongitude || !isValidLatitude) {
             out.write(("-ERR invalid latitude or longitude\r\n").getBytes());
