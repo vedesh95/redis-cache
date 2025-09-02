@@ -19,7 +19,7 @@ public class Geopos implements GeoCommand {
         List<Double> res = new ArrayList<>();
         String key = command.get(0);
         out.write(("*" + (command.size() - 2) + "\r\n").getBytes());
-        for(int i=2;i<=command.size();i++){
+        for(int i=2;i<command.size();i++){
             String member = command.get(i);
             double score = this.sortedSet.getZScore(key, member);
             if(score == -1){
@@ -27,7 +27,6 @@ public class Geopos implements GeoCommand {
                 continue;
             }
             List<Double> coords = RedisGeoCodec.decode((long) score);
-            // write coords as array of two bulk strings
             out.write(("*2\r\n").getBytes());
             for(Double coord : coords){
                 String coordStr = String.valueOf(coord);
