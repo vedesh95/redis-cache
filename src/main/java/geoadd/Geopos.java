@@ -19,7 +19,7 @@ public class Geopos implements GeoCommand {
         String member = command.get(2);
         double score = this.sortedSet.getZScore(key, member);
         if(score == -1){
-            out.write(("*-1\r\n").getBytes());
+            out.write(("*2\r\n*-1\r\n*-1\r\n").getBytes());
             out.flush();
             return;
         }
