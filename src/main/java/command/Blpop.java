@@ -11,10 +11,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Blpop implements Command {
-    private ConcurrentHashMap<String, Pair> map = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, List<String>> lists = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP = new ConcurrentHashMap<>();
-    private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Pair> map;
+    private ConcurrentHashMap<String, List<String>> lists;
+    private ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP;
+    private ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap;
 
     public Blpop(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap) {
         this.map = map;
