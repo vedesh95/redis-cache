@@ -1,5 +1,6 @@
 import command.*;
 import geoadd.Geoadd;
+import geoadd.Geopos;
 import pubsub.*;
 import pubsub.GeoCommand;
 import rdbparser.RDBParser;
@@ -61,6 +62,7 @@ public class CommandHandler {
     Command zrem;
     // geo commands
     GeoCommand geoadd;
+    GeoCommand geopos;
 
     public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, java.util.Set<Socket> > pubSubMap, Map<Socket, java.util.Set<String>> subPubMap, SortedSet sortedSet) {
         this.map = map;
@@ -107,6 +109,7 @@ public class CommandHandler {
         this.zrem = new Zrem(sortedSet);
 
         this.geoadd = new Geoadd(sortedSet);
+        this.geopos = new Geopos(sortedSet);
     }
 
     public void handleCommand(List<String> command, OutputStream out, Socket socket){
@@ -167,6 +170,7 @@ public class CommandHandler {
                 case "ZSCORE": zscore.execute(command, out); break;
                 case "ZREM": zrem.execute(command, out); break;
                 case "GEOADD": geoadd.execute(command, out, socket); break;
+                case "GEOPOS": geopos.execute(command, out, socket); break;
                 case "QUIT":
                     out.write("+OK\r\n".getBytes());
                     out.flush();
