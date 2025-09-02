@@ -27,6 +27,10 @@ public class Geopos implements GeoCommand {
                 continue;
             }
             List<Double> coords = RedisGeoCodec.decode((long) score);
+            // we return lat lon but tester expects lon lat
+            Double tmp = coords.get(0);
+            coords.set(0, coords.get(1));
+            coords.set(1, tmp);
             System.out.println(coords);
             out.write(("*2\r\n").getBytes());
             for(Double coord : coords){
