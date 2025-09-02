@@ -84,6 +84,14 @@ public class SortedSet {
     public double getZScore(String key, String member){
         if(!sortedMembers.containsKey(key) || !sortedMembers.get(key).containsKey(member)) return -1;
         return sortedMembers.get(key).get(member);
+    }
 
+    public int getZRem(String key, String member){
+        if(!sortedMembers.containsKey(key) || !sortedMembers.get(key).containsKey(member)) return 0;
+        double score = sortedMembers.get(key).get(member);
+        sortedMembers.get(key).remove(member);
+        scoreMembers.get(key).get(score).remove(member);
+        if(scoreMembers.get(key).get(score).isEmpty()) scoreMembers.get(key).remove(score);
+        return 1;
     }
 }
