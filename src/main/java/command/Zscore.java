@@ -17,9 +17,12 @@ public class Zscore implements Command {
     public void execute(List<String> command, OutputStream out) throws IOException {
         String key = command.get(1);
         String member = command.get(2);
-        double ans = this.sortedSet.getZScore(key, member);
-        if (ans != -1) out.write(("$" + ans + "\r\n").getBytes());
-        else out.write(("$-1\r\n").getBytes());
+        double value = this.sortedSet.getZScore(key, member);
+        if (value == -1) out.write(("$-1\r\n").getBytes());
+        else{
+            String ans= String.valueOf(value);
+            out.write(("$" + ans.length() + "\r\n" + ans + "\r\n").getBytes());
+        }
         out.flush();
     }
 }
