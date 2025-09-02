@@ -44,37 +44,6 @@ public class RedisGeoCodec {
         return v;
     }
 
-    public static double[] decodeToCellCenter(long score) {
-        long y = score >> 1;      // longitude bits
-        long x = score;           // latitude bits
-
-        double gridLat = compactBits64To32(x);
-        double gridLon = compactBits64To32(y);
-
-        // exact match to repo: compute min/max of the cell, then take center
-        double latMin = cellMin(gridLat, MIN_LAT, LAT_RANGE);
-        double latMax = cellMax(gridLat, MIN_LAT, LAT_RANGE);
-        double lonMin = cellMin(gridLon, MIN_LON, LON_RANGE);
-        double lonMax = cellMax(gridLon, MIN_LON, LON_RANGE);
-
-        double lat = (latMin + latMax) / 2.0;
-        double lon = (lonMin + lonMax) / 2.0;
-        return new double[] { lat, lon };
-    }
-
-    // If you prefer the direct “center” formula:
-    public static double[] decodeToCellCenterFast(long score) {
-        long y = score >> 1, x = score;
-        double gridLat = compactBits64To32(x);
-        double gridLon = compactBits64To32(y);
-        double lat = MIN_LAT + LAT_RANGE * ((gridLat + 0.5) / (double) GRID_SIZE);
-        double lon = MIN_LON + LON_RANGE * ((gridLon + 0.5) / (double) GRID_SIZE);
-        return new double[] { lat, lon };
-    }
-
-    /* =========================
-       Optional: get cell bounds
-       ========================= */
     public static List<Double> decode(long score) {
         long y = score >> 1, x = score;
         double gridLat = compactBits64To32(x);
@@ -111,18 +80,18 @@ public class RedisGeoCodec {
         return min + range * ((grid + 1) / (double) GRID_SIZE);
     }
 
-    public static void main(String[] args) {
-        // Test example: New Delhi (28.6667, 77.2167)
-
-        long code = encode(51.506479, -0.0884948 );
-        System.out.println("Encoded score: " + code);
-
-        List<Double> decoded = decode(code);
-        System.out.printf("Decoded lat: %.6f, lon: %.6f%n", decoded.get(0), decoded.get(1));
-
-        double[] center = decodeToCellCenter(3663832614298053L);
-        System.out.printf("Cell center lat: %.6f, lon: %.6f%n", center[0], center[1]);
-    }
+//    public static void main(String[] args) {
+//        // Test example: New Delhi (28.6667, 77.2167)
+//
+//        long code = encode(51.506479, -0.0884948 );
+//        System.out.println("Encoded score: " + code);
+//
+//        List<Double> decoded = decode(code);
+//        System.out.println(decoded.get(0) + " " + decoded.get(1));
+//
+//        double[] center = decodeToCellCenter(code);
+//        System.out.println(center[0] + " " + center[1]);
+//    }
 
 
 }
