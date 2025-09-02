@@ -21,7 +21,7 @@ public class Geopos implements GeoCommand {
         for(int i=2;i<command.size();i++){
             String member = command.get(i);
             double score = this.sortedSet.getZScore(key, member);
-            System.out.println("score:" + score);
+
             if(score == -1){
                 out.write("*-1\r\n".getBytes());
                 continue;

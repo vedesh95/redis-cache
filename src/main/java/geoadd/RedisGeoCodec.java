@@ -54,8 +54,6 @@ public class RedisGeoCodec {
         double lonMin = cellMin(gridLon, MIN_LON, LON_RANGE);
         double lonMax = cellMax(gridLon, MIN_LON, LON_RANGE);
 
-        //    latitude = (grid_latitude_min + grid_latitude_max) / 2
-        //    longitude = (grid_longitude_min + grid_longitude_max) / 2
         ArrayList<Double> coords = new ArrayList<>();
         coords.add((lonMin + lonMax)/2);
         coords.add((latMin+ latMax )/2);
