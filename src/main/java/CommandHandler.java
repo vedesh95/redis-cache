@@ -57,6 +57,7 @@ public class CommandHandler {
     Command zadd;
     Command zrank;
     Command zrange;
+    Command zcard;
 
     public CommandHandler(ConcurrentHashMap<String, Pair> map, ConcurrentHashMap<String, List<String>> lists, ConcurrentHashMap<String, ConcurrentLinkedQueue<Thread>> threadsWaitingForBLPOP, ConcurrentHashMap<String, LinkedHashMap<String, List<KeyValue>>> streamMap, ServerInfo info, AtomicInteger ackCounter, RDBDetails rdbDetails, RDBParser rdbparser, Map<String, java.util.Set<Socket> > pubSubMap, Map<Socket, java.util.Set<String>> subPubMap, SortedSet sortedSet) {
         this.map = map;
@@ -98,6 +99,7 @@ public class CommandHandler {
         this.zadd = new Zadd(sortedSet);
         this.zrank = new Zrank(sortedSet);
         this.zrange = new Zrange(sortedSet);
+        this.zcard = new Zcard(sortedSet);
     }
 
     public void handleCommand(List<String> command, OutputStream out, Socket socket){
@@ -154,6 +156,7 @@ public class CommandHandler {
                 case "ZADD": zadd.execute(command, out); break;
                 case "ZRANK": zrank.execute(command, out); break;
                 case "ZRANGE": zrange.execute(command, out); break;
+                case "ZCARD": zcard.execute(command, out); break;
                 case "QUIT":
                     out.write("+OK\r\n".getBytes());
                     out.flush();
