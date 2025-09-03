@@ -1,7 +1,6 @@
 package geoadd;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class RedisGeoCodec {
 
@@ -95,18 +94,44 @@ public class RedisGeoCodec {
         return 2.0 * EARTH_RADIUS_METERS * Math.asin(Math.sqrt(a));
     }
 
+    public static double distanceBetweenScores(long score1, long score2) {
+        List<Double> coord1 = decode(score1);
+        List<Double> coord2 = decode(score2);
+        double lon1 = coord1.get(0);
+        double lat1 = coord1.get(1);
+        double lon2 = coord2.get(0);
+        double lat2 = coord2.get(1);
+        return redisGeohashDistance(lon1, lat1, lon2, lat2);
+    }
+
+    public static List<String> geoSearch(double centerLon, double centerLat, double radiusMeters,
+                                         Map<Double, Set<String>> scoreMembers) {
+        List<String> results = new ArrayList<>();
+        long centerScore = encode(centerLon, centerLat);
+
+        for (Map.Entry<Double, Set<String>> entry : scoreMembers.entrySet()) {
+            long score = entry.getKey().longValue();
+            double dist = distanceBetweenScores(centerScore, score);
+            if (dist <= radiusMeters) {
+                results.addAll(entry.getValue());
+            }
+        }
+        return results;
+    }
+
 //    public static void main(String[] args) {
-//        // Test example: New Delhi (28.6667, 77.2167)
+//        double lon = -73.935242;
+//        double lat = 40.730610;
+//        long score = encode(lon, lat);
+//        System.out.println("Encoded score: " + score);
 //
-//        long code = encode(51.506479, -0.0884948 );
-//        System.out.println("Encoded score: " + code);
+//        List<Double> coords = decode(score);
+//        System.out.println("Decoded coords: " + coords);
 //
-//        List<Double> decoded = decode(code);
-//        System.out.println(decoded.get(0) + " " + decoded.get(1));
-//
-//        double[] center = decodeToCellCenter(code);
-//        System.out.println(center[0] + " " + center[1]);
+//        double lon2 = -74.935242;
+//        double lat2 = 41.730610;
+//        long score2 = encode(lon2, lat2);
+//        double distance = distanceBetweenScores(score, score2);
+//        System.out.println("Distance between points: " + distance + " meters");
 //    }
-
-
 }
