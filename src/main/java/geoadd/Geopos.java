@@ -1,12 +1,9 @@
 package geoadd;
 
-import pubsub.GeoCommand;
 import struct.SortedSet;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Geopos implements GeoCommand {

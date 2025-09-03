@@ -1,7 +1,5 @@
 package geoadd;
 
-import pubsub.GeoCommand;
-
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;

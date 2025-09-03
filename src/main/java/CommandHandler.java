@@ -3,7 +3,7 @@ import geoadd.Geoadd;
 import geoadd.Geodist;
 import geoadd.Geopos;
 import pubsub.*;
-import pubsub.GeoCommand;
+import geoadd.GeoCommand;
 import rdbparser.RDBParser;
 import struct.*;
 

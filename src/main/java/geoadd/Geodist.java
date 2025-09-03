@@ -1,14 +1,11 @@
 package geoadd;
 
-import pubsub.GeoCommand;
 import struct.SortedSet;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.ReadWriteLock;
 
 public class Geodist implements GeoCommand {
     private SortedSet sortedSet;
