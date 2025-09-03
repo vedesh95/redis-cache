@@ -25,6 +25,7 @@ public class Geosearch implements GeoCommand{
         if(unit.equalsIgnoreCase("km")) radius = radius * 1000;
         else if(unit.equalsIgnoreCase("mi")) radius = radius * 1609.34;
         else if(unit.equalsIgnoreCase("ft")) radius = radius * 0.3048;
+        else if (unit.equalsIgnoreCase("m")) radius = radius;
         else {
             out.write(("-ERR invalid unit\r\n").getBytes());
             out.flush();
