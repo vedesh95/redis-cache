@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.List;
+import java.util.Objects;
 
 public class Geosearch implements GeoCommand{
     private SortedSet sortedSet;
@@ -20,10 +21,9 @@ public class Geosearch implements GeoCommand{
         double latitude = Double.parseDouble(command.get(4));
         double radius = Double.parseDouble(command.get(6));
         String unit = command.get(7);
-        if(unit=="km") radius = radius * 1000;
-        else if(unit=="m") radius = radius;
-        else if(unit=="mi") radius = radius * 1609.34;
-        else if(unit=="ft") radius = radius * 0.3048;
+        if(unit.equalsIgnoreCase("km")) radius = radius * 1000;
+        else if(unit.equalsIgnoreCase("mi")) radius = radius * 1609.34;
+        else if(unit.equalsIgnoreCase("ft")) radius = radius * 0.3048;
         else {
             out.write(("-ERR invalid unit\r\n").getBytes());
             out.flush();
