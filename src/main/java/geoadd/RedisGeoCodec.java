@@ -14,6 +14,9 @@ public class RedisGeoCodec {
     private static final double LAT_RANGE = MAX_LAT - MIN_LAT;
     private static final double LON_RANGE = MAX_LON - MIN_LON;
     private static final long GRID_SIZE = 1L << 26; // 2^26
+    private static final double EARTH_RADIUS_METERS = 6372797.560856;
+    private static final double DEG_TO_RAD = Math.PI / 180.0;
+
 
     public static long encode(double lon, double lat) {
         long x = normalize(lat, MIN_LAT, LAT_RANGE);
@@ -76,6 +79,22 @@ public class RedisGeoCodec {
 
     private static double cellMax(double grid, double min, double range) {
         return min + range * ((grid + 1) / (double) GRID_SIZE);
+    }
+
+    public static double redisGeohashDistance(double lon1d, double lat1d,
+                                              double lon2d, double lat2d) {
+        double lon1r = lon1d * DEG_TO_RAD;
+        double lon2r = lon2d * DEG_TO_RAD;
+        double v = Math.sin((lon2r - lon1r) / 2.0);
+        if (v == 0.0) {
+            // optimization in Redis: if lon difference is (effectively) zero use lat distance
+            return EARTH_RADIUS_METERS * Math.abs((lat2d - lat1d) * DEG_TO_RAD);
+        }
+        double lat1r = lat1d * DEG_TO_RAD;
+        double lat2r = lat2d * DEG_TO_RAD;
+        double u = Math.sin((lat2r - lat1r) / 2.0);
+        double a = u * u + Math.cos(lat1r) * Math.cos(lat2r) * v * v;
+        return 2.0 * EARTH_RADIUS_METERS * Math.asin(Math.sqrt(a));
     }
 
 //    public static void main(String[] args) {

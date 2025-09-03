@@ -33,7 +33,7 @@ public class Geodist implements GeoCommand {
         double lat1 = coords1.get(1);
         double lon2 = coords2.get(0);
         double lat2 = coords2.get(1);
-        double distance = RedisGeoDist.redisGeohashDistance(lon1, lat1, lon2, lat2);
+        double distance = RedisGeoCodec.redisGeohashDistance(lon1, lat1, lon2, lat2);
         String distanceStr = String.valueOf(distance);
         out.write(("$" + distanceStr.length() + "\r\n").getBytes());
         out.write((distanceStr + "\r\n").getBytes());
