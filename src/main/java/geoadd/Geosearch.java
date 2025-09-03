@@ -21,7 +21,7 @@ public class Geosearch implements GeoCommand{
         double latitude = Double.parseDouble(command.get(4));
         double radius = Double.parseDouble(command.get(6));
         String unit = command.get(7);
-        System.out.println("unit: " + unit);
+
         if(unit.equalsIgnoreCase("km")) radius = radius * 1000;
         else if(unit.equalsIgnoreCase("mi")) radius = radius * 1609.34;
         else if(unit.equalsIgnoreCase("ft")) radius = radius * 0.3048;
